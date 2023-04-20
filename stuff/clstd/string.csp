@@ -1,0 +1,116 @@
+class string {
+	ptr start, end;
+	int length;
+
+	fn _constructor (this: string): void {
+		this.start = alloc(0);
+		let test: string = "why are you like this";
+		this.end = this.start;
+
+		this.length = 0;
+	}
+	
+	fn _constructor (this: string, str: list[char]): void {
+		this.start = alloc(str.length);
+		this.end = this.start + str.length;
+		var c: ptr = this.start;
+		while (c++ != this.end) {
+			write(c, str[c - this.start]);
+		}
+		this.length = str.length;
+	}
+
+	fn _iter (this: string): list[char] {
+		var out: list[char] {this.length};
+		var c: ptr = this.start;
+		while (c++ != this.end) {
+			out[c - this.start] = read(c);
+		}
+		return out;
+	}
+
+	fn _index (this: string, idx: int): char {
+		if (idx >= this.length) throw IndexError {"string index out of range"};
+		return read(this.start + (idx % this.length));
+	}
+
+	fn _slice (this: string, start: int, end: int): string {
+		var out: list[char];
+		var i: int = start;
+		while (i++ < end) {
+			out[(i - start) % this.length] = this[i];
+		}
+		return string {out};
+	}
+	
+	fn _operator+ (this: string, other: string): string {
+		var cat: list[char] {this.length + other.length};
+
+		var i: int = 0;
+
+		while (i++ < this.length) cat[i] = this[i];
+		while (i++ < this.length + other.length) cat[i] = other[i - this.length];
+
+		return string {cat};
+	}
+
+	fn _operator* (this: string, other: int): string {
+		var out: list[char] {this.length * other};
+
+		var i: int = 0;
+		while (i++ < this.length * other) out[i] = this[i % this.length];
+
+		return string {out};
+	}
+
+	fn _operator== (this: string, other: string): bool {
+		if (this.length != other.length) return false;
+		var i: int = 0;
+		while (i++ < this.length) {
+			if(this[i] != other[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	fn split (this: string): list[string] {
+		var i: int = 0;
+		var out: list[string];
+		var delim: string = " ";
+		
+		var previousDelim: bool = true;
+		
+		while (i < this.length) {
+			var delim: bool = false;
+			string current = this[i:i+delim.length];
+			if (current == delim)
+				delim = true;
+			if (!delim && previousDelim) 
+				out.append("");
+			
+			if (!delim)
+				out[-1] += current;
+			
+			previousDelim = delim;
+		}
+
+		return out;
+	}
+	fn replace (this: string, from: string, to: string): string {
+		string out;
+
+		var i: int = 0;
+		while (i < this.length) {
+			if (this[i:i+from.length] == from) {
+				out += to;
+				i += from.length;
+			} else {
+				out += this[i];
+				i += 1;
+			}
+		}
+
+		return out;
+	}
+}
