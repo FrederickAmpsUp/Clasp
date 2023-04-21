@@ -242,6 +242,34 @@ class FunctionDecl : public Statement {
         }
 };
 
+class While : public Statement {
+    public:
+        void accept(ASTVisitor *visitor) override {
+            visitor->visitWhile(this);
+        }
+        CodeBlock *body;
+        Expression *cond;
+
+        While (CodeBlock *body, Expression *cond) {
+            this->body = body;
+            this->cond = cond;
+        }
+};
+
+class If : public Statement {
+    public:
+        void accept(ASTVisitor *visitor) override {
+            visitor->visitIf(this);
+        }
+
+        CodeBlock *body;
+        Expression *cond;
+
+        If (CodeBlock *body, Expression *cond) {
+            this->body = body;
+            this->cond = cond;
+        }
+};
 // END AST
 
 #endif

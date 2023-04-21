@@ -15,6 +15,8 @@ class IntegerConstant;
 class FixedConstant;
 class StringConstant;
 class Variable;
+class While;
+class If;
 
 #include "clasp_ast.cpp"
 
@@ -34,5 +36,7 @@ class ASTVisitor {
         virtual void visitFixedConstant       (FixedConstant *node) = 0;
         virtual void visitStringConstant     (StringConstant *node) = 0;
         virtual void visitVariable                 (Variable *node) = 0;
+        virtual void visitWhile                       (While *node) = 0;
+        virtual void visitIf                             (If *node) = 0;
 };
 #endif
