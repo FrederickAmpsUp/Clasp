@@ -18,10 +18,11 @@ enum Operation {
 class NotImplementedException {
 
 };
-
+class ASTVisitor;
 // START EXPRESSION
 class Expression {
     public:
+        virtual void accept(ASTVisitor *visitor) = 0;
         virtual Expression *left()  = 0;
         virtual Expression *right() = 0;
         virtual string op()         = 0;
@@ -34,6 +35,9 @@ class BinaryExpression : public Expression {
     Expression *l, *r;
     string operand;
     public:
+        void accept(ASTVisitor *visitor) {
+            visitor->visitBinaryExpression(this);
+        }
         Expression *left()  {return l;      };
         Expression *right() {return r;      };
         string op()         {return operand;};
@@ -52,6 +56,9 @@ class UnaryExpression : public Expression {
     Expression *r;
     string operand;
     public:
+        void accept(ASTVisitor *visitor) {
+            visitor->visitUnaryExpression(this);
+        }
         Expression *right() {return r;};
         string  op() {return operand;};
 
@@ -73,6 +80,9 @@ class Variable : public Expression {
 class IntegerConstant : public Expression {
     int val;
     public:
+        void accept(ASTVisitor *visitor) {
+            visitor->visitIntegerConstant(this);
+        }
         Expression *left() {throw NotImplementedException();};
         Expression *right() {throw NotImplementedException();};
         string op() {throw NotImplementedException();};
@@ -86,6 +96,9 @@ class IntegerConstant : public Expression {
 class FixedConstant : public Expression {
     int val;
     public:
+        void accept(ASTVisitor *visitor) {
+            visitor->visitFixedConstant(this);
+        }
         Expression *left() {throw NotImplementedException();};
         Expression *right() {throw NotImplementedException();};
         string op() {throw NotImplementedException();};
@@ -99,6 +112,9 @@ class FixedConstant : public Expression {
 class StringConstant : public Expression {
     string val;
     public:
+        void accept(ASTVisitor *visitor) {
+            visitor->visitStringConstant(this);
+        }
         Expression *left() {throw NotImplementedException();};
         Expression *right() {throw NotImplementedException();};
         string op() {throw NotImplementedException();};
@@ -114,20 +130,29 @@ class StringConstant : public Expression {
 // END EXPRESSION
 
 // START AST
-class Line {
 
+class Line {
+    public:
+        virtual void accept (ASTVisitor *visitor) = 0;
 };
 
-class CodeBlock {
+class CodeBlock : public Line {
     public:
+        void accept (ASTVisitor *visitor) override {
+            visitor->visitCodeBlock (this);
+        }
         vector<Line *> body;
         CodeBlock (vector<Line *> body) {
             this->body = body;
         }
 };
 
-class VariableDecl : Line {
+class VariableDecl : public Line {
     public:
+        void accept (ASTVisitor *visitor) override {
+            visitor->visitVariableDecl(this);
+        }
+
         string name;
         string type;
 
@@ -148,6 +173,10 @@ class VariableDecl : Line {
 
 class Assignment : public Line {
     public:
+        void accept (ASTVisitor *visitor) override {
+            visitor->visitAssignment(this);
+        }
+
         string name;
         Expression *value;
 
@@ -159,6 +188,10 @@ class Assignment : public Line {
 
 class FunctionCall : public Line {
     public:
+        void accept (ASTVisitor *visitor) override {
+            visitor->visitFunctionCall(this);
+        }
+
         string name;
         vector<Expression *> args;
 
@@ -170,24 +203,44 @@ class FunctionCall : public Line {
 
 class FunctionDecl : public Line {
     public:
+        void accept (ASTVisitor *visitor) override {
+            visitor->visitFunctionDecl(this);
+        }
         string name;
         CodeBlock *body;
-        vector<VariableDecl> arguments;
+        vector<VariableDecl *> args;
         string returnType;
 
         FunctionDecl (
             string name,
             CodeBlock *body,
-            vector<VariableDecl> arguments,
+            vector<VariableDecl *> arguments,
             string returnType
         ) {
             this->name = name;
             this->body = body;
-            this->arguments = arguments;
+            this->args = arguments;
             this->returnType = returnType;
         }
 };
 
 // END AST
+
+class ASTVisitor {
+    public:
+        virtual void visit                             (Line *node) = 0;
+        virtual void visitVariableDecl         (VariableDecl *node) = 0;
+        virtual void visitAssignment             (Assignment *node) = 0;
+        virtual void visitFunctionCall         (FunctionCall *node) = 0;
+        virtual void visitFunctionDecl         (FunctionDecl *node) = 0;
+        virtual void visitCodeBlock               (CodeBlock *node) = 0;
+
+        virtual void visitExpression             (Expression *node) = 0;
+        virtual void visitBinaryExpression (BinaryExpression *node) = 0;
+        virtual void visitUnaryExpression   (UnaryExpression *node) = 0;
+        virtual void visitIntegerConstant   (IntegerConstant *node) = 0;
+        virtual void visitFixedConstant       (FixedConstant *node) = 0;
+        virtual void visitStringConstant     (StringConstant *node) = 0;
+};
 
 #endif

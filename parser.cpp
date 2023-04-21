@@ -164,51 +164,116 @@ class ASTParser {
             Token tok1 = advance();
 
             if (tok0.type == "IDENTIFIER" && tok1.type == "OPERATOR") {
+                cout << tok1.value << endl;
                 return new Assignment(tok0.value, expression());
             }
         }
 
         CodeBlock *codeBlock() {
             if (peek().value == "{") { // multiple lines
-
+                int depth = 1;
+                advance();
+                Token current;
+                vector<Line *> lines;
+                while (depth != 0) {
+                    current = peek();
+                    if (current.value == "{") depth++;
+                    if (current.value == "}") depth--;
+                    if (isAtEnd()) error("SyntaxError", "Unexpected EOF while parsing");
+                    lines.push_back(line());
+                }
+                return new CodeBlock(lines);
             }
+            return new CodeBlock({line()});
         }
 };
 
-class ASTPrinter {
-public:
-    void print (Expression *expr) { // i know, i plan to make it an ASTVisitor setup later
-        std::cout << "(";
-        try {
-            try {
-                print(expr->left());
-            }catch (NotImplementedException e) {}
-            std::cout << (expr->op());
-            print(expr->right());
-        }catch(NotImplementedException e){}
-        try {
-            std::cout << expr->value();
-        }catch(NotImplementedException e){}
-        try {
-            std::cout << '"' << expr->constant() << '"';
-        }catch(NotImplementedException e){}
+class ASTPrinter : public ASTVisitor {
+    void visit(Line *node) {
+        node->accept(this);
+    }
+
+    void visitVariableDecl(VariableDecl *node) {
+        std::cout << "VariableDecl (name=\"" << node->name << "\" type=\"" << node->type << "\" initializer=";
+        if (node->initialiser != nullptr) {
+            visitExpression(node->initialiser);
+        }
+        cout << ")";
+    }
+
+    void visitAssignment(Assignment *node) {
+        std::cout << "Assignment (name=\"" << node->name << "\" value=";
+        visitExpression(node->value);
         std::cout << ")";
+    }
+
+    void visitFunctionCall(FunctionCall *node) {
+        std::cout << "FunctionCall (name=\"" << node->name << "\" arguments=[";
+        for (Expression *arg : node->args) {
+            this->visitExpression(arg);
+            std::cout << ",";
+        }
+        std::cout << "])";
+    }
+
+    void visitFunctionDecl(FunctionDecl *node) {
+        std::cout << "FunctionDecl (name=\"" << node->name << "\" rettype=\"" << node->returnType << "\" arguments=[";
+        for (VariableDecl *arg : node->args) {
+            this->visit(arg);
+            std::cout << ",";
+        }
+        std::cout << "] body=";
+        this->visit(node->body);
+        std::cout << ")";
+    }
+
+    void visitCodeBlock(CodeBlock *node) {
+        std::cout << "CodeBlock (body=[";
+        for (Line *line : node->body) {
+            this->visit(line);
+            std::cout << std::endl;
+        }
+        std::cout << "])";
+    }
+
+    void visitExpression(Expression *node) {
+        node->accept(this);
+    }
+
+    void visitBinaryExpression(BinaryExpression *node) {
+        std::cout << "BinaryExpression (left=";
+        this->visitExpression(node->left());
+        std::cout << " op=" << node->op() << " right=";
+        this->visitExpression(node->right());
+        std::cout << ")";
+    }
+
+    void visitUnaryExpression(UnaryExpression *node) {
+        std::cout << "UnaryExpression (op=" << node->op() << " right=";
+        this->visitExpression(node->right());
+        std::cout << ")";
+    }
+
+    void visitIntegerConstant(IntegerConstant *node) {
+        std::cout << "IntegerConstant (value=" << node->value() << ")";
+    }
+
+    void visitFixedConstant(FixedConstant *node) {
+        std::cout << "FixedConstant (value=" << (node->value() / 2^32) << ")";
+    }
+
+    void visitStringConstant(StringConstant *node) {
+        std::cout << "StringConstant (value=\"" << node->constant() << "\")";
     }
 };
 
 int main () {
-    string expression = "(5 + 6 * 2) ";
+    string expression = "a = (5);";
+    cout << 393920 / (2^32);
 
     vector<Token> tokens = parse_tokens(expression);
-    //print_tokens(tokens);
 
-    ASTParser parser {tokens};
-
-    Expression *expr = parser.expression();
-
-    ASTPrinter printer {};
-    printer.print(expr);
-    cout << endl;
+    
 }
 
 #endif
