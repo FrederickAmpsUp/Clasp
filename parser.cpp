@@ -74,7 +74,7 @@ class ASTParser {
         Expression *primary() {
 
             if(peek().type == "IDENTIFIER") {
-                // TODO: implement this
+                return new Variable(advance().value);
             }
 
             if(peek().type == "STRING") {
@@ -197,7 +197,7 @@ class ASTParser {
                 while (peek().value != ")") {
                     cout << peek().value << endl;
                     args.push_back(expression());
-                    if (advance().value != "," && advance().value != ")") error("SyntaxError", "exptected , after argument");
+                    if (peek().value != "," && peek().value != ")") error("SyntaxError", "exptected , after argument");
                 }
                 return new FunctionCall(name, args);
             }

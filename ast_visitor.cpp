@@ -14,6 +14,8 @@ class UnaryExpression;
 class IntegerConstant;
 class FixedConstant;
 class StringConstant;
+class Variable;
+
 #include "clasp_ast.cpp"
 
 class ASTVisitor {
