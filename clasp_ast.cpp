@@ -146,6 +146,28 @@ class VariableDecl : Line {
         }
 };
 
+class Assignment : public Line {
+    public:
+        string name;
+        Expression *value;
+
+        Assignment(string name, Expression *value) {
+            this->name = name;
+            this->value = value;
+        }
+};
+
+class FunctionCall : public Line {
+    public:
+        string name;
+        vector<Expression *> args;
+
+        FunctionCall(string name, vector<Expression *> args) {
+            this->name = name;
+            this->args = args;
+        }
+};
+
 class FunctionDecl : public Line {
     public:
         string name;
