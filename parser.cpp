@@ -4,9 +4,11 @@
 #define MAIN
 #include "clasp_ast.cpp"
 #include "lexer.cpp"
+#include "get_type.cpp"
 #include <vector>
 #include <string>
 #include <stdarg.h>
+#include <typeinfo>
 
 using namespace std;
 
@@ -95,7 +97,7 @@ class ASTParser {
                 return expr;
             }
             error("SyntaxError", "Expected expression");
-  }
+        }
 
         Expression *unary() {
             if (matchName({"!", "-"})) {
@@ -156,34 +158,40 @@ class ASTParser {
         Expression *expression () {
             return equality();
         }
+
+        CodeBlock *codeBlock() {
+            if (peek().value == "{") {
+
+            }
+        }
 };
 
 class ASTPrinter {
 public:
-  void print (Expression *expr) {
-    std::cout << "(";
-    try {
+    void print (Expression *expr) { // i know
+        std::cout << "(";
         try {
-            print(expr->left());
-        }catch (NotImplementedException e) {}
-        std::cout << (expr->op());
-        print(expr->right());
-    }catch(NotImplementedException e){}
-    try {
-        std::cout << expr->value();
-    }catch(NotImplementedException e){}
-    try {
-        std::cout << '"' << expr->constant() << '"';
-    }catch(NotImplementedException e){}
-    std::cout << ")";
-  }
+            try {
+                print(expr->left());
+            }catch (NotImplementedException e) {}
+            std::cout << (expr->op());
+            print(expr->right());
+        }catch(NotImplementedException e){}
+        try {
+            std::cout << expr->value();
+        }catch(NotImplementedException e){}
+        try {
+            std::cout << '"' << expr->constant() << '"';
+        }catch(NotImplementedException e){}
+        std::cout << ")";
+    }
 };
 
 int main () {
-    string expression = "5 + 6 * 2 ";
+    string expression = "(5 + 6 * 2) ";
 
     vector<Token> tokens = parse_tokens(expression);
-    print_tokens(tokens);
+    //print_tokens(tokens);
 
     ASTParser parser {tokens};
 
