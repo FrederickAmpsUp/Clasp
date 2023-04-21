@@ -5,6 +5,7 @@
 #include "clasp_ast.cpp"
 #include "lexer.cpp"
 #include "get_type.cpp"
+#include "ast_visitor.cpp"
 #include <vector>
 #include <string>
 #include <stdarg.h>
@@ -190,6 +191,15 @@ class ASTParser {
                     string type = peek().value;
                     return new FunctionDecl(name, codeblock(), args, type);
                 }
+            } else if (tok0.type == "IDENTIFIER" && tok1.value == "(") {
+                string name = tok0.value;
+                vector<Expression *> args;
+                while (peek().value != ")") {
+                    cout << peek().value << endl;
+                    args.push_back(expression());
+                    if (advance().value != "," && advance().value != ")") error("SyntaxError", "exptected , after argument");
+                }
+                return new FunctionCall(name, args);
             }
             return new FunctionCall("",{});
         }
@@ -293,6 +303,10 @@ public:
 
     void visitStringConstant(StringConstant *node) {
         std::cout << "StringConstant (value=\"" << node->constant() << "\")";
+    }
+
+    void visitVariable(Variable *node) {
+        std::cout << "Identifier (name=" << node->constant() << ")";
     }
 };
 

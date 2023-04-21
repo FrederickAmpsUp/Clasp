@@ -76,10 +76,6 @@ class UnaryExpression : public Expression {
 
 };
 
-class Variable : public Expression {
-    // TODO: implement this
-};
-
 class IntegerConstant : public Expression {
     int val;
     public:
@@ -130,6 +126,25 @@ class StringConstant : public Expression {
         }
 
 };
+
+class Variable : public Expression {
+    string val;
+    public:
+        void accept(ASTVisitor *visitor) {
+            visitor->visitVariable(this);
+        }
+        Expression *left()  {throw NotImplementedException();};
+        Expression *right() {throw NotImplementedException();};
+        string op() {throw NotImplementedException();};
+        int value() {throw NotImplementedException();};
+
+        string constant() {return val;};
+
+        Variable (string name) {
+            val = name;
+        }
+};
+
 // END EXPRESSION
 
 // START AST

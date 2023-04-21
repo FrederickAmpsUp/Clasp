@@ -18,7 +18,7 @@ class StringConstant;
 
 class ASTVisitor {
     public:
-        virtual void visit                             (Statement *node) = 0;
+        virtual void visit                        (Statement *node) = 0;
         virtual void visitVariableDecl         (VariableDecl *node) = 0;
         virtual void visitAssignment             (Assignment *node) = 0;
         virtual void visitFunctionCall         (FunctionCall *node) = 0;
@@ -31,5 +31,6 @@ class ASTVisitor {
         virtual void visitIntegerConstant   (IntegerConstant *node) = 0;
         virtual void visitFixedConstant       (FixedConstant *node) = 0;
         virtual void visitStringConstant     (StringConstant *node) = 0;
+        virtual void visitVariable                 (Variable *node) = 0;
 };
 #endif
