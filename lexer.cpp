@@ -152,7 +152,7 @@ vector<Token> parse_tokens (string code) {
 #ifndef MAIN
 #define MAIN
 int main ( int argc, char *argv[] ) {
-    string code = "(6 + 5 * \"null\") ";
+    string code = "a = 5;";
     
     vector<Token> tokens = parse_tokens(code);
 

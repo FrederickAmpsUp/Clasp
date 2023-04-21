@@ -159,8 +159,17 @@ class ASTParser {
             return equality();
         }
 
+        Line *line () {
+            Token tok0 = previous();
+            Token tok1 = advance();
+
+            if (tok0.type == "IDENTIFIER" && tok1.type == "OPERATOR") {
+                return new Assignment(tok0.value, expression());
+            }
+        }
+
         CodeBlock *codeBlock() {
-            if (peek().value == "{") {
+            if (peek().value == "{") { // multiple lines
 
             }
         }
@@ -168,7 +177,7 @@ class ASTParser {
 
 class ASTPrinter {
 public:
-    void print (Expression *expr) { // i know
+    void print (Expression *expr) { // i know, i plan to make it an ASTVisitor setup later
         std::cout << "(";
         try {
             try {
