@@ -87,7 +87,7 @@ class ASTParser {
 
             if (matchType({"NUMBER"})) {
                 for (char c : previous().value)
-                    if (c == '.') return new FixedConstant(stoi(previous().value) * 56636.0);
+                    if (c == '.') return new FixedConstant(stoi(previous().value) * 65536.0);
                 return new IntegerConstant(stoi(previous().value));
             }
 
@@ -162,6 +162,10 @@ class ASTParser {
         }
 
         Statement *statement () {
+            if (peek().type == "DIRECTIVE") {
+                
+            }
+
             Token tok0 = previous();
             Token tok1 = advance();
             if (tok0.type == "IDENTIFIER" && tok1.type == "OPERATOR") {
@@ -188,18 +192,28 @@ class ASTParser {
                     }
                     if (advance().value != ")") error ("SyntaxError", "exptected ) after argument list");
                     if (advance().value != ":") error ("SyntaxError", "exptected : after argument list");
-                    string type = peek().value;
+                    string type = advance().value;
                     return new FunctionDecl(name, codeblock(), args, type);
                 }
             } else if (tok0.type == "IDENTIFIER" && tok1.value == "(") {
                 string name = tok0.value;
                 vector<Expression *> args;
-                while (peek().value != ")") {
-                    cout << peek().value << endl;
+                while (previous().value != ")") {
                     args.push_back(expression());
                     if (peek().value != "," && peek().value != ")") error("SyntaxError", "exptected , after argument");
+                    advance();
                 }
                 return new FunctionCall(name, args);
+            } else if (tok0.type == "KEYWORD" && tok1.value == "(") {
+                if (tok0.value == "while") {
+                    Expression *cond = expression();
+                    if (advance().value != ")") error("SyntaxError", "Expected ) after condition");
+                    return new While(codeblock(), cond);
+                } else if (tok0.value == "if") {
+                    Expression *cond = expression();
+                    if (advance().value != ")") error("SyntaxError", "Expected ) after condition");
+                    return new If(codeblock(), cond);
+                }
             }
             return new FunctionCall("",{});
         }
@@ -306,7 +320,23 @@ public:
     }
 
     void visitVariable(Variable *node) {
-        std::cout << "Identifier (name=" << node->constant() << ")";
+        std::cout << "Variable (name=" << node->constant() << ")";
+    }
+
+    void visitWhile(While *node) {
+        std::cout << "While (cond=";
+        this->visitExpression(node->cond);
+        std::cout << " body=";
+        this->visitCodeBlock(node->body);
+        std::cout << ")";
+    }
+
+    void visitIf(If *node) {
+        std::cout << "If (cond=";
+        this->visitExpression(node->cond);
+        std::cout << " body=";
+        this->visitCodeBlock(node->body);
+        std::cout << ")";
     }
 };
 
@@ -314,9 +344,15 @@ int main () {
     string expression = R"(
     {
         fn main (argv: list[int]): int {
-            var a: int = 0;
-            a = 1;
-            print(a);
+            var i: int = 0;
+            while (i <= 10) 
+                i = i + 1;
+            
+            print(
+                "Hello world * ",
+                i,
+                "10"
+            );
         }
     }
     )";
