@@ -9,6 +9,7 @@
 #include <string>
 #include <stdarg.h>
 #include <typeinfo>
+#include <cmath>
 
 using namespace std;
 
@@ -85,7 +86,7 @@ class ASTParser {
 
             if (matchType({"NUMBER"})) {
                 for (char c : previous().value)
-                    if (c == '.') return new FixedConstant(stoi(previous().value) * (2^32));
+                    if (c == '.') return new FixedConstant(stoi(previous().value) * 56636.0);
                 return new IntegerConstant(stoi(previous().value));
             }
 
@@ -159,37 +160,64 @@ class ASTParser {
             return equality();
         }
 
-        Line *line () {
+        Statement *statement () {
             Token tok0 = previous();
             Token tok1 = advance();
-
             if (tok0.type == "IDENTIFIER" && tok1.type == "OPERATOR") {
-                cout << tok1.value << endl;
                 return new Assignment(tok0.value, expression());
+            } else if (tok0.type == "KEYWORD" && tok1.type == "IDENTIFIER") {
+                if (tok0.value == "var") {
+                    if (advance().value != ":") error ("SyntaxError", "exptected : after variable name");
+                    string type = advance().value;
+                    if (advance().value == "=")
+                        return new VariableDecl(tok1.value, type, expression());
+                    return new VariableDecl(tok1.value, type);
+                } if (tok0.value == "fn") {
+                    string name = tok1.value;
+                    advance();
+                    vector<VariableDecl *> args;
+                    while (peek().value != ")") {
+                        string aName = advance().value;
+                        if (advance().value != ":") error ("SyntaxError", "exptected : after argument name");
+                        string type;
+                        while (peek().value != "," && peek().value != ")") {
+                            type += advance().value;
+                        }
+                        args.push_back(new VariableDecl(aName, type));
+                    }
+                    if (advance().value != ")") error ("SyntaxError", "exptected ) after argument list");
+                    if (advance().value != ":") error ("SyntaxError", "exptected : after argument list");
+                    string type = peek().value;
+                    return new FunctionDecl(name, codeblock(), args, type);
+                }
             }
+            return new FunctionCall("",{});
         }
 
-        CodeBlock *codeBlock() {
+        CodeBlock *codeblock() {
             if (peek().value == "{") { // multiple lines
                 int depth = 1;
                 advance();
                 Token current;
-                vector<Line *> lines;
+                vector<Statement *> statements;
                 while (depth != 0) {
                     current = peek();
                     if (current.value == "{") depth++;
                     if (current.value == "}") depth--;
+                    if (depth == 0) break;
                     if (isAtEnd()) error("SyntaxError", "Unexpected EOF while parsing");
-                    lines.push_back(line());
+                    statements.push_back(statement());
                 }
-                return new CodeBlock(lines);
+                return new CodeBlock(statements);
             }
-            return new CodeBlock({line()});
+            advance();
+            return new CodeBlock({statement()});
         }
 };
 
 class ASTPrinter : public ASTVisitor {
-    void visit(Line *node) {
+public:
+    void visit(Statement *node) {
         node->accept(this);
     }
 
@@ -208,6 +236,7 @@ class ASTPrinter : public ASTVisitor {
     }
 
     void visitFunctionCall(FunctionCall *node) {
+        if (node->name == "") return;
         std::cout << "FunctionCall (name=\"" << node->name << "\" arguments=[";
         for (Expression *arg : node->args) {
             this->visitExpression(arg);
@@ -228,8 +257,8 @@ class ASTPrinter : public ASTVisitor {
     }
 
     void visitCodeBlock(CodeBlock *node) {
-        std::cout << "CodeBlock (body=[";
-        for (Line *line : node->body) {
+        std::cout << "CodeBlock (body=[" << std::endl;
+        for (Statement *line : node->body) {
             this->visit(line);
             std::cout << std::endl;
         }
@@ -259,7 +288,7 @@ class ASTPrinter : public ASTVisitor {
     }
 
     void visitFixedConstant(FixedConstant *node) {
-        std::cout << "FixedConstant (value=" << (node->value() / 2^32) << ")";
+        std::cout << "FixedConstant (value=" << (node->value() / 65536.0) << ")";
     }
 
     void visitStringConstant(StringConstant *node) {
@@ -268,12 +297,25 @@ class ASTPrinter : public ASTVisitor {
 };
 
 int main () {
-    string expression = "a = (5);";
-    cout << 393920 / (2^32);
+    string expression = R"(
+    {
+        fn main (argv: list[int]): int {
+            var a: int = 0;
+            a = 1;
+            print(a);
+        }
+    }
+    )";
 
     vector<Token> tokens = parse_tokens(expression);
 
-    
+    ASTParser parser {tokens};
+
+    ASTPrinter printer;
+
+    printer.visitCodeBlock(
+        parser.codeblock()
+    );
 }
 
 #endif

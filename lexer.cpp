@@ -27,7 +27,7 @@ const std::vector<std::string> claspTokens = {"::", "->", "+=", "-=", "*=", "/="
 
 const std::vector<std::string> claspPunctuationTokens = {"->", "(", ")", "{", "}", ";", "[", "]", ":"};
 const std::vector<std::string> claspOperators = {"+", "-", "*", "/", "%", "&", "+=", "-=", "*=", "/=", "%=", "==", "!=", "<=", ">=", "<<", "&&", "||", ">>", "<<=", ">>=", "="}; // TODO: organise this
-
+const std::vector<std::string> claspKeywords = {"fn", "var", "let", "while", "if", "for"};
 // https://chat.openai.com/
 void padTokens(string& code, const vector<string>& tokens) {
     string result;
@@ -130,6 +130,8 @@ vector<Token> tokenize ( const string claspCode ) {
                 tokens.push_back(Token{"OPERATOR", tok});
             } else if (find(claspPunctuationTokens.begin(), claspPunctuationTokens.end(), tok) != std::end(claspPunctuationTokens)) {
                 tokens.push_back(Token{"PUNCTUATION", tok});
+            } else if (find(claspKeywords.begin(), claspKeywords.end(), tok) != std::end(claspKeywords)) {
+                tokens.push_back(Token{"KEYWORD", tok});
             } else {
                 tokens.push_back(Token{"IDENTIFIER", tok});
             }
@@ -153,7 +155,7 @@ vector<Token> parse_tokens (string code) {
 #define MAIN
 int main ( int argc, char *argv[] ) {
     string code = "a = 5;";
-    
+
     vector<Token> tokens = parse_tokens(code);
 
     print_tokens(tokens);

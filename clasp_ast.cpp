@@ -18,7 +18,10 @@ enum Operation {
 class NotImplementedException {
 
 };
+
 class ASTVisitor;
+#include "ast_visitor.cpp"
+
 // START EXPRESSION
 class Expression {
     public:
@@ -131,23 +134,23 @@ class StringConstant : public Expression {
 
 // START AST
 
-class Line {
+class Statement {
     public:
         virtual void accept (ASTVisitor *visitor) = 0;
 };
 
-class CodeBlock : public Line {
+class CodeBlock : public Statement {
     public:
         void accept (ASTVisitor *visitor) override {
             visitor->visitCodeBlock (this);
         }
-        vector<Line *> body;
-        CodeBlock (vector<Line *> body) {
+        vector<Statement *> body;
+        CodeBlock (vector<Statement *> body) {
             this->body = body;
         }
 };
 
-class VariableDecl : public Line {
+class VariableDecl : public Statement {
     public:
         void accept (ASTVisitor *visitor) override {
             visitor->visitVariableDecl(this);
@@ -171,7 +174,7 @@ class VariableDecl : public Line {
         }
 };
 
-class Assignment : public Line {
+class Assignment : public Statement {
     public:
         void accept (ASTVisitor *visitor) override {
             visitor->visitAssignment(this);
@@ -186,7 +189,7 @@ class Assignment : public Line {
         }
 };
 
-class FunctionCall : public Line {
+class FunctionCall : public Statement {
     public:
         void accept (ASTVisitor *visitor) override {
             visitor->visitFunctionCall(this);
@@ -201,7 +204,7 @@ class FunctionCall : public Line {
         }
 };
 
-class FunctionDecl : public Line {
+class FunctionDecl : public Statement {
     public:
         void accept (ASTVisitor *visitor) override {
             visitor->visitFunctionDecl(this);
@@ -225,22 +228,5 @@ class FunctionDecl : public Line {
 };
 
 // END AST
-
-class ASTVisitor {
-    public:
-        virtual void visit                             (Line *node) = 0;
-        virtual void visitVariableDecl         (VariableDecl *node) = 0;
-        virtual void visitAssignment             (Assignment *node) = 0;
-        virtual void visitFunctionCall         (FunctionCall *node) = 0;
-        virtual void visitFunctionDecl         (FunctionDecl *node) = 0;
-        virtual void visitCodeBlock               (CodeBlock *node) = 0;
-
-        virtual void visitExpression             (Expression *node) = 0;
-        virtual void visitBinaryExpression (BinaryExpression *node) = 0;
-        virtual void visitUnaryExpression   (UnaryExpression *node) = 0;
-        virtual void visitIntegerConstant   (IntegerConstant *node) = 0;
-        virtual void visitFixedConstant       (FixedConstant *node) = 0;
-        virtual void visitStringConstant     (StringConstant *node) = 0;
-};
 
 #endif
