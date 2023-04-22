@@ -1,5 +1,0 @@
-namespace com.frederickampsup.myApp
-
-fn doNothing (): void {
-    return;
-}
