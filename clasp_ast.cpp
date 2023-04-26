@@ -25,7 +25,7 @@ class ASTVisitor;
 // START EXPRESSION
 class Expression {
     public:
-        virtual void accept(ASTVisitor *visitor) = 0;
+        virtual Expression *accept(ASTVisitor *visitor) = 0;
         virtual Expression *left()  = 0;
         virtual Expression *right() = 0;
         virtual string op()         = 0;
@@ -38,8 +38,8 @@ class BinaryExpression : public Expression {
     Expression *l, *r;
     string operand;
     public:
-        void accept(ASTVisitor *visitor) {
-            visitor->visitBinaryExpression(this);
+        Expression *accept(ASTVisitor *visitor) {
+            return visitor->visitBinaryExpression(this);
         }
         Expression *left()  {return l;      };
         Expression *right() {return r;      };
@@ -59,8 +59,8 @@ class UnaryExpression : public Expression {
     Expression *r;
     string operand;
     public:
-        void accept(ASTVisitor *visitor) {
-            visitor->visitUnaryExpression(this);
+        Expression *accept(ASTVisitor *visitor) {
+            return visitor->visitUnaryExpression(this);
         }
         Expression *right() {return r;};
         string  op() {return operand;};
@@ -79,8 +79,8 @@ class UnaryExpression : public Expression {
 class IntegerConstant : public Expression {
     int val;
     public:
-        void accept(ASTVisitor *visitor) {
-            visitor->visitIntegerConstant(this);
+        Expression *accept(ASTVisitor *visitor) {
+            return visitor->visitIntegerConstant(this);
         }
         Expression *left() {throw NotImplementedException();};
         Expression *right() {throw NotImplementedException();};
@@ -95,8 +95,8 @@ class IntegerConstant : public Expression {
 class FixedConstant : public Expression {
     int val;
     public:
-        void accept(ASTVisitor *visitor) {
-            visitor->visitFixedConstant(this);
+        Expression *accept(ASTVisitor *visitor) {
+            return visitor->visitFixedConstant(this);
         }
         Expression *left() {throw NotImplementedException();};
         Expression *right() {throw NotImplementedException();};
@@ -111,8 +111,8 @@ class FixedConstant : public Expression {
 class StringConstant : public Expression {
     string val;
     public:
-        void accept(ASTVisitor *visitor) {
-            visitor->visitStringConstant(this);
+        Expression *accept(ASTVisitor *visitor) {
+            return visitor->visitStringConstant(this);
         }
         Expression *left() {throw NotImplementedException();};
         Expression *right() {throw NotImplementedException();};
@@ -130,8 +130,8 @@ class StringConstant : public Expression {
 class Variable : public Expression {
     string val;
     public:
-        void accept(ASTVisitor *visitor) {
-            visitor->visitVariable(this);
+        Expression *accept(ASTVisitor *visitor) {
+            return visitor->visitVariable(this);
         }
         Expression *left()  {throw NotImplementedException();};
         Expression *right() {throw NotImplementedException();};

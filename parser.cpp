@@ -1,6 +1,7 @@
 #ifndef PARSER_CPP
 #define PARSER_CPP
 
+#ifndef MAIN
 #define MAIN
 #include "clasp_ast.cpp"
 #include "lexer.cpp"
@@ -368,4 +369,5 @@ int main () {
     );
 }
 
+#endif
 #endif

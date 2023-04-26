@@ -28,15 +28,15 @@ class ASTVisitor {
         virtual void visitFunctionCall         (FunctionCall *node) = 0;
         virtual void visitFunctionDecl         (FunctionDecl *node) = 0;
         virtual void visitCodeBlock               (CodeBlock *node) = 0;
-
-        virtual void visitExpression             (Expression *node) = 0;
-        virtual void visitBinaryExpression (BinaryExpression *node) = 0;
-        virtual void visitUnaryExpression   (UnaryExpression *node) = 0;
-        virtual void visitIntegerConstant   (IntegerConstant *node) = 0;
-        virtual void visitFixedConstant       (FixedConstant *node) = 0;
-        virtual void visitStringConstant     (StringConstant *node) = 0;
-        virtual void visitVariable                 (Variable *node) = 0;
         virtual void visitWhile                       (While *node) = 0;
         virtual void visitIf                             (If *node) = 0;
+
+        virtual Expression *visitExpression             (Expression *node) = 0;
+        virtual Expression *visitBinaryExpression (BinaryExpression *node) = 0;
+        virtual Expression *visitUnaryExpression   (UnaryExpression *node) = 0;
+        virtual int        *visitIntegerConstant   (IntegerConstant *node) = 0;
+        virtual int        *visitFixedConstant       (FixedConstant *node) = 0;
+        virtual string     *visitStringConstant     (StringConstant *node) = 0;
+        virtual Expression *visitVariable                 (Variable *node) = 0;
 };
 #endif
