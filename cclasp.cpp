@@ -11,6 +11,8 @@
 #include "get_type.cpp"
 #include <string>
 #include <map>
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 class Interpreter : public ASTVisitor {
@@ -126,18 +128,22 @@ public:
     }
 };
 
-int main (int argc, char* argv[]) {
-    string code = R"( {
-var n1: int = 0;
-var n2: int = 1;
-
-while(true) {
-    print(n1);
-    var tmp: int = n1 + n2;
-    n1 = n2;
-    n2 = tmp;
+string load_file(const char* fname) {
+    ifstream file(fname);
+    if (!file.is_open()) {
+        error("Could not open file", (string)fname);
+    }
+    string file_contents((istreambuf_iterator<char>(file)),
+                              istreambuf_iterator<char>());
+    file.close();
+    return file_contents;
 }
-} )";
+
+int main (int argc, char* argv[]) {
+    if (argc < 2) error("usage", "cclasp <filename>");
+    string code = "{";
+    code += load_file(argv[1]);
+    code += '}';
     vector<Token> tokens;
     tokens = parse_tokens(code);
     ASTParser parser {tokens};
