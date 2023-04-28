@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 enum Operation {
@@ -19,12 +20,14 @@ class NotImplementedException {
 
 };
 
-class ASTVisitor;
+//class ASTVisitor;
 #include "ast_visitor.cpp"
 
 // START EXPRESSION
 class Expression {
     public:
+        virtual bool is_numberConstant() = 0;
+        virtual bool is_stringConstant() = 0;
         virtual Expression *accept(ASTVisitor *visitor) = 0;
         virtual Expression *left()  = 0;
         virtual Expression *right() = 0;
@@ -38,6 +41,8 @@ class BinaryExpression : public Expression {
     Expression *l, *r;
     string operand;
     public:
+        bool is_numberConstant() {return false;}
+        bool is_stringConstant() {return false;}
         Expression *accept(ASTVisitor *visitor) {
             return visitor->visitBinaryExpression(this);
         }
@@ -59,6 +64,8 @@ class UnaryExpression : public Expression {
     Expression *r;
     string operand;
     public:
+        bool is_numberConstant() {return false;}
+        bool is_stringConstant() {return false;}
         Expression *accept(ASTVisitor *visitor) {
             return visitor->visitUnaryExpression(this);
         }
@@ -79,6 +86,8 @@ class UnaryExpression : public Expression {
 class IntegerConstant : public Expression {
     int val;
     public:
+        bool is_stringConstant() {return false;}
+        bool is_numberConstant() {return true;}
         Expression *accept(ASTVisitor *visitor) {
             return visitor->visitIntegerConstant(this);
         }
@@ -95,6 +104,8 @@ class IntegerConstant : public Expression {
 class FixedConstant : public Expression {
     int val;
     public:
+        bool is_stringConstant() {return false;}
+        bool is_numberConstant() {return true;}
         Expression *accept(ASTVisitor *visitor) {
             return visitor->visitFixedConstant(this);
         }
@@ -111,6 +122,8 @@ class FixedConstant : public Expression {
 class StringConstant : public Expression {
     string val;
     public:
+        bool is_numberConstant() {return false;}
+        bool is_stringConstant() {return true;}
         Expression *accept(ASTVisitor *visitor) {
             return visitor->visitStringConstant(this);
         }
@@ -130,6 +143,8 @@ class StringConstant : public Expression {
 class Variable : public Expression {
     string val;
     public:
+        bool is_numberConstant() {return false;}
+        bool is_stringConstant() {return false;}
         Expression *accept(ASTVisitor *visitor) {
             return visitor->visitVariable(this);
         }
@@ -156,7 +171,7 @@ class Statement {
 
 class CodeBlock : public Statement {
     public:
-        void accept (ASTVisitor *visitor) override {
+        void accept (ASTVisitor *visitor) {
             visitor->visitCodeBlock (this);
         }
         vector<Statement *> body;
@@ -167,8 +182,8 @@ class CodeBlock : public Statement {
 
 class VariableDecl : public Statement {
     public:
-        void accept (ASTVisitor *visitor) override {
-            visitor->visitVariableDecl(this);
+        void accept (ASTVisitor *visitor) {
+            visitor->visitVariableDecl (this);
         }
 
         string name;
@@ -191,7 +206,7 @@ class VariableDecl : public Statement {
 
 class Assignment : public Statement {
     public:
-        void accept (ASTVisitor *visitor) override {
+        void accept (ASTVisitor *visitor) {
             visitor->visitAssignment(this);
         }
 
@@ -206,7 +221,7 @@ class Assignment : public Statement {
 
 class FunctionCall : public Statement {
     public:
-        void accept (ASTVisitor *visitor) override {
+        void accept (ASTVisitor *visitor) {
             visitor->visitFunctionCall(this);
         }
 
@@ -221,7 +236,7 @@ class FunctionCall : public Statement {
 
 class FunctionDecl : public Statement {
     public:
-        void accept (ASTVisitor *visitor) override {
+        void accept (ASTVisitor *visitor) {
             visitor->visitFunctionDecl(this);
         }
         string name;
@@ -244,7 +259,7 @@ class FunctionDecl : public Statement {
 
 class While : public Statement {
     public:
-        void accept(ASTVisitor *visitor) override {
+        void accept(ASTVisitor *visitor) {
             visitor->visitWhile(this);
         }
         CodeBlock *body;
@@ -258,7 +273,7 @@ class While : public Statement {
 
 class If : public Statement {
     public:
-        void accept(ASTVisitor *visitor) override {
+        void accept(ASTVisitor *visitor) {
             visitor->visitIf(this);
         }
 

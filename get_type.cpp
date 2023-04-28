@@ -1,3 +1,6 @@
+#ifndef GET_TYPE_CPP
+#define GET_TYPE_CPP
+
 #include <type_traits>
 #include <typeinfo>
 #ifndef _MSC_VER
@@ -33,3 +36,4 @@ type_name()
         r += "&&";
     return r;
 }
+#endif
