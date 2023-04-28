@@ -42,7 +42,7 @@ public:
             right = variables[rval->constant()];
 
         string op = node->op();
-        if (op == "+") {
+        if (op == "+") { // surely there's a better way to do this ... ?
             return new IntegerConstant(left + right);
         } else if (op == "-") {
             return new IntegerConstant(left - right);
@@ -50,6 +50,18 @@ public:
             return new IntegerConstant(left * right);
         } else if (op == "/") {
             return new IntegerConstant(left / right);
+        } else if (op == "==") {
+            return new IntegerConstant(left == right);
+        } else if (op == "!=") {
+            return new IntegerConstant(left != right);
+        } else if (op == ">") {
+            return new IntegerConstant(left > right);
+        } else if (op == "<") {
+            return new IntegerConstant(left < right);
+        } else if (op == ">=") {
+            return new IntegerConstant(left >= right);
+        } else if (op == "<=") {
+            return new IntegerConstant(left <= right);
         }
         error("UnsupportedFeatureError", "Unsupported operator: " + op);
     }
