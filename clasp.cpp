@@ -113,16 +113,18 @@ public:
         }
         // TODO: this
         scope--;
-        garbageCollect();
+        variableScope();
     }
     
-    void garbageCollect() {
+    void variableScope() {
+        unsigned int highest_addr = 0;
         for (auto itr = variables.begin(); itr != variables.end(); ++itr) {
+            if (get<0>(itr->second) > highest_addr) highest_addr = get<0>(itr->second);
             if (get<1>(itr->second) > scope) {
-                if (get<0>(itr->second) == numvars - 1) numvars--;
                 variables.erase(itr->first);
             }
         }
+        numvars = highest_addr;
     }
     
     void visit(Statement *node) {
@@ -155,7 +157,7 @@ public:
             visitCodeBlock(functions[node->name]->body);
         }
         scope--;
-        garbageCollect();
+        variableScope();
     }
     void visitFunctionDecl(FunctionDecl *node) {
         functions[node->name] = node;
@@ -170,7 +172,7 @@ public:
             scope++;
             visitCodeBlock(node->body);
             scope--;
-            garbageCollect();
+            variableScope();
         }
     }
     void visitIf(If* node) {
@@ -178,7 +180,7 @@ public:
             scope++;
             visitCodeBlock(node->body);
             scope--;
-            garbageCollect();
+            variableScope();
         }
     }
 };
