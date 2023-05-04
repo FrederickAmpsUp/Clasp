@@ -13,13 +13,15 @@
 #include <map>
 #include <fstream>
 #include <iostream>
+#include <tuple>
 
 using namespace std;
 class Interpreter : public ASTVisitor {
     int memory[1000];
     int numvars = 0;
-    map<string, int> variables;
-    map<string, CodeBlock*> functions;
+    int scope = 0;
+    map<string, tuple<int,int>> variables;
+    map<string, FunctionDecl*> functions;
     
 public:
     Expression *visitExpression(Expression* node) {
@@ -34,12 +36,12 @@ public:
         if (lval->is_numberConstant())
             left = lval->value();
         else
-            left = variables[lval->constant()];
+            left = get<0>(variables[lval->constant()]);
         int right;
         if (rval->is_numberConstant())
             right = rval->value();
         else
-            right = variables[rval->constant()];
+            right = get<0>(variables[rval->constant()]);
 
         string op = node->op();
         if (op == "+") { // surely there's a better way to do this ... ?
@@ -72,13 +74,13 @@ public:
         if (rval->is_numberConstant())
             right = rval->value();
         else
-            right = variables[rval->constant()];
+            right = get<0>(variables[rval->constant()]);
         
         string op = node->op();
         if (op == "-") {
             return new IntegerConstant(-right);
         }
-        error("UnsupportedFeatureError", "Unsupported operator: " + op);
+        error("UnsupportedFeatureError", "Unsupported unary operator: " + op);
     }
 
     Expression *visitIntegerConstant(IntegerConstant* node) {
@@ -94,34 +96,69 @@ public:
     }
 
     Expression *visitVariable(Variable* node) {
-        return new IntegerConstant(memory[variables[node->constant()]]);
+        return new IntegerConstant(memory[get<0>(variables[node->constant()])]);
     }
-
+    
+    Expression *visitFunctionValue(FunctionValue* node) {
+        scope++;
+        if (node->name == "ptr") {
+            if (node->args[0]->is_numberConstant()) error("MemoryError", "Cannot take address of a number constant");
+            if (node->args[0]->is_stringConstant()) error("MemoryError", "Cannot take address of a string constant");
+            scope--;
+            try {
+                return new IntegerConstant(get<0>(variables[node->args[0]->constant()]));
+            } catch (NotImplementedException e) {
+                error("MemoryError", "Cannot take address of an expression");
+            }
+        }
+        // TODO: this
+        scope--;
+        garbageCollect();
+    }
+    
+    void garbageCollect() {
+        for (auto itr = variables.begin(); itr != variables.end(); ++itr) {
+            if (get<1>(itr->second) > scope) {
+                if (get<0>(itr->second) == numvars - 1) numvars--;
+                variables.erase(itr->first);
+            }
+        }
+    }
+    
     void visit(Statement *node) {
         node->accept(this);
     }
     void visitVariableDecl(VariableDecl *node) {
-        variables[node->name] = numvars;
+        variables[node->name] = tuple<int, int> {numvars, scope};
         if (node->initialiser != nullptr) {
             memory[numvars] = this->visitExpression(node->initialiser)->value();
         }
         numvars++;
     }
     void visitAssignment(Assignment* node) {
-        memory[variables[node->name]] = this->visitExpression(node->value)->value();
+        memory[get<0>(variables[node->name])] = this->visitExpression(node->value)->value();
     }
     void visitFunctionCall(FunctionCall* node) {
         if (node->name == "") return;
         if (node->name == "print") {
+        scope++;
             for (Expression *arg : node->args) {
                 std::cout << visitExpression(arg)->value() << std::endl;
             }
         } else {
-            visitCodeBlock(functions[node->name]);
+            for (int i = 0; i < node->args.size(); i++) {
+                visitVariableDecl(
+                    new VariableDecl(functions[node->name]->args[i]->name, functions[node->name]->args[i]->type, node->args[i])
+                );
+                //cout << i << " " << functions[node->name]->args[i]->name << endl;
+            }
+            visitCodeBlock(functions[node->name]->body);
         }
+        scope--;
+        garbageCollect();
     }
     void visitFunctionDecl(FunctionDecl *node) {
-        functions[node->name] = node->body;
+        functions[node->name] = node;
     }
     void visitCodeBlock(CodeBlock* node) {
         for (Statement *statement : node->body) {
@@ -130,12 +167,18 @@ public:
     }
     void visitWhile(While* node) {
         while (visitExpression(node->cond)->value() != 0) {
+            scope++;
             visitCodeBlock(node->body);
+            scope--;
+            garbageCollect();
         }
     }
     void visitIf(If* node) {
         if(visitExpression(node->cond)->value() != 0) {
+            scope++;
             visitCodeBlock(node->body);
+            scope--;
+            garbageCollect();
         }
     }
 };

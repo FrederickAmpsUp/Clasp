@@ -17,6 +17,7 @@ class IntegerConstant;
 class FixedConstant;
 class StringConstant;
 class Variable;
+class FunctionValue;
 
 #include "clasp_ast.cpp"
 
@@ -38,6 +39,7 @@ class ASTVisitor {
         virtual Expression *visitFixedConstant       (FixedConstant *node) = 0;
         virtual Expression *visitStringConstant     (StringConstant *node) = 0;
         virtual Expression *visitVariable                 (Variable *node) = 0;
+        virtual Expression *visitFunctionValue       (FunctionValue *node) = 0;
 };
 
 /*

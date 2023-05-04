@@ -1,10 +1,12 @@
-var n0: int = 0;
-var n1: int = 1;
 var i: int = 0;
-while(i < 10) {
-    print(n1);
-    var tmp: int = n0 + n1;
-    n0 = n1;
-    n1 = tmp;
-    i = i + 1;
+var j: int = 1;
+
+var n: int = 10;
+
+while(n) {
+    var tmp: int = i + j;
+    print(ptr(tmp));
+    i = j;
+    j = tmp;
+    n = n - 1;
 }

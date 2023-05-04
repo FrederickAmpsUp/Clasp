@@ -22,8 +22,8 @@ class ASTParser {
             this->tokens = tokens;
         }
 
-        Token peek () {
-            return tokens[current];
+        Token peek (int n = 0) {
+            return tokens[current + n];
         }
 
         Token previous() {
@@ -71,6 +71,16 @@ class ASTParser {
         }
 
         Expression *primary() {
+            if (peek().type == "IDENTIFIER" && peek(1).value == "(") {
+                advance();
+                string name = previous().value;
+                vector<Expression*> args;
+                while (advance().value != ")") {
+                    args.push_back(expression());
+                    if (peek().value != ")" && peek().value != ",") error("SyntaxError", "Expected ')' or ',' after argument");
+                }
+                return new FunctionValue(name, args);
+            }
             if (matchName({"false"})) return new IntegerConstant(false);
             if (matchName({"true"})) return new IntegerConstant(true);
             if (matchName({"null"})) return new IntegerConstant(0);
@@ -200,6 +210,7 @@ class ASTParser {
                     if (peek().value != "," && peek().value != ")") error("SyntaxError", "exptected , after argument");
                     advance();
                 }
+                
                 return new FunctionCall(name, args);
             } else if (tok0.type == "KEYWORD" && tok1.value == "(") {
                 if (tok0.value == "while") {
