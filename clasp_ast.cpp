@@ -307,6 +307,19 @@ class If : public Statement {
             this->cond = cond;
         }
 };
+
+class Return : public Statement {
+public:
+        void accept(ASTVisitor *visitor) {
+            visitor->visitReturn(this);
+        }
+        Expression *value;
+        
+        Return(Expression *value) {
+            this->value = value;
+        }
+};
+
 // END AST
 
 #endif

@@ -170,11 +170,12 @@ class ASTParser {
 
         Statement *statement () {
             if (peek().type == "DIRECTIVE") {
-                
+                // TODO: handle directives
             }
 
             Token tok0 = previous();
             Token tok1 = advance();
+            //cout << tok0.value << " " << tok1.value << endl;
             if (tok0.type == "IDENTIFIER" && tok1.type == "OPERATOR") {
                 return new Assignment(tok0.value, expression());
             } else if (tok0.type == "KEYWORD" && tok1.type == "IDENTIFIER") {
@@ -195,6 +196,8 @@ class ASTParser {
                         while (peek().value != "," && peek().value != ")") {
                             type += advance().value;
                         }
+                        if (peek().value == ",")
+                            advance();
                         args.push_back(new VariableDecl(aName, type));
                     }
                     if (advance().value != ")") error ("SyntaxError", "exptected ) after argument list");
@@ -222,27 +225,37 @@ class ASTParser {
                     if (advance().value != ")") error("SyntaxError", "Expected ) after condition");
                     return new If(codeblock(), cond);
                 }
+            } else if (tok0.value == "return") {
+                current--;
+                Expression *val = expression();
+                if (advance().value != ";") error("SyntaxError", "Expected ; after return statement");
+                return new Return(val);
             }
             return new FunctionCall("",{});
         }
 
         CodeBlock *codeblock() {
             if (peek().value == "{") { // multiple lines
-                int depth = 1;
-                advance();
+                int depth = 0;
+                bool started = false;
                 Token current;
                 vector<Statement *> statements;
-                while (depth != 0) {
+                cout << "START CODEBLOCK" << endl;
+                while (depth != 0 || !started) {
                     current = peek();
+                    cout << "CB:" << current.value << endl;
                     if (current.value == "{") depth++;
                     if (current.value == "}") depth--;
-                    if (depth == 0) break;
+                    if (depth == 0 && started) break;
                     if (isAtEnd()) error("SyntaxError", "Unexpected EOF while parsing");
+                    advance();
                     statements.push_back(statement());
+                    started = true;
                 }
+                cout << "END CODEBLOCK" << endl;
                 return new CodeBlock(statements);
             }
-            advance();
+            //advance();
             return new CodeBlock({statement()});
         }
 };

@@ -20,6 +20,7 @@ class Interpreter : public ASTVisitor {
     int memory[1000];
     int numvars = 0;
     int scope = 0;
+    Expression *returned;
     map<string, tuple<int,int>> variables;
     map<string, FunctionDecl*> functions;
     
@@ -110,8 +111,14 @@ public:
             } catch (NotImplementedException e) {
                 error("MemoryError", "Cannot take address of an expression");
             }
+        } else {
+            visitFunctionCall(new FunctionCall(
+                node->name,
+                node->args
+            ));
+            return returned;
         }
-        // TODO: this
+        error("FunctionUndefinedError", "Function \"" + node->name + "\" is not defined");
         scope--;
         variableScope();
     }
@@ -119,9 +126,11 @@ public:
     void variableScope() {
         unsigned int highest_addr = 0;
         for (auto itr = variables.begin(); itr != variables.end(); ++itr) {
+            cout << ((itr != variables.end()) ? "true" : "false") << endl;
             if (get<0>(itr->second) > highest_addr) highest_addr = get<0>(itr->second);
             if (get<1>(itr->second) > scope) {
                 variables.erase(itr->first);
+                ++itr;
             }
         }
         numvars = highest_addr;
@@ -183,6 +192,9 @@ public:
             variableScope();
         }
     }
+    void visitReturn(Return* node) {
+        returned = node->value;
+    }
 };
 
 string load_file(const char* fname) {
@@ -197,7 +209,7 @@ string load_file(const char* fname) {
 }
 
 int main (int argc, char* argv[]) {
-    if (argc < 2) error("usage", "cclasp <filename>");
+    if (argc < 2) error("usage", "clasp <filename>");
     string code = "{";
     code += load_file(argv[1]);
     code += '}';

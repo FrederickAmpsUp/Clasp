@@ -2,10 +2,14 @@ var i: int = 0;
 var j: int = 1;
 
 var n: int = 10;
-
+print(0);
+fn add (n1: int, n2: int): int {
+    print (n1);
+    return n1 + n2;
+}
 while(n) {
-    var tmp: int = i + j;
-    print(ptr(tmp));
+    var tmp: int = add(i, j);
+    print(tmp);
     i = j;
     j = tmp;
     n = n - 1;

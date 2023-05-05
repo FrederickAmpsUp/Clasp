@@ -9,6 +9,7 @@ class FunctionDecl;
 class CodeBlock;
 class While;
 class If;
+class Return;
 
 class Expression;
 class BinaryExpression;
@@ -31,6 +32,7 @@ class ASTVisitor {
         virtual void visitCodeBlock               (CodeBlock *node) = 0;
         virtual void visitWhile                       (While *node) = 0;
         virtual void visitIf                             (If *node) = 0;
+        virtual void visitReturn                     (Return *node) = 0;
 
         virtual Expression *visitExpression             (Expression *node) = 0;
         virtual Expression *visitBinaryExpression (BinaryExpression *node) = 0;
