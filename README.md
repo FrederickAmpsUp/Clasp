@@ -8,7 +8,7 @@ print(i + 1);
 ```
 
 ## Notes:
-Clasp is still in early development. As such, it doesn't support a lot of things (string, function returns) yet. Watch the github for updates when I add features.  
+Clasp is still in early development. As such, it doesn't support a lot of things (string, ~~function returns~~) yet. Watch the github for updates when I add features.  
 Documentation is coming soon.
 
 ## Future plans:
