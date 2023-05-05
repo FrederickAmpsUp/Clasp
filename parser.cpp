@@ -1,6 +1,8 @@
 #ifndef PARSER_CPP
 #define PARSER_CPP
 
+//#define NOMAIN_PARSER_CPP // commenting this line allows the main function in this file to be created
+
 #include "clasp_ast.cpp"
 #include "lexer.cpp"
 #include "get_type.cpp"
@@ -10,6 +12,7 @@
 #include <stdarg.h>
 #include <typeinfo>
 #include <cmath>
+#include <fstream>
 
 using namespace std;
 
@@ -260,29 +263,146 @@ class ASTParser {
         }
 };
 
-#ifndef MAIN
-#define MAIN
 
-int main () {
-    string expression = R"(
-    {
-        fn main (argv: list[int]): int {
-            var i: int = 0;
-            while (i <= 10) 
-                i = i + 1;
-            
-            print(
-                "Hello world * ",
-                i,
-                "10"
-            );
-        }
+class ASTPrinter : public ASTVisitor {
+public:
+    void visit(Statement *node) {
+        node->accept(this);
     }
-    )";
 
-    vector<Token> tokens = parse_tokens(expression);
+    void visitVariableDecl(VariableDecl *node) {
+        std::cout << "VariableDecl (name=\"" << node->name << "\" type=\"" << node->type << "\" initializer=";
+        if (node->initialiser != nullptr) {
+            visitExpression(node->initialiser);
+        }
+        cout << ")";
+    }
 
+    void visitAssignment(Assignment *node) {
+        std::cout << "Assignment (name=\"" << node->name << "\" value=";
+        visitExpression(node->value);
+        std::cout << ")";
+    }
+
+    void visitFunctionCall(FunctionCall *node) {
+        if (node->name == "") return;
+        std::cout << "FunctionCall (name=\"" << node->name << "\" arguments=[";
+        for (Expression *arg : node->args) {
+            this->visitExpression(arg);
+            std::cout << ",";
+        }
+        std::cout << "])";
+    }
+
+    void visitFunctionDecl(FunctionDecl *node) {
+        std::cout << "FunctionDecl (name=\"" << node->name << "\" rettype=\"" << node->returnType << "\" arguments=[";
+        for (VariableDecl *arg : node->args) {
+            this->visit(arg);
+            std::cout << ",";
+        }
+        std::cout << "] body=";
+        this->visit(node->body);
+        std::cout << ")";
+    }
+
+    void visitCodeBlock(CodeBlock *node) {
+        std::cout << "CodeBlock (body=[" << std::endl;
+        for (Statement *line : node->body) {
+            this->visit(line);
+            std::cout << std::endl;
+        }
+        std::cout << "])";
+    }
+
+    Expression *visitExpression(Expression *node) {
+        node->accept(this);
+        return nullptr;
+    }
+
+    Expression *visitBinaryExpression(BinaryExpression *node) {
+        std::cout << "BinaryExpression (left=";
+        this->visitExpression(node->left());
+        std::cout << " op=" << node->op() << " right=";
+        this->visitExpression(node->right());
+        std::cout << ")";
+    }
+
+    Expression *visitUnaryExpression(UnaryExpression *node) {
+        std::cout << "UnaryExpression (op=" << node->op() << " right=";
+        this->visitExpression(node->right());
+        std::cout << ")";
+    }
+
+    Expression *visitIntegerConstant(IntegerConstant *node) {
+        std::cout << "IntegerConstant (value=" << node->value() << ")";
+    }
+
+    Expression *visitFixedConstant(FixedConstant *node) {
+        std::cout << "FixedConstant (value=" << (node->value() / 65536.0) << ")";
+    }
+
+    Expression *visitStringConstant(StringConstant *node) {
+        std::cout << "StringConstant (value=\"" << node->constant() << "\")";
+    }
+
+    Expression *visitVariable(Variable *node) {
+        std::cout << "Variable (name=" << node->constant() << ")";
+    }
+    
+    Expression *visitFunctionValue(FunctionValue *node) {
+        std::cout << "FunctionValue(name=" << node->name << ", args=[";
+        for (Expression *arg : node->args) {
+            visitExpression(arg);
+        }
+        std::cout << "])";
+    }
+
+    void visitWhile(While *node) {
+        std::cout << "While (cond=";
+        this->visitExpression(node->cond);
+        std::cout << " body=";
+        this->visitCodeBlock(node->body);
+        std::cout << ")";
+    }
+
+    void visitIf(If *node) {
+        std::cout << "If (cond=";
+        this->visitExpression(node->cond);
+        std::cout << " body=";
+        this->visitCodeBlock(node->body);
+        std::cout << ")";
+    }
+    
+    void visitReturn(Return *node) {
+        std::cout << "Return (value=";
+        visitExpression(node->value);
+        std::cout << ")";
+    }
+};
+
+#ifndef MAIN
+
+string load_file(const char* fname) {
+    ifstream file(fname);
+    if (!file.is_open()) {
+        error("Could not open file", (string)fname);
+    }
+    string file_contents((istreambuf_iterator<char>(file)),
+                              istreambuf_iterator<char>());
+    file.close();
+    return file_contents;
+}
+
+int main (int argc, char *argv[]) {
+    if (argc < 2) error("usage", "clasp <filename>");
+    string code = "{";
+    code += load_file(argv[1]);
+    code += '}';
+    vector<Token> tokens;
+    tokens = parse_tokens(code);
     ASTParser parser {tokens};
+    ASTPrinter printer;
+    printer.visit(parser.codeblock());
 }
 
 #endif

@@ -1,8 +1,7 @@
 #ifndef CCLASP_CPP
 #define CCLASP_CPP
 
-#ifndef MAIN
-#define MAIN
+#define NOMAIN_CLASP_CPP
 
 #include "parser.cpp"
 #include "lexer.cpp"
@@ -207,7 +206,7 @@ string load_file(const char* fname) {
     file.close();
     return file_contents;
 }
-
+#ifndef NOMAIN_CLASP_CPP
 int main (int argc, char* argv[]) {
     if (argc < 2) error("usage", "clasp <filename>");
     string code = "{";
