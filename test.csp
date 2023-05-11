@@ -1,16 +1,7 @@
-var i: int = 0;
-var j: int = 1;
+var test: int = 0;
 
-var n: int = 10;
-print(0);
-fn add (n1: int, n2: int): int {
-    print (n1);
-    return n1 + n2;
+fn main(): void {
+    print(0);
 }
-while(n) {
-    var tmp: int = add(i, j);
-    print(tmp);
-    i = j;
-    j = tmp;
-    n = n - 1;
-}
+
+main();

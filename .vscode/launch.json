@@ -25,7 +25,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/clasp.exe",
+            "program": "${workspaceFolder}\\clasp.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

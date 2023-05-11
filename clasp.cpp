@@ -1,7 +1,7 @@
 #ifndef CCLASP_CPP
 #define CCLASP_CPP
 
-#define NOMAIN_CLASP_CPP
+//#define NOMAIN_CLASP_CPP
 
 #include "parser.cpp"
 #include "lexer.cpp"
@@ -156,6 +156,7 @@ public:
                 std::cout << visitExpression(arg)->value() << std::endl;
             }
         } else {
+            if (functions.count(node->name) == 0) error("FunctionNotDefinedError", "Function \"" + node->name + "\" not defined.");
             for (int i = 0; i < node->args.size(); i++) {
                 visitVariableDecl(
                     new VariableDecl(functions[node->name]->args[i]->name, functions[node->name]->args[i]->type, node->args[i])
@@ -168,6 +169,7 @@ public:
         variableScope();
     }
     void visitFunctionDecl(FunctionDecl *node) {
+        cout << node->name << endl;
         functions[node->name] = node;
     }
     void visitCodeBlock(CodeBlock* node) {
