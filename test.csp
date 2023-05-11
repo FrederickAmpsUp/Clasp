@@ -1,7 +1,10 @@
-var test: int = 0;
-
 fn main(): void {
-    print(0);
+    var i: int = 10;
+    print(i);
+    while (i != 0) {
+        print(i);
+        i = i - 1;
+    }
 }
 
-main();
+print(0);

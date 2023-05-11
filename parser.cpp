@@ -1,7 +1,7 @@
 #ifndef PARSER_CPP
 #define PARSER_CPP
 
-//#define NOMAIN_PARSER_CPP // commenting this line allows the main function in this file to be created
+#define NOMAIN_PARSER_CPP // commenting this line allows the main function in this file to be created
 
 #include "clasp_ast.cpp"
 #include "lexer.cpp"
@@ -37,8 +37,8 @@ class ASTParser {
             return current == tokens.size() - 1;
         }
 
-        Token advance() {
-            if (!isAtEnd()) current++;
+        Token advance(int n=1) {
+            if (!isAtEnd()) current+=n;
             return previous();
         }
 
@@ -180,7 +180,6 @@ class ASTParser {
             Token tok1 = advance();
             if (tok0.type == "IDENTIFIER" && tok1.type == "OPERATOR") {
                 Assignment *out = new Assignment(tok0.value, expression());
-                cout << peek().value;
                 return out;
             } else if (tok0.type == "KEYWORD" && tok1.type == "IDENTIFIER") {
                 if (tok0.value == "var") {
@@ -216,13 +215,15 @@ class ASTParser {
             } else if (tok0.type == "IDENTIFIER" && tok1.value == "(") {
                 string name = tok0.value;
                 vector<Expression *> args;
-                while (peek().value != ")" && previous().value != ")") {
+                bool had_args = false;
+                while (previous().value != ")" && peek().value != ")") {
                     args.push_back(expression());
                     if (peek().value != "," && peek().value != ")") error("SyntaxError", "exptected , after argument");
-                    
                     advance();
+                    had_args = true;
                 }
-                cout << peek().value << endl;
+                if (had_args) advance(-1);
+                if (advance().value != ")") error("SyntaxError", "exptected ) after function call args");
                 if (advance().value != ";") error("SyntaxError", "exptected ; after function call");
                 return new FunctionCall(name, args);
             } else if (tok0.type == "KEYWORD" && tok1.value == "(") {
@@ -250,18 +251,17 @@ class ASTParser {
                 bool started = false;
                 Token current;
                 vector<Statement *> statements;
-                cout << "START CODEBLOCK" << endl;
                 while (depth != 0 || !started) {
-                    current = advance();
+                    current = peek();
                     if (current.value == "{") depth++;
                     if (current.value == "}") depth--;
                     if (depth == 0 && started) break;
                     if (isAtEnd()) error("SyntaxError", "Unexpected EOF while parsing code block");
-                    advance();
                     statements.push_back(statement());
                     started = true;
                 }
-                cout << "END CODEBLOCK" << endl;
+                advance();
+                advance();
                 return new CodeBlock(statements);
             }
             //advance();

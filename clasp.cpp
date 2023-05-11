@@ -13,6 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <tuple>
+#include <typeinfo>
 
 using namespace std;
 class Interpreter : public ASTVisitor {
@@ -42,7 +43,6 @@ public:
             right = rval->value();
         else
             right = get<0>(variables[rval->constant()]);
-
         string op = node->op();
         if (op == "+") { // surely there's a better way to do this ... ?
             return new IntegerConstant(left + right);
@@ -124,18 +124,23 @@ public:
     
     void variableScope() {
         unsigned int highest_addr = 0;
+        std::vector<string> toErase{};
         for (auto itr = variables.begin(); itr != variables.end(); ++itr) {
-            cout << ((itr != variables.end()) ? "true" : "false") << endl;
+            //cout << ((itr != variables.end()) ? "true" : "false") << endl;
+            if (itr->first == "") continue;
             if (get<0>(itr->second) > highest_addr) highest_addr = get<0>(itr->second);
             if (get<1>(itr->second) > scope) {
-                variables.erase(itr->first);
-                ++itr;
+                toErase.push_back(itr->first);
             }
+        }
+        for (string name: toErase) {
+            variables.erase(name);
         }
         numvars = highest_addr;
     }
     
     void visit(Statement *node) {
+        cout << typeid(*node).name() << endl;
         node->accept(this);
     }
     void visitVariableDecl(VariableDecl *node) {
@@ -169,12 +174,11 @@ public:
         variableScope();
     }
     void visitFunctionDecl(FunctionDecl *node) {
-        cout << node->name << endl;
         functions[node->name] = node;
     }
     void visitCodeBlock(CodeBlock* node) {
         for (Statement *statement : node->body) {
-            visit((Statement *)statement);
+            visit(statement);
         }
     }
     void visitWhile(While* node) {
