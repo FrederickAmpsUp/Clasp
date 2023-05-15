@@ -249,18 +249,19 @@ class ASTParser {
 
         CodeBlock *codeblock() {
             if (peek().value == "{") { // multiple lines
-                int depth = 0;
+                int depth = 1;
                 bool started = false;
                 Token current;
                 vector<Statement *> statements;
+                advance();
                 while (depth != 0 || !started) {
                     current = advance();
                     if (current.value == "{") depth++;
                     if (current.value == "}") depth--;
                     if (depth == 0 && started) break;
-                    cout << peek().value << " " << depth << endl;
-                    
+                    cout << current.value << " " << depth << endl;
                     if (isAtEnd()) error("SyntaxError", "Unexpected EOF while parsing code block");
+
                     statements.push_back(statement());
                     started = true;
                 }

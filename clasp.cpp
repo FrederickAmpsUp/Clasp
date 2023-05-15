@@ -286,10 +286,10 @@ pl alu1 _ _
                 error("MemoryError", "Cannot take address of an expression");
             }
         } else {
-            visitFunctionCall(new FunctionCall(
+            /*visitFunctionCall(new FunctionCall(
                 node->name,
                 node->args
-            ));
+            ));*/
             //return returned;
         }
         error("FunctionUndefinedError", "Function \"" + node->name + "\" is not defined");
@@ -315,7 +315,6 @@ pl alu1 _ _
     }
     
     void visit(Statement *node) {
-        //cout << typeid(*node).name() << endl;
         node->accept(this);
     }
     void visitVariableDecl(VariableDecl *node) {
@@ -331,8 +330,8 @@ pl alu1 _ _
         out += "pl a _ _\nst a " + to_string(get<0>(variables[node->name])) + " _\n";
     }
     void visitFunctionCall(FunctionCall* node) {
-        error("UnsupportedFeatureError", "Functions are not yet supported in the SHARK architecture.");
         if (node->name == "") return;
+        error("UnsupportedFeatureError", "Functions are not yet supported in the SHARK architecture.");
         if (node->name == "print") {
         scope++;
             for (Expression *arg : node->args) {
@@ -405,7 +404,10 @@ int main (int argc, char* argv[]) {
     tokens = parse_tokens(code);
     ASTParser parser {tokens};
     SHARKCompiler compiler;
-    compiler.visit(parser.codeblock());
+    CodeBlock *block = parser.codeblock();
+    ASTPrinter printer;
+    printer.visit(block);
+    compiler.visit(block);
     cout << compiler.out << endl;
 }
 
