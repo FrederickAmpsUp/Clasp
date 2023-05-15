@@ -1,7 +1,7 @@
 #ifndef PARSER_CPP
 #define PARSER_CPP
 
-#define NOMAIN_PARSER_CPP // commenting this line allows the main function in this file to be created
+//#define NOMAIN_PARSER_CPP // commenting this line allows the main function in this file to be created
 
 #include "clasp_ast.cpp"
 #include "lexer.cpp"
@@ -178,6 +178,8 @@ class ASTParser {
 
             Token tok0 = previous();
             Token tok1 = advance();
+            
+            //cout << tok0.value << " " << tok1.value << endl;
             if (tok0.type == "IDENTIFIER" && tok1.type == "OPERATOR") {
                 Assignment *out = new Assignment(tok0.value, expression());
                 return out;
@@ -251,8 +253,9 @@ class ASTParser {
                 bool started = false;
                 Token current;
                 vector<Statement *> statements;
+                advance();
                 while (depth != 0 || !started) {
-                    current = peek();
+                    current = advance();
                     if (current.value == "{") depth++;
                     if (current.value == "}") depth--;
                     if (depth == 0 && started) break;

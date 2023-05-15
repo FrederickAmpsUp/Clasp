@@ -14,6 +14,7 @@
 #include <iostream>
 #include <tuple>
 #include <typeinfo>
+#include <stdexcept>
 
 using namespace std;
 class Interpreter : public ASTVisitor {
@@ -140,10 +141,11 @@ public:
     }
     
     void visit(Statement *node) {
-        cout << typeid(*node).name() << endl;
+        //cout << typeid(*node).name() << endl;
         node->accept(this);
     }
     void visitVariableDecl(VariableDecl *node) {
+        cout << variables.max_size() << " " << variables.size() << endl;
         variables[node->name] = tuple<int, int> {numvars, scope};
         if (node->initialiser != nullptr) {
             memory[numvars] = this->visitExpression(node->initialiser)->value();
@@ -202,6 +204,187 @@ public:
     }
 };
 
+class SHARKCompiler : public ASTVisitor {
+    int numvars = 0;
+    int scope = 0;
+    map<string, tuple<int,int>> variables;
+    map<string, FunctionDecl*> functions;
+    
+public:
+    string out;
+    Expression *visitExpression(Expression* node) {
+        return node->accept(this);
+    }
+    
+    Expression *visitBinaryExpression(BinaryExpression* node) {
+        visitExpression(node->left());
+        visitExpression(node->right());
+        out += 
+R"(
+pl alu2 _ _
+pl alu1 _ _
+)";
+        string op = node->op();
+        if (op == "+") { // surely there's a better way to do this ... ? perhaps a map
+            out += "add _ _ _\nph a _ _\n";
+        } else if (op == "-") {
+            out += "sub _ _ _\nph a _ _\n";
+        } else if (op == "*") {
+            out += "mul _ _ _\nph a _ _\n";
+        } else if (op == "/") {
+            out += "div _ _ _\nph a _ _\n";
+        } else if (op == "==") {
+            out += "eq _ _ _\nph a _ _\n";
+        } else if (op == "!=") {
+            out += "neq _ _ _\nph a _ _\n";
+        } else if (op == ">") {
+            out += "gt _ _ _\nph a _ _\n";
+        } else if (op == "<") {
+            out += "lt _ _ _\nph a _ _\n";
+        } else if (op == ">=") {
+            out += "ge _ _ _\nph a _ _\n";
+        } else if (op == "<=") {
+            out += "le _ _ _\nph a _ _\n";
+        } else {
+            error("UnsupportedFeatureError", "Unsupported operator: " + op);
+        }
+    }
+    Expression *visitUnaryExpression(UnaryExpression* node) {
+        error("UnsupportedFeatureError", "Sorry, Unary Expressions are not supported in the SHARK architecture yet."); // WIP
+    }
+
+    Expression *visitIntegerConstant(IntegerConstant* node) {
+        out += "imm a ";
+        out += to_string(node->value());
+        out += " _\nph a _ _\n";
+    }
+
+    Expression *visitFixedConstant(FixedConstant* node) {
+        error("UnsupportedFeatureError", "Fixed-point numbers are not supported in the SHARK architecture yet."); // WIP
+    }
+
+    Expression *visitStringConstant(StringConstant* node) {
+        error("UnsupportedFeatureError", "String constants are not supported in the SHARK architecture.");
+    }
+
+    Expression *visitVariable(Variable* node) {
+        out += "ld a ";
+        out += to_string(get<0>(variables[node->constant()]));
+        out += " _\nph a _ _\n";
+    }
+    
+    Expression *visitFunctionValue(FunctionValue* node) {
+        error("UnsupportedFeatureError", "Functions are not yet supported in the SHARK architecture.");
+        scope++;
+        if (node->name == "ptr") {
+            if (node->args[0]->is_numberConstant()) error("MemoryError", "Cannot take address of a number constant");
+            if (node->args[0]->is_stringConstant()) error("MemoryError", "Cannot take address of a string constant");
+            scope--;
+            try {
+                return new IntegerConstant(get<0>(variables[node->args[0]->constant()]));
+            } catch (NotImplementedException e) {
+                error("MemoryError", "Cannot take address of an expression");
+            }
+        } else {
+            visitFunctionCall(new FunctionCall(
+                node->name,
+                node->args
+            ));
+            //return returned;
+        }
+        error("FunctionUndefinedError", "Function \"" + node->name + "\" is not defined");
+        scope--;
+        variableScope();
+    }
+    
+    void variableScope() {
+        unsigned int highest_addr = 0;
+        std::vector<string> toErase{};
+        for (auto itr = variables.begin(); itr != variables.end(); ++itr) {
+            //cout << ((itr != variables.end()) ? "true" : "false") << endl;
+            if (itr->first == "") continue;
+            if (get<0>(itr->second) > highest_addr) highest_addr = get<0>(itr->second);
+            if (get<1>(itr->second) > scope) {
+                toErase.push_back(itr->first);
+            }
+        }
+        for (string name: toErase) {
+            variables.erase(name);
+        }
+        numvars = highest_addr;
+    }
+    
+    void visit(Statement *node) {
+        //cout << typeid(*node).name() << endl;
+        node->accept(this);
+    }
+    void visitVariableDecl(VariableDecl *node) {
+        variables[node->name] = tuple<int, int> {numvars, scope};
+        if (node->initialiser != nullptr) {
+            this->visitExpression(node->initialiser);
+            out += "pl a _ _\nst a " + to_string(numvars) + " _\n";
+        }
+        numvars++;
+    }
+    void visitAssignment(Assignment* node) {
+        this->visitExpression(node->value);
+        out += "pl a _ _\nst a " + to_string(get<0>(variables[node->name])) + " _\n";
+    }
+    void visitFunctionCall(FunctionCall* node) {
+        error("UnsupportedFeatureError", "Functions are not yet supported in the SHARK architecture.");
+        if (node->name == "") return;
+        if (node->name == "print") {
+        scope++;
+            for (Expression *arg : node->args) {
+                std::cout << visitExpression(arg)->value() << std::endl;
+            }
+        } else {
+            if (functions.count(node->name) == 0) error("FunctionNotDefinedError", "Function \"" + node->name + "\" not defined.");
+            for (int i = 0; i < node->args.size(); i++) {
+                visitVariableDecl(
+                    new VariableDecl(functions[node->name]->args[i]->name, functions[node->name]->args[i]->type, node->args[i])
+                );
+                //cout << i << " " << functions[node->name]->args[i]->name << endl;
+            }
+            visitCodeBlock(functions[node->name]->body);
+        }
+        scope--;
+        variableScope();
+    }
+    void visitFunctionDecl(FunctionDecl *node) {
+        error("UnsupportedFeatureError", "Functions are not yet supported in the SHARK architecture.");
+    
+        functions[node->name] = node;
+    }
+    void visitCodeBlock(CodeBlock* node) {
+        for (Statement *statement : node->body) {
+            visit(statement);
+        }
+    }
+    void visitWhile(While* node) {
+        error("", "WIP");
+        while (visitExpression(node->cond)->value() != 0) {
+            scope++;
+            visitCodeBlock(node->body);
+            scope--;
+            variableScope();
+        }
+    }
+    void visitIf(If* node) {
+        error("", "WIP");
+        if(visitExpression(node->cond)->value() != 0) {
+            scope++;
+            visitCodeBlock(node->body);
+            scope--;
+            variableScope();
+        }
+    }
+    void visitReturn(Return* node) {
+        error("UnsupportedFeatureError", "Functions are not yet supported in the SHARK architecture.");
+       // returned = node->value;
+    }
+};
+
 string load_file(const char* fname) {
     ifstream file(fname);
     if (!file.is_open()) {
@@ -221,8 +404,9 @@ int main (int argc, char* argv[]) {
     vector<Token> tokens;
     tokens = parse_tokens(code);
     ASTParser parser {tokens};
-    Interpreter interpreter;
-    interpreter.visit(parser.codeblock());
+    SHARKCompiler compiler;
+    compiler.visit(parser.codeblock());
+    cout << compiler.out << endl;
 }
 
 #endif

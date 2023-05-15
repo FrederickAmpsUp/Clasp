@@ -1,10 +1,5 @@
-fn main(): void {
-    var i: int = 10;
-    print(i);
-    while (i != 0) {
-        print(i);
-        i = i - 1;
-    }
-}
+var a: int = 2 + 2;
 
-print(0);
+var b: int = 5;
+
+var c: int = a + b;
