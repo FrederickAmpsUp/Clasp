@@ -160,6 +160,11 @@ class Variable : public Expression {
         }
 };
 
+class FunctionReturn : public Expression {
+    FunctionCall *call;
+    public:
+}
+
 // END EXPRESSION
 
 // START AST
