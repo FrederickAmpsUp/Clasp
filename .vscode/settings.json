@@ -33,6 +33,8 @@
         "system_error": "cpp",
         "tuple": "cpp",
         "typeinfo": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "memory": "cpp",
+        "string_view": "cpp"
     }
 }

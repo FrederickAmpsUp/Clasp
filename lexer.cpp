@@ -1,6 +1,8 @@
 #ifndef LEXER_CPP
 #define LEXER_CPP
 
+#define NOMAIN_LEXER_CPP
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -151,8 +153,7 @@ vector<Token> parse_tokens (string code) {
     return tokenize (code);
 }
 
-#ifndef MAIN
-#define MAIN
+#ifndef NOMAIN_LEXER_CPP
 int main ( int argc, char *argv[] ) {
     string code = "a = 5;";
 

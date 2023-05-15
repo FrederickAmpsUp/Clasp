@@ -1,10 +1,5 @@
-var n0: int = 0;
-var n1: int = 1;
-var i: int = 0;
-while(i < 10) {
-    print(n1);
-    var tmp: int = n0 + n1;
-    n0 = n1;
-    n1 = tmp;
-    i = i + 1;
-}
+var a: int = 2 + 2;
+
+var b: int = 5;
+
+var c: int = a + b;

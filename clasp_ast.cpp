@@ -160,10 +160,27 @@ class Variable : public Expression {
         }
 };
 
-class FunctionReturn : public Expression {
-    FunctionCall *call;
-    public:
-}
+class FunctionValue : public Expression {
+public:
+    string name;
+    vector<Expression *> args;
+    Expression *accept(ASTVisitor *visitor) {
+        return visitor->visitFunctionValue(this);
+    }
+    bool is_numberConstant() {return false;}
+    bool is_stringConstant() {return false;}
+    
+    Expression *left()  {throw NotImplementedException();};
+    Expression *right() {throw NotImplementedException();};
+    string op() {throw NotImplementedException();};
+    int value() {throw NotImplementedException();};
+    string constant() {throw NotImplementedException();};
+    
+    FunctionValue(string name, vector<Expression *> args) {
+        this->name = name;
+        this->args = args;
+    }
+};
 
 // END EXPRESSION
 
@@ -290,6 +307,19 @@ class If : public Statement {
             this->cond = cond;
         }
 };
+
+class Return : public Statement {
+public:
+        void accept(ASTVisitor *visitor) {
+            visitor->visitReturn(this);
+        }
+        Expression *value;
+        
+        Return(Expression *value) {
+            this->value = value;
+        }
+};
+
 // END AST
 
 #endif
