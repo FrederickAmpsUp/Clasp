@@ -48,6 +48,7 @@ public:
         if (op == "+") { // surely there's a better way to do this ... ?
             return new IntegerConstant(left + right);
         } else if (op == "-") {
+            cout << left << " " << right << endl;
             return new IntegerConstant(left - right);
         } else if (op == "*") {
             return new IntegerConstant(left * right);
@@ -145,7 +146,6 @@ public:
         node->accept(this);
     }
     void visitVariableDecl(VariableDecl *node) {
-        cout << variables.max_size() << " " << variables.size() << endl;
         variables[node->name] = tuple<int, int> {numvars, scope};
         if (node->initialiser != nullptr) {
             memory[numvars] = this->visitExpression(node->initialiser)->value();
@@ -200,7 +200,7 @@ public:
         }
     }
     void visitReturn(Return* node) {
-        returned = node->value;
+        returned = visitExpression(node->value);
     }
 };
 
@@ -219,11 +219,7 @@ public:
     Expression *visitBinaryExpression(BinaryExpression* node) {
         visitExpression(node->left());
         visitExpression(node->right());
-        out += 
-R"(
-pl alu2 _ _
-pl alu1 _ _
-)";
+        out += "pl alu2 _ _\npl alu1 _ _\n";
         string op = node->op();
         if (op == "+") { // surely there's a better way to do this ... ? perhaps a map
             out += "add _ _ _\nph a _ _\n";
@@ -250,7 +246,7 @@ pl alu1 _ _
         }
     }
     Expression *visitUnaryExpression(UnaryExpression* node) {
-        error("UnsupportedFeatureError", "Sorry, Unary Expressions are not supported in the SHARK architecture yet."); // WIP
+        error("UnsupportedFeatureError", "Unary Expressions are not supported in the SHARK architecture yet."); // WIP
     }
 
     Expression *visitIntegerConstant(IntegerConstant* node) {
@@ -396,19 +392,24 @@ string load_file(const char* fname) {
 }
 #ifndef NOMAIN_CLASP_CPP
 int main (int argc, char* argv[]) {
-    if (argc < 2) error("usage", "clasp <filename>");
+    if (argc < 2) error("usage", "clasp <filename> [-s]");
+
     string code = "{";
     code += load_file(argv[1]);
     code += '}';
     vector<Token> tokens;
     tokens = parse_tokens(code);
     ASTParser parser {tokens};
-    SHARKCompiler compiler;
     CodeBlock *block = parser.codeblock();
-    ASTPrinter printer;
-    printer.visit(block);
-    compiler.visit(block);
-    cout << compiler.out << endl;
+    string shark_flag = "-s";
+    if (argc > 2 && string(argv[2]) == shark_flag){
+        SHARKCompiler compiler;
+        compiler.visit(block);
+        cout << endl << compiler.out << endl;
+    } else {
+        Interpreter interpreter;
+        interpreter.visit(block);
+    }
 }
 
 #endif
