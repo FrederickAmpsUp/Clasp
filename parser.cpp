@@ -245,6 +245,7 @@ class ASTParser {
                 if (advance().value != ";") error("SyntaxError", "Expected ; after return statement");
                 return new Return(val);
             }
+            advance(-1);
             return new FunctionCall("",{});
         }
 
