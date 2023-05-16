@@ -1,0 +1,13 @@
+var i: int = 0;
+var j: int = 1;
+
+var n: int = 10;
+
+while (n != 0) {
+    var tmp: int = i + j;
+    i = j;;
+    j = tmp;;
+    
+    n = n - 1;;
+}
+print(i);

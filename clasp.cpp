@@ -48,7 +48,6 @@ public:
         if (op == "+") { // surely there's a better way to do this ... ?
             return new IntegerConstant(left + right);
         } else if (op == "-") {
-            cout << left << " " << right << endl;
             return new IntegerConstant(left - right);
         } else if (op == "*") {
             return new IntegerConstant(left * right);
