@@ -5,9 +5,9 @@ var n: int = 10;
 
 while (n != 0) {
     var tmp: int = i + j;
-    i = j;;
-    j = tmp;;
+    i = j;
+    j = tmp;
     
-    n = n - 1;;
+    n = n - 1;
 }
 print(i);

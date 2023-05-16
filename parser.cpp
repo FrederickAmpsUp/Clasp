@@ -182,6 +182,7 @@ class ASTParser {
             //cout << tok0.value << " " << tok1.value << endl;
             if (tok0.type == "IDENTIFIER" && tok1.type == "OPERATOR") {
                 Assignment *out = new Assignment(tok0.value, expression());
+                if (advance().value != ";") error("SyntaxError", "Expected ';' after variable assignment");
                 return out;
             } else if (tok0.type == "KEYWORD" && tok1.type == "IDENTIFIER") {
                 if (tok0.value == "var") {
