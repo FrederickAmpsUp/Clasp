@@ -75,7 +75,13 @@ class ASTParser {
 
         Expression *primary() {
             if (peek().value == "[") {
-                
+                advance();
+                vector<Expression *> values;
+                while (peek().value != "]") {
+                    values.push_back(expression());
+                    
+                    cout << advance().value << endl;
+                }
             }
             if (peek().type == "IDENTIFIER" && peek(1).value == "(") {
                 advance();

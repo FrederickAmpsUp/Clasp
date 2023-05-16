@@ -160,6 +160,23 @@ class Variable : public Expression {
         }
 };
 
+class ListConstant : public Expression {
+public:
+    vector<Expression *> values;
+
+    bool is_numberConstant() {return false;}
+    bool is_stringConstant() {return false;}
+    Expression *accept(ASTVisitor *visitor) {
+        return visitor->visitListConstant(this);
+    }
+    Expression *left()  {throw NotImplementedException();};
+    Expression *right() {throw NotImplementedException();};
+    string op() {throw NotImplementedException();};
+    int value() {throw NotImplementedException();};
+
+    string constant() {throw NotImplementedException();};
+};
+
 class FunctionValue : public Expression {
 public:
     string name;

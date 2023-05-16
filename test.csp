@@ -1,0 +1,14 @@
+printChar(72);
+printChar(101);
+printChar(108);
+printChar(108);
+printChar(111);
+printChar(44);
+printChar(32);
+printChar(119);
+printChar(111);
+printChar(114);
+printChar(108);
+printChar(100);
+printChar(33);
+printChar(10);

@@ -123,6 +123,10 @@ public:
         variableScope();
     }
     
+    Expression *visitListConstant(ListConstant* node) {
+        error("uhh", "hmm");
+    }
+    
     void variableScope() {
         unsigned int highest_addr = 0;
         std::vector<string> toErase{};
@@ -156,12 +160,23 @@ public:
     }
     void visitFunctionCall(FunctionCall* node) {
         if (node->name == "") return;
-        if (node->name == "print") {
-        scope++;
+        
+        if (node->name == "printChar") {
+            for (Expression *arg : node->args) {
+                std::cout << (char)visitExpression(arg)->value();
+            }
+        } else if (node->name == "print") {
             for (Expression *arg : node->args) {
                 std::cout << visitExpression(arg)->value() << std::endl;
             }
+        } else if (node->name == "write") {
+            if (node->args.size() < 2) error("ArgumentError", "Not enough arguments for write() function");
+            memory[visitExpression(node->args[0])->value()] = visitExpression(node->args[1])->value();
+        } else if (node->name == "read") {
+            if (node->args.size() < 1) error("ArgumentError", "Not enough arguments for read() function");
+            returned = new IntegerConstant(memory[visitExpression(node->args[0])->value()]);
         } else {
+            scope++;
             if (functions.count(node->name) == 0) error("FunctionNotDefinedError", "Function \"" + node->name + "\" not defined.");
             for (int i = 0; i < node->args.size(); i++) {
                 visitVariableDecl(
@@ -170,9 +185,9 @@ public:
                 //cout << i << " " << functions[node->name]->args[i]->name << endl;
             }
             visitCodeBlock(functions[node->name]->body);
+            scope--;
+            variableScope();
         }
-        scope--;
-        variableScope();
     }
     void visitFunctionDecl(FunctionDecl *node) {
         functions[node->name] = node;
@@ -292,6 +307,10 @@ public:
         variableScope();
     }
     
+    Expression *visitListConstant(ListConstant* node) {
+        error("uhh", "hmm");
+    }
+    
     void variableScope() {
         unsigned int highest_addr = 0;
         std::vector<string> toErase{};
@@ -326,13 +345,13 @@ public:
     }
     void visitFunctionCall(FunctionCall* node) {
         if (node->name == "") return;
-        error("UnsupportedFeatureError", "Functions are not yet supported in the SHARK architecture.");
         if (node->name == "print") {
         scope++;
             for (Expression *arg : node->args) {
                 std::cout << visitExpression(arg)->value() << std::endl;
             }
         } else {
+            error("UnsupportedFeatureError", "Functions are not yet supported in the SHARK architecture.");
             if (functions.count(node->name) == 0) error("FunctionNotDefinedError", "Function \"" + node->name + "\" not defined.");
             for (int i = 0; i < node->args.size(); i++) {
                 visitVariableDecl(
