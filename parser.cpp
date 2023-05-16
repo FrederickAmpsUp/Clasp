@@ -74,6 +74,9 @@ class ASTParser {
         }
 
         Expression *primary() {
+            if (peek().value == "[") {
+                
+            }
             if (peek().type == "IDENTIFIER" && peek(1).value == "(") {
                 advance();
                 string name = previous().value;
