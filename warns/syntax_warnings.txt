@@ -1,0 +1,1 @@
+* Identifiers have a maximum length of 128 characters
