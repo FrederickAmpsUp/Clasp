@@ -1,11 +1,14 @@
 # CMake minimum version
 cmake_minimum_required(VERSION 3.5)
-
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
 set(CMAKE_DEBUG_POSTFIX d)
 
 # Project name / config
-project(Complexia)
+project(Clasp)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+enable_testing()
 
 # Test source files
 file(GLOB TEST_SOURCES tests/*.c)
@@ -24,7 +27,11 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
     get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
 
     # Create an executable for each test source file
-    add_executable(tests/${TEST_NAME} ${TEST_SOURCE} ${SOURCES})
+    add_executable(${TEST_NAME} ${TEST_SOURCE} ${SOURCES})
+    add_test(
+        NAME    ${TEST_NAME}
+        COMMAND ${TEST_NAME}
+        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
     # Optionally, link any necessary libraries
     # target_link_libraries(${TEST_NAME} some_library)

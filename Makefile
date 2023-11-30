@@ -65,6 +65,16 @@ CMAKE_BINARY_DIR = /home/frederickampsup/Documents/clasp-new
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
@@ -116,6 +126,67 @@ depend:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
+#=============================================================================
+# Target rules for targets named lexer_test
+
+# Build rule for target.
+lexer_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lexer_test
+.PHONY : lexer_test
+
+# fast build rule for target.
+lexer_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/build
+.PHONY : lexer_test/fast
+
+src/lexer.o: src/lexer.c.o
+.PHONY : src/lexer.o
+
+# target to build an object file
+src/lexer.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/src/lexer.c.o
+.PHONY : src/lexer.c.o
+
+src/lexer.i: src/lexer.c.i
+.PHONY : src/lexer.i
+
+# target to preprocess a source file
+src/lexer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/src/lexer.c.i
+.PHONY : src/lexer.c.i
+
+src/lexer.s: src/lexer.c.s
+.PHONY : src/lexer.s
+
+# target to generate assembly for a file
+src/lexer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/src/lexer.c.s
+.PHONY : src/lexer.c.s
+
+tests/lexer_test.o: tests/lexer_test.c.o
+.PHONY : tests/lexer_test.o
+
+# target to build an object file
+tests/lexer_test.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/tests/lexer_test.c.o
+.PHONY : tests/lexer_test.c.o
+
+tests/lexer_test.i: tests/lexer_test.c.i
+.PHONY : tests/lexer_test.i
+
+# target to preprocess a source file
+tests/lexer_test.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/tests/lexer_test.c.i
+.PHONY : tests/lexer_test.c.i
+
+tests/lexer_test.s: tests/lexer_test.c.s
+.PHONY : tests/lexer_test.s
+
+# target to generate assembly for a file
+tests/lexer_test.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/tests/lexer_test.c.s
+.PHONY : tests/lexer_test.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -124,6 +195,14 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... test"
+	@echo "... lexer_test"
+	@echo "... src/lexer.o"
+	@echo "... src/lexer.i"
+	@echo "... src/lexer.s"
+	@echo "... tests/lexer_test.o"
+	@echo "... tests/lexer_test.i"
+	@echo "... tests/lexer_test.s"
 .PHONY : help
 
 

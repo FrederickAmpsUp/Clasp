@@ -3,6 +3,9 @@
         "*.h": "c",
         "*.c": "c",
         "*.s": "customasm",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c"
     }
 }
