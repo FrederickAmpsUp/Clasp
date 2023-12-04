@@ -36,13 +36,13 @@ static bool is_identifier(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
 }
 
-static ClaspToken *new_token(char *data, TokenType type) {
+static ClaspToken *new_token(char *data, ClaspTokenType type) {
     ClaspToken *out = malloc(sizeof(ClaspToken));
     out->data = data;
     out->type = type;
     return out;
 }
-static ClaspToken *new_token_const(const char *const data, TokenType type) {
+static ClaspToken *new_token_const(const char *const data, ClaspTokenType type) {
     char *buf = malloc(strlen(data) + 1);
     strcpy(buf, data);
     return new_token(buf, type);
@@ -203,7 +203,7 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
 }
 
 #define CASE(typ) case (typ): return (#typ);
-const char *tktyp_str(TokenType typ) {
+const char *tktyp_str(ClaspTokenType typ) {
     switch (typ) {
         CASE(TOKEN_ID)
         CASE(TOKEN_NUMBER)

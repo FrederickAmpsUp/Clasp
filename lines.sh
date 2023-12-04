@@ -1,1 +1,1 @@
-find ./** -type f \( -name "*.c" -o -name "*.h" \) -not -path "./CMakeFiles/*" -exec cat {} \; | wc -l
+find ./** -type f \( -name "*.c" -o -name "*.h" \) -not -path "./CMakeFiles/*" -not -path "./build/*" -exec cat {} \; | wc -l

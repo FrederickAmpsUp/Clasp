@@ -3,6 +3,8 @@
 
 typedef char (*StreamReadFn) ();
 
+// TODO: file/line/column numbers
+// in tokens (for debugging)
 
 typedef enum {
     TOKEN_ID, TOKEN_NUMBER,
@@ -29,11 +31,11 @@ typedef enum {
     TOKEN_RIGHT_POINT,TOKEN_LEFT_POINT,
 
     TOKEN_EOF, TOKEN_UNKNOWN
-} TokenType;
+} ClaspTokenType;
 
 typedef struct {
     char *data;
-    TokenType type;
+    ClaspTokenType type;
 } ClaspToken;
 
 typedef struct {
@@ -50,7 +52,7 @@ void new_lexer(ClaspLexer *lexer, StreamReadFn fn);
 ClaspToken *lexer_next(ClaspLexer *lexer);
 ClaspToken *lexer_scan(ClaspLexer *lexer);
 
-const char *toktyp_str(TokenType type);
+const char *toktyp_str(ClaspTokenType type);
 void token_print(ClaspToken *token);
 
 #endif // LEXER_H

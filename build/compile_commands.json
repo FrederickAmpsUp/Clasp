@@ -1,0 +1,20 @@
+[
+{
+  "directory": "/home/frederickampsup/Documents/clasp-new/build",
+  "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/lexer_test.dir/tests/lexer_test.c.o -c /home/frederickampsup/Documents/clasp-new/tests/lexer_test.c",
+  "file": "/home/frederickampsup/Documents/clasp-new/tests/lexer_test.c",
+  "output": "CMakeFiles/lexer_test.dir/tests/lexer_test.c.o"
+},
+{
+  "directory": "/home/frederickampsup/Documents/clasp-new/build",
+  "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/lexer_test.dir/src/lexer.c.o -c /home/frederickampsup/Documents/clasp-new/src/lexer.c",
+  "file": "/home/frederickampsup/Documents/clasp-new/src/lexer.c",
+  "output": "CMakeFiles/lexer_test.dir/src/lexer.c.o"
+},
+{
+  "directory": "/home/frederickampsup/Documents/clasp-new/build",
+  "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/lexer_test.dir/src/parser.c.o -c /home/frederickampsup/Documents/clasp-new/src/parser.c",
+  "file": "/home/frederickampsup/Documents/clasp-new/src/parser.c",
+  "output": "CMakeFiles/lexer_test.dir/src/parser.c.o"
+}
+]
