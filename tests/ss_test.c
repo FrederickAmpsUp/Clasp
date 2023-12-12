@@ -6,10 +6,10 @@
 #include <assert.h>
 
 int main(int argc, char **argv) {
-    StringStream str = (StringStream) { "5wowo 76+82 e68==75= -> 7", 0 };
+    StringStream *str = new_stream("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890  \n\nabcd");
     
     char c;
-    while ((c = stream_read(&str)) != EOF) {
+    while ((c = stream_read(str)) != EOF) {
         putchar(c);
     }
     putchar('\n');
