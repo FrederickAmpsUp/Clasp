@@ -70,6 +70,13 @@ build CMakeFiles/lexer_test.dir/src/parser.c.o: C_COMPILER__lexer_test_unscanned
   OBJECT_DIR = CMakeFiles/lexer_test.dir
   OBJECT_FILE_DIR = CMakeFiles/lexer_test.dir/src
 
+build CMakeFiles/lexer_test.dir/src/stringstream.c.o: C_COMPILER__lexer_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/stringstream.c || cmake_object_order_depends_target_lexer_test
+  DEP_FILE = CMakeFiles/lexer_test.dir/src/stringstream.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/lexer_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/lexer_test.dir/src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target lexer_test
@@ -78,7 +85,7 @@ build CMakeFiles/lexer_test.dir/src/parser.c.o: C_COMPILER__lexer_test_unscanned
 #############################################
 # Link the executable bin/lexer_test
 
-build bin/lexer_test: C_EXECUTABLE_LINKER__lexer_test_Debug CMakeFiles/lexer_test.dir/tests/lexer_test.c.o CMakeFiles/lexer_test.dir/src/lexer.c.o CMakeFiles/lexer_test.dir/src/parser.c.o
+build bin/lexer_test: C_EXECUTABLE_LINKER__lexer_test_Debug CMakeFiles/lexer_test.dir/tests/lexer_test.c.o CMakeFiles/lexer_test.dir/src/lexer.c.o CMakeFiles/lexer_test.dir/src/parser.c.o CMakeFiles/lexer_test.dir/src/stringstream.c.o
   FLAGS = -g
   LINK_LIBRARIES = -lm
   OBJECT_DIR = CMakeFiles/lexer_test.dir
@@ -86,6 +93,114 @@ build bin/lexer_test: C_EXECUTABLE_LINKER__lexer_test_Debug CMakeFiles/lexer_tes
   PRE_LINK = :
   TARGET_FILE = bin/lexer_test
   TARGET_PDB = lexer_test.dbg
+
+# =============================================================================
+# Object build statements for EXECUTABLE target parser_test
+
+
+#############################################
+# Order-only phony target for parser_test
+
+build cmake_object_order_depends_target_parser_test: phony || CMakeFiles/parser_test.dir
+
+build CMakeFiles/parser_test.dir/tests/parser_test.c.o: C_COMPILER__parser_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/tests/parser_test.c || cmake_object_order_depends_target_parser_test
+  DEP_FILE = CMakeFiles/parser_test.dir/tests/parser_test.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/parser_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/parser_test.dir/tests
+
+build CMakeFiles/parser_test.dir/src/lexer.c.o: C_COMPILER__parser_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/lexer.c || cmake_object_order_depends_target_parser_test
+  DEP_FILE = CMakeFiles/parser_test.dir/src/lexer.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/parser_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/parser_test.dir/src
+
+build CMakeFiles/parser_test.dir/src/parser.c.o: C_COMPILER__parser_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/parser.c || cmake_object_order_depends_target_parser_test
+  DEP_FILE = CMakeFiles/parser_test.dir/src/parser.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/parser_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/parser_test.dir/src
+
+build CMakeFiles/parser_test.dir/src/stringstream.c.o: C_COMPILER__parser_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/stringstream.c || cmake_object_order_depends_target_parser_test
+  DEP_FILE = CMakeFiles/parser_test.dir/src/stringstream.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/parser_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/parser_test.dir/src
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target parser_test
+
+
+#############################################
+# Link the executable bin/parser_test
+
+build bin/parser_test: C_EXECUTABLE_LINKER__parser_test_Debug CMakeFiles/parser_test.dir/tests/parser_test.c.o CMakeFiles/parser_test.dir/src/lexer.c.o CMakeFiles/parser_test.dir/src/parser.c.o CMakeFiles/parser_test.dir/src/stringstream.c.o
+  FLAGS = -g
+  LINK_LIBRARIES = -lm
+  OBJECT_DIR = CMakeFiles/parser_test.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = bin/parser_test
+  TARGET_PDB = parser_test.dbg
+
+# =============================================================================
+# Object build statements for EXECUTABLE target ss_test
+
+
+#############################################
+# Order-only phony target for ss_test
+
+build cmake_object_order_depends_target_ss_test: phony || CMakeFiles/ss_test.dir
+
+build CMakeFiles/ss_test.dir/tests/ss_test.c.o: C_COMPILER__ss_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/tests/ss_test.c || cmake_object_order_depends_target_ss_test
+  DEP_FILE = CMakeFiles/ss_test.dir/tests/ss_test.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/ss_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/ss_test.dir/tests
+
+build CMakeFiles/ss_test.dir/src/lexer.c.o: C_COMPILER__ss_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/lexer.c || cmake_object_order_depends_target_ss_test
+  DEP_FILE = CMakeFiles/ss_test.dir/src/lexer.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/ss_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/ss_test.dir/src
+
+build CMakeFiles/ss_test.dir/src/parser.c.o: C_COMPILER__ss_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/parser.c || cmake_object_order_depends_target_ss_test
+  DEP_FILE = CMakeFiles/ss_test.dir/src/parser.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/ss_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/ss_test.dir/src
+
+build CMakeFiles/ss_test.dir/src/stringstream.c.o: C_COMPILER__ss_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/stringstream.c || cmake_object_order_depends_target_ss_test
+  DEP_FILE = CMakeFiles/ss_test.dir/src/stringstream.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/ss_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/ss_test.dir/src
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target ss_test
+
+
+#############################################
+# Link the executable bin/ss_test
+
+build bin/ss_test: C_EXECUTABLE_LINKER__ss_test_Debug CMakeFiles/ss_test.dir/tests/ss_test.c.o CMakeFiles/ss_test.dir/src/lexer.c.o CMakeFiles/ss_test.dir/src/parser.c.o CMakeFiles/ss_test.dir/src/stringstream.c.o
+  FLAGS = -g
+  LINK_LIBRARIES = -lm
+  OBJECT_DIR = CMakeFiles/ss_test.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = bin/ss_test
+  TARGET_PDB = ss_test.dbg
 
 
 #############################################
@@ -127,6 +242,10 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
 build lexer_test: phony bin/lexer_test
 
+build parser_test: phony bin/parser_test
+
+build ss_test: phony bin/ss_test
+
 # =============================================================================
 # Folder targets.
 
@@ -135,7 +254,7 @@ build lexer_test: phony bin/lexer_test
 #############################################
 # Folder: /home/frederickampsup/Documents/clasp-new/build
 
-build all: phony bin/lexer_test
+build all: phony bin/lexer_test bin/parser_test bin/ss_test
 
 # =============================================================================
 # Built-in targets
@@ -144,14 +263,14 @@ build all: phony bin/lexer_test
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | /home/frederickampsup/Documents/clasp-new/CMakeLists.txt /usr/share/cmake-3.27/Modules/CMakeCInformation.cmake /usr/share/cmake-3.27/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-Initialize.cmake /usr/share/cmake-3.27/Modules/Platform/Linux.cmake /usr/share/cmake-3.27/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.27.7/CMakeCCompiler.cmake CMakeFiles/3.27.7/CMakeCXXCompiler.cmake CMakeFiles/3.27.7/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | /home/frederickampsup/Documents/clasp-new/CMakeLists.txt /usr/share/cmake-3.27/Modules/CMakeCInformation.cmake /usr/share/cmake-3.27/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-Initialize.cmake /usr/share/cmake-3.27/Modules/Platform/Linux.cmake /usr/share/cmake-3.27/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.27.9/CMakeCCompiler.cmake CMakeFiles/3.27.9/CMakeCXXCompiler.cmake CMakeFiles/3.27.9/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /home/frederickampsup/Documents/clasp-new/CMakeLists.txt /usr/share/cmake-3.27/Modules/CMakeCInformation.cmake /usr/share/cmake-3.27/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-Initialize.cmake /usr/share/cmake-3.27/Modules/Platform/Linux.cmake /usr/share/cmake-3.27/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.27.7/CMakeCCompiler.cmake CMakeFiles/3.27.7/CMakeCXXCompiler.cmake CMakeFiles/3.27.7/CMakeSystem.cmake: phony
+build /home/frederickampsup/Documents/clasp-new/CMakeLists.txt /usr/share/cmake-3.27/Modules/CMakeCInformation.cmake /usr/share/cmake-3.27/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.27/Modules/Compiler/GNU.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.27/Modules/Platform/Linux-Initialize.cmake /usr/share/cmake-3.27/Modules/Platform/Linux.cmake /usr/share/cmake-3.27/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.27.9/CMakeCCompiler.cmake CMakeFiles/3.27.9/CMakeCXXCompiler.cmake CMakeFiles/3.27.9/CMakeSystem.cmake: phony
 
 
 #############################################

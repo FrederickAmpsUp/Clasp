@@ -15,7 +15,9 @@
 					"source" : ".",
 					"targetIndexes" : 
 					[
-						0
+						0,
+						1,
+						2
 					]
 				}
 			],
@@ -30,7 +32,9 @@
 					"name" : "Clasp",
 					"targetIndexes" : 
 					[
-						0
+						0,
+						1,
+						2
 					]
 				}
 			],
@@ -39,8 +43,22 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "lexer_test::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lexer_test-Debug-4f5bc2761eaac81e2192.json",
+					"jsonFile" : "target-lexer_test-Debug-9c60a27ced8fa2de317b.json",
 					"name" : "lexer_test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "parser_test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-parser_test-Debug-94feab85bb9cc2f8e2c1.json",
+					"name" : "parser_test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ss_test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ss_test-Debug-8edf8e2d2c03485a6d7f.json",
+					"name" : "ss_test",
 					"projectIndex" : 0
 				}
 			]

@@ -201,6 +201,9 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
 
     return new_token_const("", TOKEN_UNKNOWN);
 }
+int lexer_has(ClaspLexer *l, ClaspTokenType t) {
+    return l->current->type == t;
+}
 
 #define CASE(typ) case (typ): return (#typ);
 const char *tktyp_str(ClaspTokenType typ) {

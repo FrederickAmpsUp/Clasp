@@ -4,3 +4,6 @@ CMakeCache.txt
 .vscode/
 CTestTestfile.cmake
 Testing/
+a.out
+.test.c
+.test.s

@@ -51,6 +51,7 @@ typedef struct {
 void new_lexer(ClaspLexer *lexer, StreamReadFn fn);
 ClaspToken *lexer_next(ClaspLexer *lexer);
 ClaspToken *lexer_scan(ClaspLexer *lexer);
+int lexer_has(ClaspLexer *lexer, ClaspTokenType type);
 
 const char *toktyp_str(ClaspTokenType type);
 void token_print(ClaspToken *token);

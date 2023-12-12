@@ -14,18 +14,14 @@ typedef enum {
 
 void clasp_visit_binop(ClaspToken *token, FILE *out);
 
-const ClaspVisitorTable claspDefaultVisitors = {
-    [VISITOR_BINOP] = &clasp_visit_binop,
-};
-
 typedef struct {
     ClaspLexer *lexer;
     FILE *out;
     const ClaspVisitorTable *visitors;
 } ClaspParser;
 
-ClaspParser *new_parser(ClaspLexer *lexer, FILE *out);
-ClaspParser *new_parser_custom(ClaspLexer *lexer, FILE *out, ClaspVisitorTable *visitors);
+void new_parser(ClaspParser *parser, ClaspLexer *lexer, FILE *out);
+void new_parser_custom(ClaspParser *parser, ClaspLexer *lexer, FILE *out, ClaspVisitorTable *visitors);
 
 void parser_compile(ClaspParser *parser);
 
@@ -36,6 +32,7 @@ void parser_compile(ClaspParser *parser);
 
 void parser_expression(ClaspParser *parser);  // Expression statement
 void parser_term(ClaspParser *parser);        // Add/sub
+void parser_factor(ClaspParser *parser);      // Mul/div
 
 void parser_primary(ClaspParser *parser);     // Primary (parenthesis, numbers, ... stuff)
 
