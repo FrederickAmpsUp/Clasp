@@ -19,7 +19,7 @@ char read_string() {
 int main(int argc, char **argv) {
     str = (StringStream) { "5wowo 76+82 e68==75= -> 7", 0 };
     ClaspLexer *l = malloc(sizeof(ClaspLexer));
-    new_lexer(l, read_string);
+    new_lexer(l, read_string, NULL);
 
     ClaspToken *current;
 

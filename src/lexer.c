@@ -6,12 +6,13 @@
 #include <stdio.h>
 #include <string.h>
 
-void new_lexer(ClaspLexer *lexer, StreamReadFn fn) {
+void new_lexer(ClaspLexer *lexer, StreamReadFn fn, void *args) {
     lexer->stream = fn;
     lexer->current  = NULL;
     lexer->next     = NULL;
     lexer->previous = NULL;
-    lexer->cCurrent = lexer->stream();
+    lexer->cCurrent = lexer->stream(args);
+    lexer->_stream_args = args;
     (void) lexer_next(lexer);
 
     return;
@@ -51,7 +52,7 @@ static ClaspToken *new_token_const(const char *const data, ClaspTokenType type) 
 ClaspToken *lexer_scan(ClaspLexer *lexer) {
     char current = lexer->cCurrent;
     if (current == EOF) return new_token("", TOKEN_EOF);
-    while (isspace(current)) current = lexer->stream();
+    while (isspace(current)) current = lexer->stream(lexer->_stream_args);
 
         // Identifiers
     if (is_identifier(current)) {
@@ -59,11 +60,11 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         unsigned int length = 1;
         identifier[0] = current;
 
-        current = lexer->stream();
+        current = lexer->stream(lexer->_stream_args);
         while ((is_identifier(current) || isdigit(current))) {
             if (length < 128) identifier[length] = current;
             ++length;
-            current = lexer->stream();
+            current = lexer->stream(lexer->_stream_args);
         }
         char *final = malloc(length + 1);
         memcpy(final, identifier, length);
@@ -86,7 +87,7 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
 
         int decimal_count = (current == '.');
 
-        while (decimal_count < 2 && (isdigit(current = lexer->stream()) || current == '.') && length < 128)  {
+        while (decimal_count < 2 && (isdigit(current = lexer->stream(lexer->_stream_args)) || current == '.') && length < 128)  {
             decimal_count += (current == '.');
             num[length++] = current;
         }
@@ -100,102 +101,102 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
     }
 
     if (current == '+') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream();
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
             return new_token_const("+=", TOKEN_PLUS_EQ);
         }
         return new_token_const("+", TOKEN_PLUS);
     }
     if (current == '-') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream();
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
             return new_token_const("-=", TOKEN_MINUS_EQ);
         }
         if (lexer->cCurrent == '>') {
-            lexer->cCurrent = lexer->stream();
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
             return new_token_const("->", TOKEN_RIGHT_POINT);
         }
         return new_token_const("-", TOKEN_MINUS);
     }
     if (current == '*') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream();
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
             return new_token_const("*=", TOKEN_ASTERIX_EQ);
         }
         return new_token_const("*", TOKEN_ASTERIX);
     }
     if (current == '/') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream();
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
             return new_token_const("/=", TOKEN_SLASH_EQ);
         }
         return new_token_const("/", TOKEN_SLASH);
     }
     if (current == '=') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream();
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
             return new_token_const("==", TOKEN_EQ_EQ);
         }
         return new_token_const("=", TOKEN_EQ);
     }
     if (current == '!') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream();
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
             return new_token_const("!=", TOKEN_BANG_EQ);
         }
         return new_token_const("!", TOKEN_BANG);
     }
     if (current == '<') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream();
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
             return new_token_const("<=", TOKEN_LESS_EQ);
         }
         if (lexer->cCurrent == '-') {
-            lexer->cCurrent = lexer->stream();
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
             return new_token_const("<-", TOKEN_LEFT_POINT);
         }
         return new_token_const("<", TOKEN_LESS);
     }
     if (current == '>') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream();
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
             return new_token_const(">=", TOKEN_GREATER_EQ);
         }
         return new_token_const(">", TOKEN_GREATER);
     }
 
     if (current == '(') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         return new_token_const("(", TOKEN_LEFT_PAREN);
     }
     if (current == ')') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         return new_token_const(")", TOKEN_RIGHT_PAREN);
     }
 
     if (current == '[') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         return new_token_const("[", TOKEN_LEFT_SQUARE);
     }
     if (current == ']') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         return new_token_const("]", TOKEN_RIGHT_SQUARE);
     }
 
     if (current == '{') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         return new_token_const("{", TOKEN_LEFT_CURLY);
     }
     if (current == '}') {
-        lexer->cCurrent = lexer->stream();
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         return new_token_const("}", TOKEN_RIGHT_CURLY);
     }
 

@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-typedef char (*StreamReadFn) ();
+typedef char (*StreamReadFn) (void *);
 
 // TODO: file/line/column numbers
 // in tokens (for debugging)
@@ -46,9 +46,10 @@ typedef struct {
     ClaspToken *next;
 
     char cCurrent;
+    void *_stream_args;
 } ClaspLexer;
 
-void new_lexer(ClaspLexer *lexer, StreamReadFn fn);
+void new_lexer(ClaspLexer *lexer, StreamReadFn fn, void *args);
 ClaspToken *lexer_next(ClaspLexer *lexer);
 ClaspToken *lexer_scan(ClaspLexer *lexer);
 int lexer_has(ClaspLexer *lexer, ClaspTokenType type);

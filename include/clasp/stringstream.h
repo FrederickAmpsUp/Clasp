@@ -8,4 +8,6 @@ typedef struct {
     unsigned int idx;
 } StringStream;
 
+char stream_read(StringStream *s);
+
 #endif // STRINGSTREAM_H

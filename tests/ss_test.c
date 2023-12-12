@@ -8,7 +8,11 @@
 int main(int argc, char **argv) {
     StringStream str = (StringStream) { "5wowo 76+82 e68==75= -> 7", 0 };
     
-    // TODO
+    char c;
+    while ((c = stream_read(&str)) != EOF) {
+        putchar(c);
+    }
+    putchar('\n');
 
     return 0;
 }
