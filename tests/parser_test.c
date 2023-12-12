@@ -18,7 +18,7 @@ char read_string() {
 }
 
 int main(int argc, char **argv) {
-    str = (StringStream) { "3 + 5 - 2", 0 };
+    str = (StringStream) { "3 + 5 - 2 * 8", 0 };
     ClaspLexer *l = malloc(sizeof(ClaspLexer));
     new_lexer(l, read_string, NULL);
     ClaspParser *p = malloc(sizeof(ClaspParser));

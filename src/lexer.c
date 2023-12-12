@@ -136,6 +136,14 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         }
         return new_token_const("/", TOKEN_SLASH);
     }
+    if (current == '%') {
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        if (lexer->cCurrent == '=') {
+            lexer->cCurrent = lexer->stream(lexer->_stream_args);
+            return new_token_const("%=", TOKEN_PERC_EQ);
+        }
+        return new_token_const("%", TOKEN_PERC);
+    }
     if (current == '=') {
         lexer->cCurrent = lexer->stream(lexer->_stream_args);
         if (lexer->cCurrent == '=') {
@@ -219,6 +227,7 @@ const char *tktyp_str(ClaspTokenType typ) {
         CASE(TOKEN_MINUS)
         CASE(TOKEN_ASTERIX)
         CASE(TOKEN_SLASH)
+        CASE(TOKEN_PERC)
         CASE(TOKEN_EQ_EQ)
         CASE(TOKEN_BANG)
         CASE(TOKEN_BANG_EQ)
@@ -231,6 +240,7 @@ const char *tktyp_str(ClaspTokenType typ) {
         CASE(TOKEN_MINUS_EQ)
         CASE(TOKEN_ASTERIX_EQ)
         CASE(TOKEN_SLASH_EQ)
+        CASE(TOKEN_PERC_EQ)
         CASE(TOKEN_LEFT_PAREN)
         CASE(TOKEN_RIGHT_PAREN)
         CASE(TOKEN_LEFT_SQUARE)

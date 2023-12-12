@@ -13,6 +13,7 @@ typedef enum {
 
     TOKEN_PLUS,TOKEN_MINUS,
     TOKEN_ASTERIX,TOKEN_SLASH,
+    TOKEN_PERC,
 
     TOKEN_EQ_EQ,
     TOKEN_BANG,TOKEN_BANG_EQ,
@@ -22,6 +23,7 @@ typedef enum {
     TOKEN_EQ,
     TOKEN_PLUS_EQ,TOKEN_MINUS_EQ,
     TOKEN_ASTERIX_EQ,TOKEN_SLASH_EQ,
+    TOKEN_PERC_EQ,
 
     TOKEN_LEFT_PAREN,TOKEN_RIGHT_PAREN,
     TOKEN_LEFT_SQUARE,TOKEN_RIGHT_SQUARE,
@@ -54,7 +56,7 @@ ClaspToken *lexer_next(ClaspLexer *lexer);
 ClaspToken *lexer_scan(ClaspLexer *lexer);
 int lexer_has(ClaspLexer *lexer, ClaspTokenType type);
 
-const char *toktyp_str(ClaspTokenType type);
+const char *tktyp_str(ClaspTokenType type);
 void token_print(ClaspToken *token);
 
 #endif // LEXER_H
