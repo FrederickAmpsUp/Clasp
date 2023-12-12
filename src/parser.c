@@ -60,22 +60,27 @@ void parser_term(ClaspParser *p) {
 void parser_factor(ClaspParser *p) {
     parser_primary(p); // Left operand
 
-    while (lexer_has(p->lexer, TOKEN_ASTERIX) || lexer_has(p->lexer, TOKEN_SLASH)) {
-        bool mul;
+    while (lexer_has(p->lexer, TOKEN_ASTERIX)
+        || lexer_has(p->lexer, TOKEN_SLASH)
+        || lexer_has(p->lexer, TOKEN_PERC)) {
+        int op;
         if (consume(p, TOKEN_ASTERIX)) {
-            mul = true;
+            op = 0; // mul
         } else if (consume(p, TOKEN_SLASH)) {
-            mul = false;
+            op = 1; // div
+        } else if (consume(p, TOKEN_PERC)) {
+            op = 2; // mod
         } else {
             fprintf(stderr, "impossible error, please report this message: \n\n\"unexpected token with type %s whilst parsing factor\"\n", tktyp_str(lexer_next(p->lexer)->type));
-            exit(2);
         }
 
         parser_primary(p); // Right operand
-        if (mul) {
+        if (op == 0) {
             printf("mul\n");
-        } else {
+        } else if (op == 1) {
             printf("div\n");
+        } else if (op == 2) {
+            printf("mod\n");
         }
     }
 }
