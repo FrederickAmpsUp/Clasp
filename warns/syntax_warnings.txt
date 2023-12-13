@@ -1,2 +1,0 @@
-* Identifiers have a maximum length of 128 characters. Identifiers longer than 128 characters will be truncated.
-* Same applies to number literals.

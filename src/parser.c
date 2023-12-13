@@ -58,7 +58,7 @@ void parser_term(ClaspParser *p) {
     }
 }
 void parser_factor(ClaspParser *p) {
-    parser_primary(p); // Left operand
+    parser_exponent(p); // Left operand
 
     while (lexer_has(p->lexer, TOKEN_ASTERIX)
         || lexer_has(p->lexer, TOKEN_SLASH)
@@ -72,17 +72,47 @@ void parser_factor(ClaspParser *p) {
             op = 2; // mod
         } else {
             fprintf(stderr, "impossible error, please report this message: \n\n\"unexpected token with type %s whilst parsing factor\"\n", tktyp_str(lexer_next(p->lexer)->type));
+            exit(2);
         }
 
-        parser_primary(p); // Right operand
-        if (op == 0) {
+        parser_exponent(p); // Right operand
+        if (op == 0) {  // multiplication
             printf("mul\n");
-        } else if (op == 1) {
+        } else if (op == 1) {  // division 
             printf("div\n");
-        } else if (op == 2) {
+        } else if (op == 2) {  // modulo
             printf("mod\n");
         }
     }
+}
+void parser_exponent(ClaspParser *p) {
+    parser_unary(p);
+
+    while (lexer_has(p->lexer, TOKEN_CARAT)) {
+        int op;
+        if (consume(p, TOKEN_CARAT)) {
+            op = 0; // exponent
+        } else {
+            fprintf(stderr, "impossible error, please report this message: \n\n\"unexpected token with type %s whilst parsing exponent\"\n", tktyp_str(lexer_next(p->lexer)->type));
+            exit(2);
+        }
+
+        parser_exponent(p);
+        if (op == 0) {  // exponentiation
+            printf("pow\n");
+        }
+    }
+}
+void parser_unary(ClaspParser *p) {
+    if (consume(p, TOKEN_MINUS)) {
+        parser_unary(p); // right operand
+        printf("neg\n");
+        return;
+    } if (consume(p, TOKEN_PLUS)) {
+        parser_unary(p); // right operand
+        printf("abs\n");
+    }
+    parser_primary(p);
 }
 void parser_primary(ClaspParser *p) {
     if (lexer_has(p->lexer, TOKEN_NUMBER)) { // Numeric literals

@@ -27,12 +27,14 @@ void parser_compile(ClaspParser *parser);
 
 /**
  * Order of operations:
- * no
+ * see spec/precedence.md
 */
 
 void parser_expression(ClaspParser *parser);  // Expression statement
 void parser_term(ClaspParser *parser);        // Add/sub
 void parser_factor(ClaspParser *parser);      // Mul/div
+void parser_exponent(ClaspParser *parser);    // Exponentiation
+void parser_unary(ClaspParser *parser);       // Unary operators
 
 void parser_primary(ClaspParser *parser);     // Primary (parenthesis, numbers, ... stuff)
 
