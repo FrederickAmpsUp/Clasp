@@ -3,6 +3,7 @@
 
 #include <clasp/lexer.h>
 #include <stdio.h>
+#include <clasp/sc_array.h>
 
 typedef void (*ClaspOutputFn)(ClaspToken *token, FILE *out);
 
@@ -11,6 +12,7 @@ typedef ClaspOutputFn ClaspVisitorTable[1];
 typedef enum {
     VISITOR_BINOP,
 } ClaspVisitorTypes;
+
 
 void clasp_visit_binop(ClaspToken *token, FILE *out);
 

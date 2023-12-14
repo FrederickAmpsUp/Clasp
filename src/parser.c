@@ -104,14 +104,26 @@ void parser_exponent(ClaspParser *p) {
     }
 }
 void parser_unary(ClaspParser *p) {
-    if (consume(p, TOKEN_MINUS)) {
+    if (lexer_has(p->lexer, TOKEN_PLUS)
+     || lexer_has(p->lexer, TOKEN_MINUS)) {
+        int op;
+        if (consume(p, TOKEN_PLUS)) {
+            op = 0; // Unary nothing (+5 is just 5)
+        } else if (consume(p, TOKEN_MINUS)) {
+            op = 1; // Unary negation
+        } else {
+            fprintf(stderr, "impossible error, please report this message: \n\n\"unexpected token with type %s whilst parsing unary\"\n", tktyp_str(lexer_next(p->lexer)->type));
+            exit(2);
+        }
+
         parser_unary(p); // right operand
-        printf("neg\n");
-        return;
-    } if (consume(p, TOKEN_PLUS)) {
-        parser_unary(p); // right operand
-        printf("abs\n");
-    }
+
+        if (op == 0) {
+            printf("iden\n");
+        } else if (op == 1) {
+            printf("neg\n");
+        }
+     }
     parser_primary(p);
 }
 void parser_primary(ClaspParser *p) {
