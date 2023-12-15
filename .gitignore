@@ -7,3 +7,5 @@ Testing/
 a.out
 .test.c
 .test.s
+Makefile
+build/
