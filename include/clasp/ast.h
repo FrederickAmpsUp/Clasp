@@ -7,6 +7,8 @@ typedef enum {
     AST_BINOP,
     AST_UNOP,
     AST_LIT_NUMBER,
+
+    CLASP_NUM_VISITORS
 } ClaspASTNodeType;
 
 typedef struct ClaspASTNode ClaspASTNode;
@@ -35,17 +37,9 @@ ClaspASTNode *binop(ClaspASTNode *left, ClaspASTNode *right, ClaspToken *op);
 ClaspASTNode *unop(ClaspASTNode *right, ClaspToken *op);
 ClaspASTNode *lit_num(ClaspToken *num);
 
-typedef enum ClaspVisitorTypes {
-    VISITOR_BINOP,
-    VISITOR_UNOP,
-    VISITOR_LIT_NUMBER,
-
-    CLASP_NUM_VISITORS,
-} ClaspVisitorTypes;
-
-typedef void (*ClaspVisitorFn) (ClaspASTNode *node);
+typedef void *(*ClaspVisitorFn) (ClaspASTNode *node);
 typedef ClaspVisitorFn ClaspASTVisitor[CLASP_NUM_VISITORS];
 
-void visit(ClaspASTNode *node);
+void *visit(ClaspASTNode *node, ClaspASTVisitor visitor);
 
 #endif // AST_H
