@@ -2,62 +2,46 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdlib.h>
-
-/**
- * TODO: type system (how??)
-*/
-
-static const ClaspVisitorTable claspDefaultVisitors = {
-    [VISITOR_BINOP] = &clasp_visit_binop,
-};
-
+#include <stdarg.h>
+#include <clasp/ast.h>
 void new_parser(ClaspParser *p, ClaspLexer *l, FILE *out) {
     p->lexer = l;
     p->out = out;
-    p->visitors = &claspDefaultVisitors;
 }
-void new_parser_custom(ClaspParser *p, ClaspLexer *l, FILE *out, ClaspVisitorTable *v) {
+void new_parser_custom(ClaspParser *p, ClaspLexer *l, FILE *out) {
     p->lexer = l;
     p->out = out;
-    p->visitors = v;
 }
+#define consume(p, ...)  consume_impl(p, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
+static bool consume_impl(ClaspParser *p, int n, ...) {
+    va_list ptr;
+    va_start(ptr, n);
 
-static bool consume(ClaspParser *p, ClaspTokenType t) {
-    if (lexer_has(p->lexer, t)) {
-        (void) lexer_next(p->lexer);
-        return true;
-    } return false;
-}
-
-void parser_compile(ClaspParser *p) {
-    parser_expression(p); // TODO: declstatements
-}
-void parser_expression(ClaspParser *p) {
-    parser_term(p);
-}
-void parser_term(ClaspParser *p) {
-    parser_factor(p);  // Left operand
-
-    while (lexer_has(p->lexer, TOKEN_PLUS) || lexer_has(p->lexer, TOKEN_MINUS)) {
-        bool add;
-        if (consume(p, TOKEN_PLUS)) {
-            add = true;
-        } else if (consume(p, TOKEN_MINUS)) {
-            add = false;
-        } else {
-            fprintf(stderr, "impossible error, please report this message: \n\n\"unexpected token with type %s whilst parsing term\"\n", tktyp_str(lexer_next(p->lexer)->type));
-            exit(2);
-        }
-
-        parser_factor(p); // Right operand
-        if (add) {
-            printf("add\n");
-        } else { // TODO: emit opcodes
-            printf("sub\n");
+    for (int i = 0; i < n; ++i) {
+        if (lexer_has(p->lexer, va_arg(ptr, ClaspTokenType))) {
+            (void) lexer_next(p->lexer);
+            va_end(ptr);
+            return true;
         }
     }
+    va_end(ptr);
+    return false;
 }
-void parser_factor(ClaspParser *p) {
+
+ClaspASTNode *parser_compile(ClaspParser *p) {
+    return parser_expression(p); // TODO: declstatements
+}
+ClaspASTNode *parser_expression(ClaspParser *p) {
+    return parser_term(p);
+}
+ClaspASTNode *parser_term(ClaspParser *p) {
+    ClaspASTNode *left = parser_factor(p);  // Left operand
+
+    while (lexer_has(p->lexer, TOKEN_PLUS) || lexer_has(p->lexer, TOKEN_MINUS)) {
+        ClaspASTNode *right = parser_factor(p);
+    }
+}
+ClaspASTNode *parser_factor(ClaspParser *p) {
     parser_exponent(p); // Left operand
 
     while (lexer_has(p->lexer, TOKEN_ASTERIX)
@@ -85,7 +69,7 @@ void parser_factor(ClaspParser *p) {
         }
     }
 }
-void parser_exponent(ClaspParser *p) {
+ClaspASTNode *parser_exponent(ClaspParser *p) {
     parser_unary(p);
 
     while (lexer_has(p->lexer, TOKEN_CARAT)) {
@@ -103,7 +87,7 @@ void parser_exponent(ClaspParser *p) {
         }
     }
 }
-void parser_unary(ClaspParser *p) {
+ClaspASTNode *parser_unary(ClaspParser *p) {
     if (lexer_has(p->lexer, TOKEN_PLUS)
      || lexer_has(p->lexer, TOKEN_MINUS)) {
         int op;
@@ -126,7 +110,7 @@ void parser_unary(ClaspParser *p) {
      }
     parser_primary(p);
 }
-void parser_primary(ClaspParser *p) {
+ClaspASTNode *parser_primary(ClaspParser *p) {
     if (lexer_has(p->lexer, TOKEN_NUMBER)) { // Numeric literals
         ClaspToken *num = lexer_next(p->lexer);
         printf("const %s\n", num->data);
