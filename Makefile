@@ -165,6 +165,36 @@ ss_test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ss_test.dir/build.make CMakeFiles/ss_test.dir/build
 .PHONY : ss_test/fast
 
+src/ast.o: src/ast.c.o
+.PHONY : src/ast.o
+
+# target to build an object file
+src/ast.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/src/ast.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser_test.dir/build.make CMakeFiles/parser_test.dir/src/ast.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ss_test.dir/build.make CMakeFiles/ss_test.dir/src/ast.c.o
+.PHONY : src/ast.c.o
+
+src/ast.i: src/ast.c.i
+.PHONY : src/ast.i
+
+# target to preprocess a source file
+src/ast.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/src/ast.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser_test.dir/build.make CMakeFiles/parser_test.dir/src/ast.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ss_test.dir/build.make CMakeFiles/ss_test.dir/src/ast.c.i
+.PHONY : src/ast.c.i
+
+src/ast.s: src/ast.c.s
+.PHONY : src/ast.s
+
+# target to generate assembly for a file
+src/ast.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/src/ast.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser_test.dir/build.make CMakeFiles/parser_test.dir/src/ast.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ss_test.dir/build.make CMakeFiles/ss_test.dir/src/ast.c.s
+.PHONY : src/ast.c.s
+
 src/lexer.o: src/lexer.c.o
 .PHONY : src/lexer.o
 
@@ -339,6 +369,9 @@ help:
 	@echo "... lexer_test"
 	@echo "... parser_test"
 	@echo "... ss_test"
+	@echo "... src/ast.o"
+	@echo "... src/ast.i"
+	@echo "... src/ast.s"
 	@echo "... src/lexer.o"
 	@echo "... src/lexer.i"
 	@echo "... src/lexer.s"

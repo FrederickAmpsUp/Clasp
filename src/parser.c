@@ -37,84 +37,41 @@ ClaspASTNode *parser_expression(ClaspParser *p) {
 ClaspASTNode *parser_term(ClaspParser *p) {
     ClaspASTNode *left = parser_factor(p);  // Left operand
 
-    while (lexer_has(p->lexer, TOKEN_PLUS) || lexer_has(p->lexer, TOKEN_MINUS)) {
+    while (consume(p, TOKEN_PLUS, TOKEN_MINUS)) {
         ClaspASTNode *right = parser_factor(p);
+        left = binop(left, right, p->lexer->previous);
     }
+    return left;
 }
 ClaspASTNode *parser_factor(ClaspParser *p) {
-    parser_exponent(p); // Left operand
+    ClaspASTNode *left = parser_exponent(p); // Left operand
 
-    while (lexer_has(p->lexer, TOKEN_ASTERIX)
-        || lexer_has(p->lexer, TOKEN_SLASH)
-        || lexer_has(p->lexer, TOKEN_PERC)) {
-        int op;
-        if (consume(p, TOKEN_ASTERIX)) {
-            op = 0; // mul
-        } else if (consume(p, TOKEN_SLASH)) {
-            op = 1; // div
-        } else if (consume(p, TOKEN_PERC)) {
-            op = 2; // mod
-        } else {
-            fprintf(stderr, "impossible error, please report this message: \n\n\"unexpected token with type %s whilst parsing factor\"\n", tktyp_str(lexer_next(p->lexer)->type));
-            exit(2);
-        }
-
-        parser_exponent(p); // Right operand
-        if (op == 0) {  // multiplication
-            printf("mul\n");
-        } else if (op == 1) {  // division 
-            printf("div\n");
-        } else if (op == 2) {  // modulo
-            printf("mod\n");
-        }
+    while (consume(p, TOKEN_ASTERIX, TOKEN_SLASH, TOKEN_PERC)) {
+        ClaspASTNode *right = parser_exponent(p); // Right operand
+        left = binop(left, right, p->lexer->previous);
     }
+    return left;
 }
 ClaspASTNode *parser_exponent(ClaspParser *p) {
-    parser_unary(p);
+    ClaspASTNode *left = parser_unary(p); // left operand
 
-    while (lexer_has(p->lexer, TOKEN_CARAT)) {
-        int op;
-        if (consume(p, TOKEN_CARAT)) {
-            op = 0; // exponent
-        } else {
-            fprintf(stderr, "impossible error, please report this message: \n\n\"unexpected token with type %s whilst parsing exponent\"\n", tktyp_str(lexer_next(p->lexer)->type));
-            exit(2);
-        }
-
-        parser_exponent(p);
-        if (op == 0) {  // exponentiation
-            printf("pow\n");
-        }
+    while (consume(p, TOKEN_CARAT)) {
+        ClaspASTNode *right = parser_exponent(p); // right operand, right-associativity
+        left = binop(left, right, p->lexer->previous);
     }
+    return left;
 }
 ClaspASTNode *parser_unary(ClaspParser *p) {
-    if (lexer_has(p->lexer, TOKEN_PLUS)
-     || lexer_has(p->lexer, TOKEN_MINUS)) {
-        int op;
-        if (consume(p, TOKEN_PLUS)) {
-            op = 0; // Unary nothing (+5 is just 5)
-        } else if (consume(p, TOKEN_MINUS)) {
-            op = 1; // Unary negation
-        } else {
-            fprintf(stderr, "impossible error, please report this message: \n\n\"unexpected token with type %s whilst parsing unary\"\n", tktyp_str(lexer_next(p->lexer)->type));
-            exit(2);
-        }
-
-        parser_unary(p); // right operand
-
-        if (op == 0) {
-            printf("iden\n");
-        } else if (op == 1) {
-            printf("neg\n");
-        }
-     }
-    parser_primary(p);
+    if (consume(p, TOKEN_PLUS, TOKEN_MINUS)) {
+        ClaspToken *op = p->lexer->previous;
+        ClaspASTNode *right = parser_unary(p); // right operand
+        return unop(right, op);
+    }
+    return parser_primary(p);
 }
 ClaspASTNode *parser_primary(ClaspParser *p) {
-    if (lexer_has(p->lexer, TOKEN_NUMBER)) { // Numeric literals
-        ClaspToken *num = lexer_next(p->lexer);
-        printf("const %s\n", num->data);
-        return;
+    if (consume(p, TOKEN_NUMBER)) { // Numeric literals
+        return lit_num(p->lexer->previous);
     }
 }
 
