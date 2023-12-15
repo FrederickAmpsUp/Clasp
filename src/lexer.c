@@ -24,8 +24,8 @@ ClaspToken *lexer_next(ClaspLexer *lexer) {
         lexer->next    = lexer_scan(lexer);
         
     } else {
-        if (lexer->previous) free(lexer->previous->data);
-        free(lexer->previous);
+        //if (lexer->previous) free(lexer->previous->data);
+        //free(lexer->previous);
         lexer->previous = lexer->current;
         lexer->current  = lexer->next;
         lexer->next     = lexer_scan(lexer);

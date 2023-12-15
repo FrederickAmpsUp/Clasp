@@ -1,5 +1,6 @@
 #include <clasp/lexer.h>
 #include <clasp/parser.h>
+#include <clasp/print_ast.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,8 +29,8 @@ int main(int argc, char **argv) {
         return -1;
     }
     new_parser(p, l, out);
-    parser_compile(p);
-
+    ClaspASTNode *tree = parser_compile(p);
+    claspPrintAST(tree);
     
     return 0;
 }

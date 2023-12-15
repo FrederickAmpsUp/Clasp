@@ -255,6 +255,36 @@ src/parser.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ss_test.dir/build.make CMakeFiles/ss_test.dir/src/parser.c.s
 .PHONY : src/parser.c.s
 
+src/print_ast.o: src/print_ast.c.o
+.PHONY : src/print_ast.o
+
+# target to build an object file
+src/print_ast.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/src/print_ast.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser_test.dir/build.make CMakeFiles/parser_test.dir/src/print_ast.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ss_test.dir/build.make CMakeFiles/ss_test.dir/src/print_ast.c.o
+.PHONY : src/print_ast.c.o
+
+src/print_ast.i: src/print_ast.c.i
+.PHONY : src/print_ast.i
+
+# target to preprocess a source file
+src/print_ast.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/src/print_ast.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser_test.dir/build.make CMakeFiles/parser_test.dir/src/print_ast.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ss_test.dir/build.make CMakeFiles/ss_test.dir/src/print_ast.c.i
+.PHONY : src/print_ast.c.i
+
+src/print_ast.s: src/print_ast.c.s
+.PHONY : src/print_ast.s
+
+# target to generate assembly for a file
+src/print_ast.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexer_test.dir/build.make CMakeFiles/lexer_test.dir/src/print_ast.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/parser_test.dir/build.make CMakeFiles/parser_test.dir/src/print_ast.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ss_test.dir/build.make CMakeFiles/ss_test.dir/src/print_ast.c.s
+.PHONY : src/print_ast.c.s
+
 src/stringstream.o: src/stringstream.c.o
 .PHONY : src/stringstream.o
 
@@ -378,6 +408,9 @@ help:
 	@echo "... src/parser.o"
 	@echo "... src/parser.i"
 	@echo "... src/parser.s"
+	@echo "... src/print_ast.o"
+	@echo "... src/print_ast.i"
+	@echo "... src/print_ast.s"
 	@echo "... src/stringstream.o"
 	@echo "... src/stringstream.i"
 	@echo "... src/stringstream.s"
