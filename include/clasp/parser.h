@@ -31,13 +31,25 @@
 #include <clasp/sc_array.h>
 #include <clasp/ast.h>
 
+/**
+ * State of a parser. Stores the lexer used.
+*/
 typedef struct {
     ClaspLexer *lexer;
-    FILE *out;
 } ClaspParser;
 
-void new_parser(ClaspParser *parser, ClaspLexer *lexer, FILE *out);
+/**
+ * Initialize a new parser.
+ * @param parser The parser to initialize
+ * @param lexer The lexer state for the parser to use
+*/
+void new_parser(ClaspParser *parser, ClaspLexer *lexer);
 
+/**
+ * Parse the input into an AST.
+ * @param parser The parser state to parse from.
+ * @return The AST from the parser's input.
+*/
 ClaspASTNode *parser_compile(ClaspParser *parser);
 
 /**
@@ -45,12 +57,29 @@ ClaspASTNode *parser_compile(ClaspParser *parser);
  * see spec/precedence.md
 */
 
+/**
+ * Parse an expression. This should only be called internally, except special cases.
+*/
 ClaspASTNode *parser_expression(ClaspParser *parser);  // Expression statement
+/**
+ * Parse a term. This should only be called internally, except special cases.
+*/
 ClaspASTNode *parser_term(ClaspParser *parser);        // Add/sub
+/**
+ * Parse a factor. This should only be called internally, except special cases.
+*/
 ClaspASTNode *parser_factor(ClaspParser *parser);      // Mul/div
+/**
+ * Parse an exponent. This should only be called internally, except special cases.
+*/
 ClaspASTNode *parser_exponent(ClaspParser *parser);    // Exponentiation
+/**
+ * Parse a unary op. This should only be called internally, except special cases.
+*/
 ClaspASTNode *parser_unary(ClaspParser *parser);       // Unary operators
-
+/**
+ * Parse a primary. This should only be called internally, except special cases.
+*/
 ClaspASTNode *parser_primary(ClaspParser *parser);     // Primary (parenthesis, numbers, ... stuff)
 
 

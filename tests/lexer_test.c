@@ -23,6 +23,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * Test status:
+ *  Passes as of 12/15/2023
+*/
+
 #include <clasp/lexer.h>
 #include <string.h>
 #include <stdio.h>

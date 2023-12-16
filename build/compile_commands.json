@@ -7,6 +7,12 @@
 },
 {
   "directory": "/home/frederickampsup/Documents/clasp-new/build",
+  "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/lexer_test.dir/src/ast.c.o -c /home/frederickampsup/Documents/clasp-new/src/ast.c",
+  "file": "/home/frederickampsup/Documents/clasp-new/src/ast.c",
+  "output": "CMakeFiles/lexer_test.dir/src/ast.c.o"
+},
+{
+  "directory": "/home/frederickampsup/Documents/clasp-new/build",
   "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/lexer_test.dir/src/lexer.c.o -c /home/frederickampsup/Documents/clasp-new/src/lexer.c",
   "file": "/home/frederickampsup/Documents/clasp-new/src/lexer.c",
   "output": "CMakeFiles/lexer_test.dir/src/lexer.c.o"
@@ -16,6 +22,12 @@
   "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/lexer_test.dir/src/parser.c.o -c /home/frederickampsup/Documents/clasp-new/src/parser.c",
   "file": "/home/frederickampsup/Documents/clasp-new/src/parser.c",
   "output": "CMakeFiles/lexer_test.dir/src/parser.c.o"
+},
+{
+  "directory": "/home/frederickampsup/Documents/clasp-new/build",
+  "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/lexer_test.dir/src/print_ast.c.o -c /home/frederickampsup/Documents/clasp-new/src/print_ast.c",
+  "file": "/home/frederickampsup/Documents/clasp-new/src/print_ast.c",
+  "output": "CMakeFiles/lexer_test.dir/src/print_ast.c.o"
 },
 {
   "directory": "/home/frederickampsup/Documents/clasp-new/build",
@@ -31,6 +43,12 @@
 },
 {
   "directory": "/home/frederickampsup/Documents/clasp-new/build",
+  "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/parser_test.dir/src/ast.c.o -c /home/frederickampsup/Documents/clasp-new/src/ast.c",
+  "file": "/home/frederickampsup/Documents/clasp-new/src/ast.c",
+  "output": "CMakeFiles/parser_test.dir/src/ast.c.o"
+},
+{
+  "directory": "/home/frederickampsup/Documents/clasp-new/build",
   "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/parser_test.dir/src/lexer.c.o -c /home/frederickampsup/Documents/clasp-new/src/lexer.c",
   "file": "/home/frederickampsup/Documents/clasp-new/src/lexer.c",
   "output": "CMakeFiles/parser_test.dir/src/lexer.c.o"
@@ -40,6 +58,12 @@
   "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/parser_test.dir/src/parser.c.o -c /home/frederickampsup/Documents/clasp-new/src/parser.c",
   "file": "/home/frederickampsup/Documents/clasp-new/src/parser.c",
   "output": "CMakeFiles/parser_test.dir/src/parser.c.o"
+},
+{
+  "directory": "/home/frederickampsup/Documents/clasp-new/build",
+  "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/parser_test.dir/src/print_ast.c.o -c /home/frederickampsup/Documents/clasp-new/src/print_ast.c",
+  "file": "/home/frederickampsup/Documents/clasp-new/src/print_ast.c",
+  "output": "CMakeFiles/parser_test.dir/src/print_ast.c.o"
 },
 {
   "directory": "/home/frederickampsup/Documents/clasp-new/build",
@@ -55,6 +79,12 @@
 },
 {
   "directory": "/home/frederickampsup/Documents/clasp-new/build",
+  "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/ss_test.dir/src/ast.c.o -c /home/frederickampsup/Documents/clasp-new/src/ast.c",
+  "file": "/home/frederickampsup/Documents/clasp-new/src/ast.c",
+  "output": "CMakeFiles/ss_test.dir/src/ast.c.o"
+},
+{
+  "directory": "/home/frederickampsup/Documents/clasp-new/build",
   "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/ss_test.dir/src/lexer.c.o -c /home/frederickampsup/Documents/clasp-new/src/lexer.c",
   "file": "/home/frederickampsup/Documents/clasp-new/src/lexer.c",
   "output": "CMakeFiles/ss_test.dir/src/lexer.c.o"
@@ -64,6 +94,12 @@
   "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/ss_test.dir/src/parser.c.o -c /home/frederickampsup/Documents/clasp-new/src/parser.c",
   "file": "/home/frederickampsup/Documents/clasp-new/src/parser.c",
   "output": "CMakeFiles/ss_test.dir/src/parser.c.o"
+},
+{
+  "directory": "/home/frederickampsup/Documents/clasp-new/build",
+  "command": "/usr/bin/cc -I/home/frederickampsup/Documents/clasp-new/include -g -o CMakeFiles/ss_test.dir/src/print_ast.c.o -c /home/frederickampsup/Documents/clasp-new/src/print_ast.c",
+  "file": "/home/frederickampsup/Documents/clasp-new/src/print_ast.c",
+  "output": "CMakeFiles/ss_test.dir/src/print_ast.c.o"
 },
 {
   "directory": "/home/frederickampsup/Documents/clasp-new/build",

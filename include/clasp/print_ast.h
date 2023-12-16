@@ -28,12 +28,29 @@
 
 #include <clasp/ast.h>
 
+/**
+ * Visitor function for printing binary operations.
+ * @param binop The binary operation node
+*/
 void *claspPrintBinop(ClaspASTNode *binop);
+/**
+ * Visitor function for printing unary operations.
+ * @param unop The unary operation node
+*/
 void *claspPrintUnop(ClaspASTNode *unop);
+/**
+ * Visitor expression for printing number literals.
+ * @param lit The number literal node
+*/
 void *claspPrintNumLiteral(ClaspASTNode *lit);
 
-void *claspPrintAST(ClaspASTNode *ast);
+/**
+ * Print an Abstract Syntax Tree.
+ * @param ast The tree to print
+*/
+void claspPrintAST(ClaspASTNode *ast);
 
+// List of visitors.
 extern ClaspASTVisitor clasp_ast_printer;
 
 #endif // PRINT_AST_H

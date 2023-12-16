@@ -56,6 +56,13 @@ build CMakeFiles/lexer_test.dir/tests/lexer_test.c.o: C_COMPILER__lexer_test_uns
   OBJECT_DIR = CMakeFiles/lexer_test.dir
   OBJECT_FILE_DIR = CMakeFiles/lexer_test.dir/tests
 
+build CMakeFiles/lexer_test.dir/src/ast.c.o: C_COMPILER__lexer_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/ast.c || cmake_object_order_depends_target_lexer_test
+  DEP_FILE = CMakeFiles/lexer_test.dir/src/ast.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/lexer_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/lexer_test.dir/src
+
 build CMakeFiles/lexer_test.dir/src/lexer.c.o: C_COMPILER__lexer_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/lexer.c || cmake_object_order_depends_target_lexer_test
   DEP_FILE = CMakeFiles/lexer_test.dir/src/lexer.c.o.d
   FLAGS = -g
@@ -65,6 +72,13 @@ build CMakeFiles/lexer_test.dir/src/lexer.c.o: C_COMPILER__lexer_test_unscanned_
 
 build CMakeFiles/lexer_test.dir/src/parser.c.o: C_COMPILER__lexer_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/parser.c || cmake_object_order_depends_target_lexer_test
   DEP_FILE = CMakeFiles/lexer_test.dir/src/parser.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/lexer_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/lexer_test.dir/src
+
+build CMakeFiles/lexer_test.dir/src/print_ast.c.o: C_COMPILER__lexer_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/print_ast.c || cmake_object_order_depends_target_lexer_test
+  DEP_FILE = CMakeFiles/lexer_test.dir/src/print_ast.c.o.d
   FLAGS = -g
   INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
   OBJECT_DIR = CMakeFiles/lexer_test.dir
@@ -85,7 +99,7 @@ build CMakeFiles/lexer_test.dir/src/stringstream.c.o: C_COMPILER__lexer_test_uns
 #############################################
 # Link the executable bin/lexer_test
 
-build bin/lexer_test: C_EXECUTABLE_LINKER__lexer_test_Debug CMakeFiles/lexer_test.dir/tests/lexer_test.c.o CMakeFiles/lexer_test.dir/src/lexer.c.o CMakeFiles/lexer_test.dir/src/parser.c.o CMakeFiles/lexer_test.dir/src/stringstream.c.o
+build bin/lexer_test: C_EXECUTABLE_LINKER__lexer_test_Debug CMakeFiles/lexer_test.dir/tests/lexer_test.c.o CMakeFiles/lexer_test.dir/src/ast.c.o CMakeFiles/lexer_test.dir/src/lexer.c.o CMakeFiles/lexer_test.dir/src/parser.c.o CMakeFiles/lexer_test.dir/src/print_ast.c.o CMakeFiles/lexer_test.dir/src/stringstream.c.o
   FLAGS = -g
   LINK_LIBRARIES = -lm
   OBJECT_DIR = CMakeFiles/lexer_test.dir
@@ -110,6 +124,13 @@ build CMakeFiles/parser_test.dir/tests/parser_test.c.o: C_COMPILER__parser_test_
   OBJECT_DIR = CMakeFiles/parser_test.dir
   OBJECT_FILE_DIR = CMakeFiles/parser_test.dir/tests
 
+build CMakeFiles/parser_test.dir/src/ast.c.o: C_COMPILER__parser_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/ast.c || cmake_object_order_depends_target_parser_test
+  DEP_FILE = CMakeFiles/parser_test.dir/src/ast.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/parser_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/parser_test.dir/src
+
 build CMakeFiles/parser_test.dir/src/lexer.c.o: C_COMPILER__parser_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/lexer.c || cmake_object_order_depends_target_parser_test
   DEP_FILE = CMakeFiles/parser_test.dir/src/lexer.c.o.d
   FLAGS = -g
@@ -119,6 +140,13 @@ build CMakeFiles/parser_test.dir/src/lexer.c.o: C_COMPILER__parser_test_unscanne
 
 build CMakeFiles/parser_test.dir/src/parser.c.o: C_COMPILER__parser_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/parser.c || cmake_object_order_depends_target_parser_test
   DEP_FILE = CMakeFiles/parser_test.dir/src/parser.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/parser_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/parser_test.dir/src
+
+build CMakeFiles/parser_test.dir/src/print_ast.c.o: C_COMPILER__parser_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/print_ast.c || cmake_object_order_depends_target_parser_test
+  DEP_FILE = CMakeFiles/parser_test.dir/src/print_ast.c.o.d
   FLAGS = -g
   INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
   OBJECT_DIR = CMakeFiles/parser_test.dir
@@ -139,7 +167,7 @@ build CMakeFiles/parser_test.dir/src/stringstream.c.o: C_COMPILER__parser_test_u
 #############################################
 # Link the executable bin/parser_test
 
-build bin/parser_test: C_EXECUTABLE_LINKER__parser_test_Debug CMakeFiles/parser_test.dir/tests/parser_test.c.o CMakeFiles/parser_test.dir/src/lexer.c.o CMakeFiles/parser_test.dir/src/parser.c.o CMakeFiles/parser_test.dir/src/stringstream.c.o
+build bin/parser_test: C_EXECUTABLE_LINKER__parser_test_Debug CMakeFiles/parser_test.dir/tests/parser_test.c.o CMakeFiles/parser_test.dir/src/ast.c.o CMakeFiles/parser_test.dir/src/lexer.c.o CMakeFiles/parser_test.dir/src/parser.c.o CMakeFiles/parser_test.dir/src/print_ast.c.o CMakeFiles/parser_test.dir/src/stringstream.c.o
   FLAGS = -g
   LINK_LIBRARIES = -lm
   OBJECT_DIR = CMakeFiles/parser_test.dir
@@ -164,6 +192,13 @@ build CMakeFiles/ss_test.dir/tests/ss_test.c.o: C_COMPILER__ss_test_unscanned_De
   OBJECT_DIR = CMakeFiles/ss_test.dir
   OBJECT_FILE_DIR = CMakeFiles/ss_test.dir/tests
 
+build CMakeFiles/ss_test.dir/src/ast.c.o: C_COMPILER__ss_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/ast.c || cmake_object_order_depends_target_ss_test
+  DEP_FILE = CMakeFiles/ss_test.dir/src/ast.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/ss_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/ss_test.dir/src
+
 build CMakeFiles/ss_test.dir/src/lexer.c.o: C_COMPILER__ss_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/lexer.c || cmake_object_order_depends_target_ss_test
   DEP_FILE = CMakeFiles/ss_test.dir/src/lexer.c.o.d
   FLAGS = -g
@@ -173,6 +208,13 @@ build CMakeFiles/ss_test.dir/src/lexer.c.o: C_COMPILER__ss_test_unscanned_Debug 
 
 build CMakeFiles/ss_test.dir/src/parser.c.o: C_COMPILER__ss_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/parser.c || cmake_object_order_depends_target_ss_test
   DEP_FILE = CMakeFiles/ss_test.dir/src/parser.c.o.d
+  FLAGS = -g
+  INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
+  OBJECT_DIR = CMakeFiles/ss_test.dir
+  OBJECT_FILE_DIR = CMakeFiles/ss_test.dir/src
+
+build CMakeFiles/ss_test.dir/src/print_ast.c.o: C_COMPILER__ss_test_unscanned_Debug /home/frederickampsup/Documents/clasp-new/src/print_ast.c || cmake_object_order_depends_target_ss_test
+  DEP_FILE = CMakeFiles/ss_test.dir/src/print_ast.c.o.d
   FLAGS = -g
   INCLUDES = -I/home/frederickampsup/Documents/clasp-new/include
   OBJECT_DIR = CMakeFiles/ss_test.dir
@@ -193,7 +235,7 @@ build CMakeFiles/ss_test.dir/src/stringstream.c.o: C_COMPILER__ss_test_unscanned
 #############################################
 # Link the executable bin/ss_test
 
-build bin/ss_test: C_EXECUTABLE_LINKER__ss_test_Debug CMakeFiles/ss_test.dir/tests/ss_test.c.o CMakeFiles/ss_test.dir/src/lexer.c.o CMakeFiles/ss_test.dir/src/parser.c.o CMakeFiles/ss_test.dir/src/stringstream.c.o
+build bin/ss_test: C_EXECUTABLE_LINKER__ss_test_Debug CMakeFiles/ss_test.dir/tests/ss_test.c.o CMakeFiles/ss_test.dir/src/ast.c.o CMakeFiles/ss_test.dir/src/lexer.c.o CMakeFiles/ss_test.dir/src/parser.c.o CMakeFiles/ss_test.dir/src/print_ast.c.o CMakeFiles/ss_test.dir/src/stringstream.c.o
   FLAGS = -g
   LINK_LIBRARIES = -lm
   OBJECT_DIR = CMakeFiles/ss_test.dir

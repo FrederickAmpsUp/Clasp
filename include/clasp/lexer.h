@@ -26,11 +26,17 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+/**
+ * Function to read a character from a stream
+*/
 typedef char (*StreamReadFn) (void *);
 
 // TODO: file/line/column numbers
 // in tokens (for debugging)
 
+/**
+ * Enumeration of token types.
+*/
 typedef enum {
     TOKEN_ID, TOKEN_NUMBER,
     TOKEN_KW_IF,TOKEN_KW_WHILE,
@@ -60,11 +66,17 @@ typedef enum {
     TOKEN_EOF, TOKEN_UNKNOWN
 } ClaspTokenType;
 
+/**
+ * Token that stores its type and data (the string it was derived from).
+*/
 typedef struct {
     char *data;
     ClaspTokenType type;
 } ClaspToken;
 
+/**
+ * State of a lexer, stores all the neccesary tokens, the current stream character, and the input stream.
+*/
 typedef struct {
     StreamReadFn stream;
 
@@ -76,12 +88,43 @@ typedef struct {
     void *_stream_args;
 } ClaspLexer;
 
+/**
+ * Initialize a new lexer.
+ * @param lexer The lexer to initialize.
+ * @param fn The stream function to be called to read a character.
+ * @param args The arguments to be passed to the stream function.
+*/
 void new_lexer(ClaspLexer *lexer, StreamReadFn fn, void *args);
+
+/**
+ * Get the next token in the lexer's stream.
+ * @param lexer The lexer to get the next token from.
+*/
 ClaspToken *lexer_next(ClaspLexer *lexer);
+
+/**
+ * Scan a token. This should only be used internally except special cases.
+ * @param lexer The lexer to scan with.
+*/
 ClaspToken *lexer_scan(ClaspLexer *lexer);
+
+/**
+ * Check if a lexer's next token is of the given type.
+ * @param lexer The lexer to check.
+ * @param type The token type to check.
+*/
 int lexer_has(ClaspLexer *lexer, ClaspTokenType type);
 
+/**
+ * Helper function to convert a token type to a string.
+ * @param type The type to stringify.
+*/
 const char *tktyp_str(ClaspTokenType type);
+
+/**
+ * Helper function to print a token with its type and data.
+ * @param token The token to print.
+*/
 void token_print(ClaspToken *token);
 
 #endif // LEXER_H

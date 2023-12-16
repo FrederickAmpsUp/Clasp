@@ -23,6 +23,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * Test status:
+ *  Passes (output looks correct) as of 12/15/2023
+*/
+
 #include <clasp/lexer.h>
 #include <clasp/parser.h>
 #include <clasp/print_ast.h>
@@ -48,12 +53,7 @@ int main(int argc, char **argv) {
     ClaspLexer *l = malloc(sizeof(ClaspLexer));
     new_lexer(l, read_string, NULL);
     ClaspParser *p = malloc(sizeof(ClaspParser));
-    FILE *out = fopen("a.out", "wb");
-    if (!out) {
-        fprintf(stderr, "Failed to open file a.out\n");
-        return -1;
-    }
-    new_parser(p, l, out);
+    new_parser(p, l);
     ClaspASTNode *tree = parser_compile(p);
     claspPrintAST(tree);
     

@@ -9,4 +9,5 @@ a.out
 .test.s
 Makefile
 build/
+bin/
 .header-template.txt

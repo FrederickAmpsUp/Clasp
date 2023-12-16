@@ -28,12 +28,24 @@
 
 #include <clasp/lexer.h>
 
+/**
+ * String Stream. This store the data and index into it.
+*/
 typedef struct {
     char *data;
     unsigned int idx;
 } StringStream;
 
+/**
+ * Allocate and intialize a new stream.
+ * @param str The string to treat as a file
+*/
 StringStream* new_stream(char *str);
+
+/**
+ * Read a character from a stream.
+ * @param s The stream to read from.
+*/
 char stream_read(StringStream *s);
 
 #endif // STRINGSTREAM_H
