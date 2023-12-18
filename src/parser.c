@@ -62,8 +62,16 @@ ClaspASTNode *parser_compile(ClaspParser *p) {
 }
 
 ClaspASTNode *parser_stmt(ClaspParser *p) {
-    // TODO: declstmts
+    if (consume(p, NULL, TOKEN_LEFT_CURLY)) {
+        cvector(ClaspASTNode *) block;
+        while (!consume(p, NULL, TOKEN_RIGHT_CURLY)) {
+            cvector_push_back(block, parser_stmt(p));
+        }
+        return block_stmt(block);
+    }
 
+    // TODO: declstmts
+    
     ClaspASTNode *expr = parser_expression(p);
     if (!consume(p, NULL, TOKEN_SEMICOLON)) {
         general_err("Expected semicolon after expression statement.\n");
