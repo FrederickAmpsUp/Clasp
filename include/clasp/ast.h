@@ -33,9 +33,9 @@
  * CLASP_NUM_VISITORS must remain at the end of the list to accurately store the number of visitor function needed.
 */
 typedef enum {
-    AST_BINOP,
-    AST_UNOP,
-    AST_LIT_NUMBER,
+    AST_EXPR_BINOP,
+    AST_EXPR_UNOP,
+    AST_EXPR_LIT_NUMBER,
 
     CLASP_NUM_VISITORS
 } ClaspASTNodeType;
@@ -84,7 +84,7 @@ typedef struct ClaspASTNode {
  * @param type The type of the new node.
  * @param data The data of the new node.
 */
-ClaspASTNode *new_node(ClaspASTNodeType type, union ASTNodeData *data);
+ClaspASTNode *new_AST_node(ClaspASTNodeType type, union ASTNodeData *data);
 
 /**
  * Helper function for creating a binary op node.

@@ -43,7 +43,7 @@ ClaspASTNode *binop(ClaspASTNode *left, ClaspASTNode *right, ClaspToken *op) {
             .right = right
         }
     };
-    return new_node(AST_BINOP, &data);
+    return new_node(AST_EXPR_BINOP, &data);
 }
 ClaspASTNode *unop(ClaspASTNode *right, ClaspToken *op) {
     union ASTNodeData data = {
@@ -52,7 +52,7 @@ ClaspASTNode *unop(ClaspASTNode *right, ClaspToken *op) {
             .right = right
         }
     };
-    return new_node(AST_UNOP, &data);
+    return new_node(AST_EXPR_UNOP, &data);
 }
 ClaspASTNode *lit_num(ClaspToken *n) {
     union ASTNodeData data = {
@@ -60,7 +60,7 @@ ClaspASTNode *lit_num(ClaspToken *n) {
             .value = n
         }
     };
-    return new_node(AST_LIT_NUMBER, &data);
+    return new_node(AST_EXPR_LIT_NUMBER, &data);
 }
 
 void *visit(ClaspASTNode *node, ClaspASTVisitor v) {
