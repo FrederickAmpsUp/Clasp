@@ -7,14 +7,14 @@ statement: exprStmt | declStmt
 ### Expression stmt
 * Function calls, assignments, etc.
 ```
-exprStmt: expression ';'
+exprStmt:   expression ';'
 expression: assignment
-assignment: term assignmentOperator assignment
-term: factor ('+' | '-') factor
-factor: exponent ('*' | '/' | '%') exponent
-exponent: primary '^' exponent
+assignment: term     assignmentOperator assignment
+term:       factor   ('+' | '-')        factor
+factor:     exponent ('*' | '/' | '%')  exponent
+exponent:   primary  '^'                exponent
 primary: number | fnCall | ('(' expression ')') | varRef
-fnCall: identifier '(' (identifier ',')* ')'
+fnCall: identifier '(' (expression ',')* ')'
 varRef: identifier
 ```
 * Examples:
@@ -22,14 +22,14 @@ varRef: identifier
 x = x + 1;
 foo();
 y = bar();
-x = y - foo();
+x = y - foo(y, x, 25);
 ```
 ### Declaration stmt
 * Variable/Function/Struct (future) declaration
 ```
 declStmt: (varDecl | letDecl | constDecl | fnDecl) ';'
-varDecl: 'var' identifier ':' typeName ('=' expression)?
-letDecl: 'let' identifier ':' typeName '=' expression
+varDecl:   'var'   identifier  ':' typeName ( '=' expression)?
+letDecl:   'let'   identifier  ':' typeName   '=' expression
 constDecl: 'const' identifier (':' typeName)? '=' expression
 
 fnDecl: 'fn' identifier '(' (identifier ':' typeName ('=' expression)? ',')* ')' '->' typeName '{' statement* '}'
@@ -54,11 +54,12 @@ fn foo(a: float, b: int) -> float {
 ## Type names
 TODO: tuples or similar
 ```
-typeName: (arrayType | fnType | singleType | templateType)
+typeName: (arrayType | fnType | singleType | templateType | ptrType)
 arrayType: '[' singleType ']'
 fnType: '(' (typeName ',')* ')' '->' '{' typeName '}'
 singleType: identifier
 templateType: identifier '[' typeName ']'
+ptrType: '>' typeName
 ```
 * Examples:
 ```
@@ -69,4 +70,5 @@ float
 
 (int, float) -> { [float] } // function that takes an int and a float and produces a list of float
 vector[float] // template class
+>vector[int] // pointer to vector of int
 ```
