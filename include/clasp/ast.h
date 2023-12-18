@@ -40,7 +40,7 @@ typedef enum {
     CLASP_NUM_VISITORS
 } ClaspASTNodeType;
 
-// Forware declaration
+// Forward declaration
 typedef struct ClaspASTNode ClaspASTNode;
 
 /**
