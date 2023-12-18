@@ -7,7 +7,7 @@ Testing/
 a.out
 .test.c
 .test.s
-Makefile
+./Makefile
 build/
 bin/
 .header-template.txt
