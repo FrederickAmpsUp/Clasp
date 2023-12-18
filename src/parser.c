@@ -139,12 +139,14 @@ ClaspASTNode *parser_unary(ClaspParser *p) {
 }
 ClaspASTNode *_parser_primary_final(ClaspParser *p);
 
+    // do ++ and -- stuff
 ClaspASTNode *parser_primary(ClaspParser *p) {
     ClaspASTNode *prim = _parser_primary_final(p);
     ClaspToken *op;
     if (consume(p, &op, TOKEN_PLUS_PLUS, TOKEN_MINUS_MINUS)) {
-        
+        return postfix(prim, op);
     }
+    return prim;
 }
 ClaspASTNode *_parser_primary_final(ClaspParser *p) {
     ClaspToken *num;

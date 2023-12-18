@@ -63,6 +63,20 @@ ClaspASTNode *unop(ClaspASTNode *right, ClaspToken *op) {
     return new_AST_node(AST_EXPR_UNOP, data);
 }
 
+ClaspASTNode *postfix(ClaspASTNode *left, ClaspToken *op) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        // Handle memory allocation failure
+        fprintf(stderr, "Memory allocation error in postfix function\n");
+        return NULL;
+    }
+
+    data->postfix.op = op;
+    data->postfix.left = left;
+
+    return new_AST_node(AST_EXPR_POSTFIX, data);
+}
+
 ClaspASTNode *lit_num(ClaspToken *n) {
     union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
     if (data == NULL) {

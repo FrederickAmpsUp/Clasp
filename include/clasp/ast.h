@@ -36,6 +36,7 @@
 typedef enum {
     AST_EXPR_BINOP,
     AST_EXPR_UNOP,
+    AST_EXPR_POSTFIX,
     AST_EXPR_LIT_NUMBER,
 
     AST_EXPR_STMT,
@@ -66,6 +67,13 @@ union ASTNodeData {
         ClaspASTNode *right;
         ClaspToken *op;
     } unop;
+    /**
+     * Postfix (x++)
+    */
+    struct {
+        ClaspASTNode *left;
+        ClaspToken *op;
+    } postfix;
     /**
      * Number literals (22)
     */
@@ -116,6 +124,13 @@ ClaspASTNode *binop(ClaspASTNode *left, ClaspASTNode *right, ClaspToken *op);
  * @param op The unary operator to use.
 */
 ClaspASTNode *unop(ClaspASTNode *right, ClaspToken *op);
+
+/**
+ * Helper function for creating a postfix op node.
+ * @param left The left operand.
+ * @param op The postix operator to use.
+*/
+ClaspASTNode *postfix(ClaspASTNode *left, ClaspToken *op);
 
 /**
  * Helper function for creating a number literal node.

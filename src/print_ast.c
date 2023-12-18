@@ -41,6 +41,13 @@ void *_printUnop(ClaspASTNode *unop) {
     printf(")");
     return NULL;
 }
+
+void *_printPostfix(ClaspASTNode *post) {
+    printf("(postfix: left=");
+    visit(post->data.postfix.left, clasp_ast_printer);
+    printf(" op=%s)", post->data.postfix.op->data);
+    return NULL;
+}
 void *_printNumLiteral(ClaspASTNode *lit) {
     printf("(num_literal: val=%s)", lit->data.lit_num.value->data);
     return NULL;
@@ -70,6 +77,7 @@ void claspPrintAST(ClaspASTNode *ast) {
 ClaspASTVisitor clasp_ast_printer = {
     [AST_EXPR_BINOP     ] = &_printBinop,
     [AST_EXPR_UNOP      ] = &_printUnop,
+    [AST_EXPR_POSTFIX   ] = &_printPostfix,
     [AST_EXPR_LIT_NUMBER] = &_printNumLiteral,
     [AST_EXPR_STMT      ] = &_printExprStmt,
     [AST_BLOCK_STMT     ] = &_printBlockStmt,
