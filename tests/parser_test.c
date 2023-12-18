@@ -1,6 +1,6 @@
 /**
  * Clasp language expression parser/AST visitor test
- * Authored 12/14/2023-12/15/2023
+ * Authored 12/14/2023-present
  * 
  * This program is part of the Clasp Test Suite.
  * 
@@ -25,7 +25,7 @@
 
 /**
  * Test status:
- *  Passes (output looks correct) as of 12/15/2023
+ *  Passes (output looks correct) as of 12/18/2023
 */
 
 #include <clasp/lexer.h>
@@ -49,7 +49,7 @@ char read_string() {
 }
 
 int main(int argc, char **argv) {
-    str = (StringStream) { "5 * 2; 85/6; 4; {8 + 3;}", 0 };
+    str = (StringStream) { "5 * 2; 85/6; 4; {8 + 3;} 8 = 4 / 2;", 0 };
     ClaspLexer *l = malloc(sizeof(ClaspLexer));
     new_lexer(l, read_string, NULL);
     ClaspParser *p = malloc(sizeof(ClaspParser));

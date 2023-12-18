@@ -79,7 +79,24 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
 }
 
 ClaspASTNode *parser_expression(ClaspParser *p) {
-    return parser_term(p);
+    return parser_assignment(p);
+}
+ClaspASTNode *parser_assignment(ClaspParser *p) {
+    ClaspASTNode *left = parser_term(p); // Left operand. I gotta make assignable targets still but that's not the parser's problem ig.
+
+    ClaspToken *op;
+    while (consume(p, &op,
+            TOKEN_EQ,
+            TOKEN_PLUS_EQ,  // Assignment operators.
+            TOKEN_MINUS_EQ,
+            TOKEN_ASTERIX_EQ,
+            TOKEN_SLASH_EQ,
+            TOKEN_PERC_EQ,
+            TOKEN_CARAT_EQ)) {
+        ClaspASTNode *right = parser_assignment(p); // right operand, right-associativity
+        left = binop(left, right, op);
+    }
+    return left;
 }
 ClaspASTNode *parser_term(ClaspParser *p) {
     ClaspASTNode *left = parser_factor(p);  // Left operand

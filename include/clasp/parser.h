@@ -68,6 +68,10 @@ ClaspASTNode *parser_stmt(ClaspParser *parser);
 */
 ClaspASTNode *parser_expression(ClaspParser *parser);  // Expression statement
 /**
+ * Parse an assignment. This should only be called internally, except special cases.
+*/
+ClaspASTNode *parser_assignment(ClaspParser *parser); // Assignment (=, +=, %=, etc.)
+/**
  * Parse a term. This should only be called internally, except special cases.
 */
 ClaspASTNode *parser_term(ClaspParser *parser);        // Add/sub
