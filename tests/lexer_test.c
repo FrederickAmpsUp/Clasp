@@ -25,7 +25,7 @@
 
 /**
  * Test status:
- *  Passes as of 12/15/2023
+ *  Passes as of 12/18/2023
 */
 
 #include <clasp/lexer.h>
