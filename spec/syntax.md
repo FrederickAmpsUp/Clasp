@@ -1,8 +1,14 @@
 # Clasp basic syntax
 
+## Program
+```
+compile: blockStmt EOF
+```
+
 ## Statements
 ```
-statement: exprStmt | declStmt
+statement: exprStmt | declStmt | '{' blockStmt '}'
+blockStmt: stmt*
 ```
 ### Expression stmt
 * Function calls, assignments, etc.

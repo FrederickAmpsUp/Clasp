@@ -30,6 +30,7 @@
 #include <stdarg.h>
 #include <clasp/ast.h>
 #include <clasp/err.h>
+#include <cvector/cvector.h>
 
 void new_parser(ClaspParser *p, ClaspLexer *l) {
     p->lexer = l;
@@ -53,7 +54,11 @@ static bool consume_impl(ClaspParser *p, ClaspToken **t, int n, ...) {
 }
 
 ClaspASTNode *parser_compile(ClaspParser *p) {
-    return parser_expression(p); // TODO: declstatements
+    cvector(ClaspASTNode *) block;
+    while (!consume(p, NULL, TOKEN_EOF)) {
+        cvector_push_back(block, parser_stmt(p));
+    }
+    return block_stmt(block);
 }
 
 ClaspASTNode *parser_stmt(ClaspParser *p) {

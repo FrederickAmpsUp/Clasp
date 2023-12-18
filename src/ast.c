@@ -89,6 +89,17 @@ ClaspASTNode *expr_stmt(ClaspASTNode *expr) {
     return new_AST_node(AST_EXPR_STMT, data);
 }
 
+ClaspASTNode *block_stmt(cvector(ClaspASTNode *) block) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        fprintf(stderr, "Memory allocation error in block_stmt function\n");
+        return NULL;
+    }
+
+    data->block_stmt.body = block;
+
+    return new_AST_node(AST_BLOCK_STMT, data);
+}
 
 void *visit(ClaspASTNode *node, ClaspASTVisitor v) {
     if (node->type < 0 || node->type > CLASP_NUM_VISITORS) {

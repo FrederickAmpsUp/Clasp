@@ -25,8 +25,9 @@
 
 #include <clasp/print_ast.h>
 #include <stdio.h>
+#include <cvector/cvector.h>
 
-void *claspPrintBinop(ClaspASTNode *binop) {
+void *_printBinop(ClaspASTNode *binop) {
     printf("(binop: left=");
     visit(binop->data.binop.left, clasp_ast_printer);
     printf(" op=%s right=", binop->data.binop.op->data);
@@ -34,14 +35,31 @@ void *claspPrintBinop(ClaspASTNode *binop) {
     printf(")");
     return NULL;
 }
-void *claspPrintUnop(ClaspASTNode *unop) {
-    printf("(unnop: op=%s right=", unop->data.unop.op->data);
+void *_printUnop(ClaspASTNode *unop) {
+    printf("(unop: op=%s right=", unop->data.unop.op->data);
     visit(unop->data.unop.right, clasp_ast_printer);
     printf(")");
     return NULL;
 }
-void *claspPrintNumLiteral(ClaspASTNode *lit) {
+void *_printNumLiteral(ClaspASTNode *lit) {
     printf("(num_literal: val=%s)", lit->data.lit_num.value->data);
+    return NULL;
+}
+
+void *_printExprStmt(ClaspASTNode *ast) {
+    printf("(exprStmt: ");
+    visit(ast->data.expr_stmt.expr, clasp_ast_printer);
+    printf(")\n");
+    return NULL;
+}
+
+void *_printBlockStmt(ClaspASTNode *ast) {
+    printf("(blockStmt:\n");
+    for (int i = 0; i < cvector_size(ast->data.block_stmt.body); ++i) {
+        printf("\t");
+        visit(ast->data.block_stmt.body[i], clasp_ast_printer);
+    }
+    printf(")\n");
     return NULL;
 }
 
@@ -50,7 +68,9 @@ void claspPrintAST(ClaspASTNode *ast) {
 }
 
 ClaspASTVisitor clasp_ast_printer = {
-    [AST_EXPR_BINOP     ] = &claspPrintBinop,
-    [AST_EXPR_UNOP      ] = &claspPrintUnop,
-    [AST_EXPR_LIT_NUMBER] = &claspPrintNumLiteral,
+    [AST_EXPR_BINOP     ] = &_printBinop,
+    [AST_EXPR_UNOP      ] = &_printUnop,
+    [AST_EXPR_LIT_NUMBER] = &_printNumLiteral,
+    [AST_EXPR_STMT      ] = &_printExprStmt,
+    [AST_BLOCK_STMT     ] = &_printBlockStmt,
 };

@@ -28,7 +28,6 @@
 
 #include <clasp/lexer.h>
 #include <stdio.h>
-#include <clasp/sc_array.h>
 #include <clasp/ast.h>
 
 /**
@@ -51,6 +50,13 @@ void new_parser(ClaspParser *parser, ClaspLexer *lexer);
  * @return The AST from the parser's input.
 */
 ClaspASTNode *parser_compile(ClaspParser *parser);
+
+/**
+ * Parse a single statement, including the semicolon.
+ * @param parser The parser to parse from.
+ * @return The statement's AST.
+*/
+ClaspASTNode *parser_stmt(ClaspParser *parser);
 
 /**
  * Order of operations:

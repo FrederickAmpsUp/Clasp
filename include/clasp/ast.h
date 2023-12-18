@@ -27,6 +27,7 @@
 #define AST_H
 
 #include <clasp/lexer.h>
+#include <cvector/cvector.h>
 
 /**
  * Enumeration to store types of AST nodes.
@@ -38,6 +39,7 @@ typedef enum {
     AST_EXPR_LIT_NUMBER,
 
     AST_EXPR_STMT,
+    AST_BLOCK_STMT,
 
     CLASP_NUM_VISITORS
 } ClaspASTNodeType;
@@ -76,6 +78,12 @@ union ASTNodeData {
    struct {
         ClaspASTNode *expr;
    } expr_stmt;
+   /**
+    * Block statment (see syntax.md)
+   */
+    struct {
+        cvector(ClaspASTNode *) body;
+    } block_stmt;
 };
 
 /**
@@ -120,6 +128,12 @@ ClaspASTNode *lit_num(ClaspToken *num);
  * @param expr The expression.
 */
 ClaspASTNode *expr_stmt(ClaspASTNode *expr);
+
+/**
+ * Helper function for creating a block statement node.
+ * @param block The list of statements to use in the block.
+*/
+ClaspASTNode *block_stmt(cvector(ClaspASTNode *) block);
 
 /**
  * AST visitor that can return data.
