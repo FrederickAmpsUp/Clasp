@@ -90,6 +90,33 @@ ClaspASTNode *lit_num(ClaspToken *n) {
     return new_AST_node(AST_EXPR_LIT_NUMBER, data);
 }
 
+ClaspASTNode *var_ref(ClaspToken *n) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        // Handle memory allocation failure
+        fprintf(stderr, "Memory allocation error in var_ref function\n");
+        return NULL;
+    }
+
+    data->var_ref.varname = n;
+
+    return new_AST_node(AST_EXPR_VAR_REF, data);
+}
+
+ClaspASTNode *fn_call(ClaspASTNode *ref, cvector(ClaspASTNode *) args) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        // Handle memory allocation failure
+        fprintf(stderr, "Memory allocation error in fn_call function\n");
+        return NULL;
+    }
+
+    data->fn_call.referencer = ref;
+    data->fn_call.args = args;
+
+    return new_AST_node(AST_EXPR_FN_CALL, data);
+}
+
 ClaspASTNode *expr_stmt(ClaspASTNode *expr) {
     union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
     if (data == NULL) {

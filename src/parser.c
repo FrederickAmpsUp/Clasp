@@ -54,7 +54,7 @@ static bool consume_impl(ClaspParser *p, ClaspToken **t, int n, ...) {
 }
 
 ClaspASTNode *parser_compile(ClaspParser *p) {
-    cvector(ClaspASTNode *) block;
+    cvector(ClaspASTNode *) block = NULL;
     while (!consume(p, NULL, TOKEN_EOF)) {
         cvector_push_back(block, parser_stmt(p));
     }
@@ -64,7 +64,7 @@ ClaspASTNode *parser_compile(ClaspParser *p) {
 ClaspASTNode *parser_stmt(ClaspParser *p) {
     while (consume(p, NULL, TOKEN_SEMICOLON));
     if (consume(p, NULL, TOKEN_LEFT_CURLY)) {
-        cvector(ClaspASTNode *) block;
+        cvector(ClaspASTNode *) block = NULL;
         while (!consume(p, NULL, TOKEN_RIGHT_CURLY)) {
             cvector_push_back(block, parser_stmt(p));
         }
@@ -75,7 +75,9 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
     
     ClaspASTNode *expr = parser_expression(p);
     if (!consume(p, NULL, TOKEN_SEMICOLON)) {
-        general_err("Expected semicolon after expression statement.\n");
+        token_err(lexer_next(p->lexer), "Expected semicolon after expression statement.\n");
+
+            // TODO: panic mode and stuff idk
     } return expr_stmt(expr);
 }
 
@@ -135,22 +137,45 @@ ClaspASTNode *parser_unary(ClaspParser *p) {
         ClaspASTNode *right = parser_unary(p); // right operand
         return unop(right, op);
     }
-    return parser_primary(p);
+    return parser_postfix(p);
 }
-ClaspASTNode *_parser_primary_final(ClaspParser *p);
-
-    // do ++ and -- stuff
-ClaspASTNode *parser_primary(ClaspParser *p) {
-    ClaspASTNode *prim = _parser_primary_final(p);
+ClaspASTNode *parser_postfix(ClaspParser *p) {
+    ClaspASTNode *prim = parser_primary(p);
     ClaspToken *op;
-    if (consume(p, &op, TOKEN_PLUS_PLUS, TOKEN_MINUS_MINUS)) {
+    if (consume(p, &op, TOKEN_PLUS_PLUS, TOKEN_MINUS_MINUS, TOKEN_LEFT_PAREN)) {
+        if (op->type == TOKEN_LEFT_PAREN) { // function call
+            cvector(ClaspASTNode *) args = NULL;
+            ClaspASTNode *arg;
+            while (1) {
+                arg = parser_expression(p);
+                cvector_push_back(args, arg);
+                if (consume(p, NULL, TOKEN_RIGHT_PAREN)) break;
+                if (!consume(p, NULL, TOKEN_COMMA)) {
+                    token_err(lexer_next(p->lexer), "Expected ',' or ')' after function argument");
+                    exit(3);
+                } 
+            }
+
+            return fn_call(prim, args);
+        }
         return postfix(prim, op);
     }
     return prim;
 }
-ClaspASTNode *_parser_primary_final(ClaspParser *p) {
-    ClaspToken *num;
-    if (consume(p, &num, TOKEN_NUMBER)) { // Numeric literals
-        return lit_num(num);
+ClaspASTNode *parser_primary(ClaspParser *p) {
+    ClaspToken *val;
+    if (consume(p, &val, TOKEN_NUMBER)) { // Numeric literals
+        return lit_num(val);
+    }
+
+    if (consume(p, &val, TOKEN_ID)) { // Variable/fnname references
+        return var_ref(val);
+    }
+    
+    if (consume(p, NULL, TOKEN_LEFT_PAREN)) {  // Parenthesized expression
+        ClaspASTNode *expr =  parser_expression(p);
+        if (!consume(p, NULL, TOKEN_RIGHT_PAREN)) {
+            token_err(lexer_next(p->lexer), "Expected closing parenthesis after expression.");
+        } return expr;
     }
 }

@@ -1,5 +1,5 @@
 * Finish full language AST
-* Document interface functions
 * Finish parser
 * Make sure to change copyright date after the new year!
+* Structs/classes & member functions
 * Syntax highlighting

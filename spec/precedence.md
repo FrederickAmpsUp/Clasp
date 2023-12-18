@@ -3,7 +3,7 @@
 
 | Precedence | Operators | Descriptions | Associativity |
 | ----: | :---- | :---- | :--- |
-| 1  | `++ --` | Postfix increment/decrement | Left
+| 1  | `++ --` <br> `(...)` | Postfix increment/decrement <br> Function call | Left
 | 2  | `- +` <br> `! ~`  | Unary negation/absolution <br>Logical/bitwise NOT | Right |
 | 3  | `^` | Exponentiation | Right |
 | 4  | `* / %` | Factor and modulo | Left |

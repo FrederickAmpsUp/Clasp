@@ -38,9 +38,15 @@ typedef enum {
     AST_EXPR_UNOP,
     AST_EXPR_POSTFIX,
     AST_EXPR_LIT_NUMBER,
+    AST_EXPR_VAR_REF,
+    AST_EXPR_FN_CALL,
 
     AST_EXPR_STMT,
     AST_BLOCK_STMT,
+    AST_VAR_DECL_STMT,
+    AST_LET_DECL_STMT,
+    AST_CONST_DECL_STMT,
+    AST_FN_DECL_STMT,
 
     CLASP_NUM_VISITORS
 } ClaspASTNodeType;
@@ -81,17 +87,31 @@ union ASTNodeData {
         ClaspToken *value;
     } lit_num;
     /**
+     * Variable references (x, foo)
+    */
+    struct {
+        ClaspToken *varname;
+    } var_ref;
+    /**
+     * Function calls (foo(), mul(a,b))
+    */
+    struct {
+        ClaspASTNode *referencer;
+        cvector(ClaspASTNode *) args;
+    } fn_call;
+    /**
      * Expression statements (see syntax.md)
     */
-   struct {
-        ClaspASTNode *expr;
-   } expr_stmt;
-   /**
-    * Block statment (see syntax.md)
-   */
+    struct {
+            ClaspASTNode *expr;
+    } expr_stmt;
+    /**
+     * Block statment (see syntax.md)
+    */
     struct {
         cvector(ClaspASTNode *) body;
     } block_stmt;
+    // TODO: other statments
 };
 
 /**
@@ -137,6 +157,20 @@ ClaspASTNode *postfix(ClaspASTNode *left, ClaspToken *op);
  * @param num The number literal token to use.
 */
 ClaspASTNode *lit_num(ClaspToken *num);
+
+/**
+ * Helper function for creating a variable reference node.
+ * @param varname The name of the variable to reference.
+*/
+ClaspASTNode *var_ref(ClaspToken *varname);
+
+/**
+ * Helper function for creating a function call node.
+ * @param referencer The object to call. This is usually a variable/fn name but can be any function type.
+ * @param args The arguments to pass to the function. TODO: pass args by name instead of order.
+*/
+ClaspASTNode *fn_call(ClaspASTNode *referencer, cvector(ClaspASTNode *) args);
+
 
 /**
  * Helper function for creating an expression statement node.

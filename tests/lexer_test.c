@@ -47,14 +47,14 @@ char read_string() {
 }
 
 int main(int argc, char **argv) {
-    str = (StringStream) { "5wowo 76+82 e68==75= -> 7 %%= %= 5%5 84; ++--", 0 };
+    str = (StringStream) { "5wowo 76+82 e68==75= 8,4 -> 7 %%= %= 5%5 84; ++--", 0 };
     ClaspLexer *l = malloc(sizeof(ClaspLexer));
     new_lexer(l, read_string, NULL);
 
     ClaspToken *current;
 
     ClaspTokenType target_type[] = {
-        TOKEN_NUMBER, TOKEN_ID, TOKEN_NUMBER, TOKEN_PLUS, TOKEN_NUMBER, TOKEN_ID, TOKEN_EQ_EQ, TOKEN_NUMBER, TOKEN_EQ, TOKEN_RIGHT_POINT, TOKEN_NUMBER,
+        TOKEN_NUMBER, TOKEN_ID, TOKEN_NUMBER, TOKEN_PLUS, TOKEN_NUMBER, TOKEN_ID, TOKEN_EQ_EQ, TOKEN_NUMBER, TOKEN_EQ, TOKEN_NUMBER, TOKEN_COMMA, TOKEN_NUMBER, TOKEN_RIGHT_POINT, TOKEN_NUMBER,
         TOKEN_PERC,TOKEN_PERC_EQ,TOKEN_PERC_EQ,TOKEN_NUMBER, TOKEN_PERC, TOKEN_NUMBER, TOKEN_NUMBER, TOKEN_SEMICOLON, TOKEN_PLUS_PLUS, TOKEN_MINUS_MINUS
     };
 

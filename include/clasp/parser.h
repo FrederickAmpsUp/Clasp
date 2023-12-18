@@ -88,6 +88,10 @@ ClaspASTNode *parser_exponent(ClaspParser *parser);    // Exponentiation
 */
 ClaspASTNode *parser_unary(ClaspParser *parser);       // Unary operators
 /**
+ * Parse a postfix. This should only be called internally, except special cases.
+*/
+ClaspASTNode *parser_postfix(ClaspParser *parser);
+/**
  * Parse a primary. This should only be called internally, except special cases.
 */
 ClaspASTNode *parser_primary(ClaspParser *parser);     // Primary (parenthesis, numbers, ... stuff)

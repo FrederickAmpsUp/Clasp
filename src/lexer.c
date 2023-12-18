@@ -249,6 +249,10 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         return new_token_const("}", TOKEN_RIGHT_CURLY);
     }
 
+    if (current == ',') {
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        return new_token_const(",", TOKEN_COMMA);
+    }
     if (current == ';') {
         lexer->cCurrent = lexer->stream(lexer->_stream_args);
         return new_token_const(";", TOKEN_SEMICOLON);
@@ -300,6 +304,7 @@ const char *tktyp_str(ClaspTokenType typ) {
         CASE(TOKEN_COLON)
         CASE(TOKEN_RIGHT_POINT)
         CASE(TOKEN_LEFT_POINT)
+        CASE(TOKEN_COMMA)
         CASE(TOKEN_SEMICOLON)
         CASE(TOKEN_EOF)
         CASE(TOKEN_UNKNOWN)

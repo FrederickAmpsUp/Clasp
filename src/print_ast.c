@@ -53,6 +53,24 @@ void *_printNumLiteral(ClaspASTNode *lit) {
     return NULL;
 }
 
+void *_printVarRef(ClaspASTNode *var) {
+    printf("(var_ref: name=%s)", var->data.var_ref.varname->data);
+    return NULL;
+}
+
+void *_printFnCall(ClaspASTNode *fn) {
+    printf("(fn_call: ref=");
+    visit(fn->data.fn_call.referencer, clasp_ast_printer);
+    printf(" args=[  ");
+
+    for (int i = 0; i < cvector_size(fn->data.fn_call.args); ++i) {
+        printf("\b\b");
+        visit(fn->data.fn_call.args[i], clasp_ast_printer);
+        printf(",   ");
+    }
+    printf("\b\b\b\b])");
+}
+
 void *_printExprStmt(ClaspASTNode *ast) {
     printf("(exprStmt: ");
     visit(ast->data.expr_stmt.expr, clasp_ast_printer);
@@ -79,6 +97,8 @@ ClaspASTVisitor clasp_ast_printer = {
     [AST_EXPR_UNOP      ] = &_printUnop,
     [AST_EXPR_POSTFIX   ] = &_printPostfix,
     [AST_EXPR_LIT_NUMBER] = &_printNumLiteral,
+    [AST_EXPR_VAR_REF   ] = &_printVarRef,
+    [AST_EXPR_FN_CALL   ] = &_printFnCall,
     [AST_EXPR_STMT      ] = &_printExprStmt,
     [AST_BLOCK_STMT     ] = &_printBlockStmt,
 };

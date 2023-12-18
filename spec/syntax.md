@@ -20,7 +20,7 @@ term:       factor   ('+' | '-')        factor
 factor:     exponent ('*' | '/' | '%')  exponent
 exponent:   primary  '^'                exponent
 primary: (number | fnCall | ('(' expression ')') | varRef) ('++' | '--')?
-fnCall: identifier '(' (expression ',')* ')'
+fnCall: identifier '(' (expression ',')* expression? ')'
 varRef: identifier
 ```
 * Examples:
@@ -29,6 +29,7 @@ x = x + 1;
 foo();
 y = bar();
 x = y - foo(y, x, 25);
+y = foo(5,);
 
 x++;
 ```
