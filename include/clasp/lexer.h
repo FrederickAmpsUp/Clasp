@@ -62,6 +62,7 @@ typedef enum {
 
     TOKEN_COLON,
     TOKEN_RIGHT_POINT,TOKEN_LEFT_POINT,
+    TOKEN_SEMICOLON,
 
     TOKEN_EOF, TOKEN_UNKNOWN
 } ClaspTokenType;

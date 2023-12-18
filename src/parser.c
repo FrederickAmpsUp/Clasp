@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <clasp/ast.h>
+#include <clasp/err.h>
+
 void new_parser(ClaspParser *p, ClaspLexer *l) {
     p->lexer = l;
 }
@@ -53,6 +55,16 @@ static bool consume_impl(ClaspParser *p, ClaspToken **t, int n, ...) {
 ClaspASTNode *parser_compile(ClaspParser *p) {
     return parser_expression(p); // TODO: declstatements
 }
+
+ClaspASTNode *parser_stmt(ClaspParser *p) {
+    // TODO: declstmts
+
+    ClaspASTNode *expr = parser_expression(p);
+    if (!consume(p, NULL, TOKEN_SEMICOLON)) {
+        general_err("Expected semicolon after expression statement.\n");
+    } return expr_stmt(expr);
+}
+
 ClaspASTNode *parser_expression(ClaspParser *p) {
     return parser_term(p);
 }
@@ -99,4 +111,6 @@ ClaspASTNode *parser_primary(ClaspParser *p) {
     if (consume(p, &num, TOKEN_NUMBER)) { // Numeric literals
         return lit_num(num);
     }
+
+
 }
