@@ -49,7 +49,7 @@ char read_string() {
 }
 
 int main(int argc, char **argv) {
-    str = (StringStream) { "5 * 2; 85/6; 4; {8 + 3;} 8 = 4 / 2;", 0 };
+    str = (StringStream) { "5 * 2; 85/6;; 4; {8 + 3;}; 8 = 4 / 2;", 0 };
     ClaspLexer *l = malloc(sizeof(ClaspLexer));
     new_lexer(l, read_string, NULL);
     ClaspParser *p = malloc(sizeof(ClaspParser));

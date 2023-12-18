@@ -62,6 +62,7 @@ ClaspASTNode *parser_compile(ClaspParser *p) {
 }
 
 ClaspASTNode *parser_stmt(ClaspParser *p) {
+    while (consume(p, NULL, TOKEN_SEMICOLON));
     if (consume(p, NULL, TOKEN_LEFT_CURLY)) {
         cvector(ClaspASTNode *) block;
         while (!consume(p, NULL, TOKEN_RIGHT_CURLY)) {
