@@ -47,11 +47,10 @@ void *claspPrintNumLiteral(ClaspASTNode *lit) {
 
 void claspPrintAST(ClaspASTNode *ast) {
     visit(ast, clasp_ast_printer);
-    return NULL;
 }
 
 ClaspASTVisitor clasp_ast_printer = {
-    [AST_BINOP     ] = &claspPrintBinop,
-    [AST_UNOP      ] = &claspPrintUnop,
-    [AST_LIT_NUMBER] = &claspPrintNumLiteral,
+    [AST_EXPR_BINOP     ] = &claspPrintBinop,
+    [AST_EXPR_UNOP      ] = &claspPrintUnop,
+    [AST_EXPR_LIT_NUMBER] = &claspPrintNumLiteral,
 };

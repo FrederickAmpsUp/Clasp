@@ -37,6 +37,8 @@ typedef enum {
     AST_EXPR_UNOP,
     AST_EXPR_LIT_NUMBER,
 
+    AST_EXPR_STMT,
+
     CLASP_NUM_VISITORS
 } ClaspASTNodeType;
 
@@ -68,6 +70,12 @@ union ASTNodeData {
     struct {
         ClaspToken *value;
     } lit_num;
+    /**
+     * Expression statements (see syntax.md)
+    */
+   struct {
+        ClaspASTNode *expr;
+   } expr_stmt;
 };
 
 /**
@@ -106,6 +114,12 @@ ClaspASTNode *unop(ClaspASTNode *right, ClaspToken *op);
  * @param num The number literal token to use.
 */
 ClaspASTNode *lit_num(ClaspToken *num);
+
+/**
+ * Helper function for creating an expression statement node.
+ * @param expr The expression.
+*/
+ClaspASTNode *expr_stmt(ClaspASTNode *expr);
 
 /**
  * AST visitor that can return data.

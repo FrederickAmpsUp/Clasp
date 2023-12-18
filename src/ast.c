@@ -34,34 +34,61 @@ ClaspASTNode *new_AST_node(ClaspASTNodeType t, union ASTNodeData *data) {
     return node;
 }
 
-
 ClaspASTNode *binop(ClaspASTNode *left, ClaspASTNode *right, ClaspToken *op) {
-    union ASTNodeData data = {
-        .binop = {
-            .left = left,
-            .op = op,
-            .right = right
-        }
-    };
-    return new_AST_node(AST_EXPR_BINOP, &data);
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        // Handle memory allocation failure
+        fprintf(stderr, "Memory allocation error in binop function\n");
+        return NULL;
+    }
+
+    data->binop.left = left;
+    data->binop.op = op;
+    data->binop.right = right;
+
+    return new_AST_node(AST_EXPR_BINOP, data);
 }
+
 ClaspASTNode *unop(ClaspASTNode *right, ClaspToken *op) {
-    union ASTNodeData data = {
-        .unop = {
-            .op = op,
-            .right = right
-        }
-    };
-    return new_AST_node(AST_EXPR_UNOP, &data);
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        // Handle memory allocation failure
+        fprintf(stderr, "Memory allocation error in unop function\n");
+        return NULL;
+    }
+
+    data->unop.op = op;
+    data->unop.right = right;
+
+    return new_AST_node(AST_EXPR_UNOP, data);
 }
+
 ClaspASTNode *lit_num(ClaspToken *n) {
-    union ASTNodeData data = {
-        .lit_num = {
-            .value = n
-        }
-    };
-    return new_AST_node(AST_EXPR_LIT_NUMBER, &data);
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        // Handle memory allocation failure
+        fprintf(stderr, "Memory allocation error in lit_num function\n");
+        return NULL;
+    }
+
+    data->lit_num.value = n;
+
+    return new_AST_node(AST_EXPR_LIT_NUMBER, data);
 }
+
+ClaspASTNode *expr_stmt(ClaspASTNode *expr) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        // Handle memory allocation failure
+        fprintf(stderr, "Memory allocation error in expr_stmt function\n");
+        return NULL;
+    }
+
+    data->expr_stmt.expr = expr;
+
+    return new_AST_node(AST_EXPR_STMT, data);
+}
+
 
 void *visit(ClaspASTNode *node, ClaspASTVisitor v) {
     if (node->type < 0 || node->type > CLASP_NUM_VISITORS) {
