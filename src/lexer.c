@@ -242,6 +242,7 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
     }
 
     if (current == ';') {
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
         return new_token_const(";", TOKEN_SEMICOLON);
     }
 
