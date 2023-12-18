@@ -19,7 +19,7 @@ assignment: term     assignmentOperator assignment
 term:       factor   ('+' | '-')        factor
 factor:     exponent ('*' | '/' | '%')  exponent
 exponent:   primary  '^'                exponent
-primary: number | fnCall | ('(' expression ')') | varRef
+primary: (number | fnCall | ('(' expression ')') | varRef) ('++' | '--')?
 fnCall: identifier '(' (expression ',')* ')'
 varRef: identifier
 ```
@@ -29,6 +29,8 @@ x = x + 1;
 foo();
 y = bar();
 x = y - foo(y, x, 25);
+
+x++;
 ```
 ### Declaration stmt
 * Variable/Function/Struct (future) declaration
