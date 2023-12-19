@@ -67,7 +67,7 @@ typeName: (arrayType | fnType | singleType | templateType | ptrType)
 arrayType: '[' singleType ']'
 fnType: '(' (typeName ',')* ')' '->' '{' typeName '}'
 singleType: identifier
-templateType: identifier '[' typeName ']'
+templateType: identifier '[' (typeName ',')* typeName? ']'
 ptrType: '>' typeName
 ```
 * Examples:

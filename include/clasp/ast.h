@@ -48,6 +48,12 @@ typedef enum {
     AST_CONST_DECL_STMT,
     AST_FN_DECL_STMT,
 
+    AST_TYPE_SINGLE,
+    AST_TYPE_ARRAY,
+    AST_TYPE_FN,
+    AST_TYPE_TEMPLATE,
+    AST_TYPE_PTR,
+
     CLASP_NUM_VISITORS
 } ClaspASTNodeType;
 
@@ -111,7 +117,48 @@ union ASTNodeData {
     struct {
         cvector(ClaspASTNode *) body;
     } block_stmt;
-    // TODO: other statments
+    /**
+     * Variable declaration statement (see syntax.md)
+    */
+    struct {
+        ClaspToken *name;
+        ClaspASTNode *type;
+    } var_decl_stmt;
+
+
+    // Type node stuff
+    /**
+     * Single types
+    */
+    struct {
+        ClaspToken *name;
+    } single;
+    /**
+     * Array types
+    */
+    struct {
+        ClaspASTNode *enclosed;
+    } array;
+    /**
+     * Function types
+    */
+    struct {
+        cvector(ClaspASTNode *) args;
+        ClaspASTNode *ret;
+    } function;
+    /**
+     * Template types
+    */
+    struct {
+        ClaspToken *typename;
+        cvector(ClaspASTNode *) template;
+    } template;
+    /**
+     * Pointer types
+    */
+    struct {
+        ClaspASTNode *pointed;
+    } pointer;
 };
 
 /**
@@ -183,6 +230,8 @@ ClaspASTNode *expr_stmt(ClaspASTNode *expr);
  * @param block The list of statements to use in the block.
 */
 ClaspASTNode *block_stmt(cvector(ClaspASTNode *) block);
+
+// TODO: helper functions for creating other statments and type nodes
 
 /**
  * AST visitor that can return data.
