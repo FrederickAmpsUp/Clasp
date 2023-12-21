@@ -37,8 +37,8 @@ x++;
 * Variable/Function/Struct (future) declaration
 ```
 declStmt: (varDecl | letDecl | constDecl | fnDecl) ';'
-varDecl:   'var'   identifier  ':' typeName ( '=' expression)?
-letDecl:   'let'   identifier  ':' typeName   '=' expression
+varDecl:   'var'   identifier((':' typeName)|('=' expression)) | (':' typeName '=' expression)
+letDecl:   'let'   identifier (':' typeName)? '=' expression
 constDecl: 'const' identifier (':' typeName)? '=' expression
 
 fnDecl: 'fn' identifier '(' (identifier ':' typeName ('=' expression)? ',')* ')' '->' typeName '{' statement* '}'
@@ -48,9 +48,11 @@ fnDecl: 'fn' identifier '(' (identifier ':' typeName ('=' expression)? ',')* ')'
 var x: int = 0;
     // Mutable variables may not be assigned on declaration
 var y: float;
+var x = 2.5;
 
-    // Immutable variables must be assigned on declaration
+    // Immutable variables must be assigned on declaration, may be type inferenced
 let foo: float = 8.6 / 5;
+let bar = 5;
 
 const pi = 3.14159265; // Type inferenced as float
 const sqrt4: float = 2; // Inference of int overridden by definition as float

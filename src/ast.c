@@ -142,6 +142,54 @@ ClaspASTNode *block_stmt(cvector(ClaspASTNode *) block) {
     return new_AST_node(AST_BLOCK_STMT, data);
 }
 
+ClaspASTNode *var_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *value) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        fpritnf(stderr, "Memory allocation error in var_decl function\n");
+        return NULL;
+    }
+
+    data->var_decl_stmt.name = name;
+    data->var_decl_stmt.type = type;
+    data->var_decl_stmt.initializer = value;
+
+    data->var_decl_stmt.var_type = VARIABLE_TYPE_VAR;
+
+    return new_AST_node(AST_VAR_DECL_STMT, data);
+}
+
+ClaspASTNode *let_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *value) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        fpritnf(stderr, "Memory allocation error in var_decl function\n");
+        return NULL;
+    }
+
+    data->var_decl_stmt.name = name;
+    data->var_decl_stmt.type = type;
+    data->var_decl_stmt.initializer = value;
+
+    data->var_decl_stmt.var_type = VARIABLE_TYPE_LET;
+
+    return new_AST_node(AST_VAR_DECL_STMT, data);
+}
+
+ClaspASTNode *const_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *value) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        fpritnf(stderr, "Memory allocation error in var_decl function\n");
+        return NULL;
+    }
+
+    data->var_decl_stmt.name = name;
+    data->var_decl_stmt.type = type;
+    data->var_decl_stmt.initializer = value;
+
+    data->var_decl_stmt.var_type = VARIABLE_TYPE_CONST;
+
+    return new_AST_node(AST_VAR_DECL_STMT, data);
+}
+
 void *visit(ClaspASTNode *node, ClaspASTVisitor v) {
     if (node->type < 0 || node->type > CLASP_NUM_VISITORS) {
         fprintf(stderr, "Internal error, please report this message: \n\n\"Unknown AST node type: %d\"\n", node->type);

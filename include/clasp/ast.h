@@ -57,6 +57,12 @@ typedef enum {
     CLASP_NUM_VISITORS
 } ClaspASTNodeType;
 
+typedef enum {
+    VARIABLE_TYPE_VAR,
+    VARIABLE_TYPE_LET,
+    VARIABLE_TYPE_CONST
+} ClaspVariableType;
+
 // Forward declaration
 typedef struct ClaspASTNode ClaspASTNode;
 
@@ -123,7 +129,12 @@ union ASTNodeData {
     struct {
         ClaspToken *name;
         ClaspASTNode *type;
+        ClaspASTNode *initializer;
+
+        ClaspVariableType var_type;
     } var_decl_stmt;
+
+    // TODO: function declarations
 
 
     // Type node stuff
@@ -230,6 +241,30 @@ ClaspASTNode *expr_stmt(ClaspASTNode *expr);
  * @param block The list of statements to use in the block.
 */
 ClaspASTNode *block_stmt(cvector(ClaspASTNode *) block);
+
+/**
+ * Helper function for creating a 'var' decl statement node.
+ * @param name The name of the variable being declared.
+ * @param type The type node representing the type of the variable.
+ * @param initializer The expression node representing the variable initializer.
+*/
+ClaspASTNode *var_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *initializer);
+
+/**
+ * Helper function for creating a 'let' decl statement node.
+ * @param name The name of the variable being declared.
+ * @param type The type node representing the type of the variable.
+ * @param initializer The expression node representing the variable initializer.
+*/
+ClaspASTNode *let_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *initializer);
+
+/**
+ * Helper function for creating a 'const' decl statement node.
+ * @param name The name of the variable being declared.
+ * @param type The type node representing the type of the variable.
+ * @param initializer The epxression node representing the variable intializer.
+*/
+ClaspASTNode *const_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *initializer);
 
 // TODO: helper functions for creating other statments and type nodes
 
