@@ -64,6 +64,11 @@ ClaspASTNode *parser_stmt(ClaspParser *parser);
 */
 
 /**
+ * Parse a type node. This should only be called internally, except special cases.
+*/
+ClaspASTNode *parser_type(ClaspParser *parser);
+
+/**
  * Parse an expression. This should only be called internally, except special cases.
 */
 ClaspASTNode *parser_expression(ClaspParser *parser);  // Expression statement

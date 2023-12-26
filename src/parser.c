@@ -58,6 +58,7 @@ ClaspASTNode *parser_compile(ClaspParser *p) {
     while (!consume(p, NULL, TOKEN_EOF)) {
         cvector_push_back(block, parser_stmt(p));
     }
+        ClaspASTNode *type = parser_type(p);
     return block_stmt(block);
 }
 
@@ -71,14 +72,44 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
         return block_stmt(block);
     }
 
-    // TODO: declstmts
+    if (consume(p, NULL, TOKEN_KW_VAR)) {
+        ClaspToken *name = lexer_next(p->lexer); // Name token
+        ClaspASTNode *type = NULL, *initializer = NULL;
+        ClaspToken *op;
+        if (consume(p, NULL, TOKEN_COLON, TOKEN_EQ)) {
+            if (op->type == TOKEN_COLON) { // We have a typename
+                type = parser_type(p);
+                if (consume(p, NULL, TOKEN_EQ)) // Typename and initializer
+                    initializer = parser_expression(p);
+            } else { // Initializer only
+                initializer = parser_expression(p);
+            }
+            if (!consume(p, NULL, TOKEN_SEMICOLON)) {
+                token_err(lexer_next(p->lexer), "Expected semicolon after variable declaration.");
+            }
+            return var_decl(name, type, initializer);
+        } else {
+            token_err(p->lexer->current, "Expected colon or assignment after variable name.");
+
+                // TODO: panic mode and stuff idk
+        }
+    }
     
+        // Fall-back to expression statements
     ClaspASTNode *expr = parser_expression(p);
     if (!consume(p, NULL, TOKEN_SEMICOLON)) {
-        token_err(lexer_next(p->lexer), "Expected semicolon after expression statement.\n");
+        token_err(lexer_next(p->lexer), "Expected semicolon after expression statement.");
 
             // TODO: panic mode and stuff idk
     } return expr_stmt(expr);
+}
+
+// TODO: add other type nodes here
+ClaspASTNode *parser_type(ClaspParser *p) {
+    if (!consume(p, NULL, TOKEN_ID)) {
+        token_err(lexer_next(p->lexer), "Temp error: unfinished type parsing system.");
+    }
+    return type_single(lexer_next(p->lexer));
 }
 
 ClaspASTNode *parser_expression(ClaspParser *p) {

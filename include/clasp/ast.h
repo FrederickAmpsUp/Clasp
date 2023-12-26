@@ -266,7 +266,13 @@ ClaspASTNode *let_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *initi
 */
 ClaspASTNode *const_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *initializer);
 
-// TODO: helper functions for creating other statments and type nodes
+/**
+ * Helper function for creating a single type node.
+ * @param name The typename.
+*/
+ClaspASTNode *type_single(ClaspToken *name);
+
+// TODO: finish helper functions
 
 /**
  * AST visitor that can return data.

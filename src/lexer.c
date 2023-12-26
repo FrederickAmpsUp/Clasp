@@ -55,6 +55,7 @@ ClaspToken *lexer_next(ClaspLexer *lexer) {
         lexer->current  = lexer->next;
         lexer->next     = lexer_scan(lexer);
     }
+    if (lexer->previous) token_print(lexer->previous);
     return lexer->previous;
 }
 
@@ -78,6 +79,7 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
     char current = lexer->cCurrent;
     if (current == EOF) return new_token("", TOKEN_EOF);
     while (isspace(current)) current = lexer->stream(lexer->_stream_args);
+    if (current == EOF) return new_token("", TOKEN_EOF);
 
         // Identifiers
     if (is_identifier(current)) {
@@ -102,6 +104,9 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         if (!strcmp(final, "while")) return new_token(final, TOKEN_KW_WHILE);
         if (!strcmp(final, "for"  )) return new_token(final, TOKEN_KW_FOR  );
         if (!strcmp(final, "fn"   )) return new_token(final, TOKEN_KW_FN   );
+        if (!strcmp(final, "var"  )) return new_token(final, TOKEN_KW_VAR  );
+        if (!strcmp(final, "let"  )) return new_token(final, TOKEN_KW_LET  );
+        if (!strcmp(final, "const")) return new_token(final, TOKEN_KW_CONST);
         return new_token(final, TOKEN_ID);
     }
         // Number literals
@@ -257,6 +262,12 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         lexer->cCurrent = lexer->stream(lexer->_stream_args);
         return new_token_const(";", TOKEN_SEMICOLON);
     }
+    if (current == ':') {
+        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        return new_token_const(":", TOKEN_COLON);
+    }
+
+    fprintf(stderr, "Syntax error on character '%c': \"Unexpected character '%c' (0x%2x).\"\n", current, current, current & 0xff);
 
     return new_token_const("", TOKEN_UNKNOWN);
 }
@@ -264,6 +275,7 @@ int lexer_has(ClaspLexer *l, ClaspTokenType t) {
     return l->current->type == t;
 }
 
+// oh how i wish there was a better way to do this
 #define CASE(typ) case (typ): return (#typ);
 const char *tktyp_str(ClaspTokenType typ) {
     switch (typ) {
@@ -273,6 +285,9 @@ const char *tktyp_str(ClaspTokenType typ) {
         CASE(TOKEN_KW_WHILE)
         CASE(TOKEN_KW_FOR)
         CASE(TOKEN_KW_FN)
+        CASE(TOKEN_KW_VAR)
+        CASE(TOKEN_KW_LET)
+        CASE(TOKEN_KW_CONST)
         CASE(TOKEN_PLUS)
         CASE(TOKEN_MINUS)
         CASE(TOKEN_ASTERIX)
