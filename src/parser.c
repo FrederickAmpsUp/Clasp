@@ -53,17 +53,38 @@ static bool consume_impl(ClaspParser *p, ClaspToken **t, int n, ...) {
     return false;
 }
 
+static const ClaspTokenType const SYNC_TOKENS[] = {
+    TOKEN_SEMICOLON, // TODO: more of these? maybe, idk
+    TOKEN_EOF,
+};
+
+static void parser_panic(ClaspParser *p) {
+    const int n_sync = sizeof(SYNC_TOKENS) / sizeof(ClaspTokenType);
+
+    ClaspToken *t;
+    while (true) {
+        t = lexer_next(p->lexer);
+        for (int i = 0; i < n_sync; ++i) {
+            if (p->lexer->previous->type == SYNC_TOKENS[i]) {
+                return;
+            }
+        }
+    }
+}
+
 ClaspASTNode *parser_compile(ClaspParser *p) {
     cvector(ClaspASTNode *) block = NULL;
     while (!consume(p, NULL, TOKEN_EOF)) {
-        cvector_push_back(block, parser_stmt(p));
+        ClaspASTNode *stmt = parser_stmt(p);
+        cvector_push_back(block, stmt);
     }
-        ClaspASTNode *type = parser_type(p);
     return block_stmt(block);
 }
 
 ClaspASTNode *parser_stmt(ClaspParser *p) {
     while (consume(p, NULL, TOKEN_SEMICOLON));
+    if (consume(p, NULL, TOKEN_EOF)) return NULL;
+
     if (consume(p, NULL, TOKEN_LEFT_CURLY)) {
         cvector(ClaspASTNode *) block = NULL;
         while (!consume(p, NULL, TOKEN_RIGHT_CURLY)) {
@@ -76,7 +97,7 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
         ClaspToken *name = lexer_next(p->lexer); // Name token
         ClaspASTNode *type = NULL, *initializer = NULL;
         ClaspToken *op;
-        if (consume(p, NULL, TOKEN_COLON, TOKEN_EQ)) {
+        if (consume(p, &op, TOKEN_COLON, TOKEN_EQ)) {
             if (op->type == TOKEN_COLON) { // We have a typename
                 type = parser_type(p);
                 if (consume(p, NULL, TOKEN_EQ)) // Typename and initializer
@@ -86,12 +107,13 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             }
             if (!consume(p, NULL, TOKEN_SEMICOLON)) {
                 token_err(lexer_next(p->lexer), "Expected semicolon after variable declaration.");
+                parser_panic(p);
             }
             return var_decl(name, type, initializer);
         } else {
-            token_err(p->lexer->current, "Expected colon or assignment after variable name.");
-
-                // TODO: panic mode and stuff idk
+            token_err(p->lexer->current, "Expected typename or assignment after variable name.");
+            parser_panic(p);
+            return NULL;
         }
     }
     
@@ -99,24 +121,25 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
     ClaspASTNode *expr = parser_expression(p);
     if (!consume(p, NULL, TOKEN_SEMICOLON)) {
         token_err(lexer_next(p->lexer), "Expected semicolon after expression statement.");
-
-            // TODO: panic mode and stuff idk
+        parser_panic(p);
     } return expr_stmt(expr);
 }
 
 // TODO: add other type nodes here
 ClaspASTNode *parser_type(ClaspParser *p) {
-    if (!consume(p, NULL, TOKEN_ID)) {
+    ClaspToken *typename;
+    if (consume(p, &typename, TOKEN_ID)) {
+        return type_single(typename);
+    } else {
         token_err(lexer_next(p->lexer), "Temp error: unfinished type parsing system.");
     }
-    return type_single(lexer_next(p->lexer));
 }
 
 ClaspASTNode *parser_expression(ClaspParser *p) {
     return parser_assignment(p);
 }
 ClaspASTNode *parser_assignment(ClaspParser *p) {
-    ClaspASTNode *left = parser_term(p); // Left operand. I gotta make assignable targets still but that's not the parser's problem ig.
+    ClaspASTNode *left = parser_term(p); // Left operand.
 
     ClaspToken *op;
     while (consume(p, &op,
@@ -183,7 +206,7 @@ ClaspASTNode *parser_postfix(ClaspParser *p) {
                 if (consume(p, NULL, TOKEN_RIGHT_PAREN)) break;
                 if (!consume(p, NULL, TOKEN_COMMA)) {
                     token_err(lexer_next(p->lexer), "Expected ',' or ')' after function argument");
-                    exit(3);
+                    parser_panic(p);
                 } 
             }
 
@@ -207,6 +230,7 @@ ClaspASTNode *parser_primary(ClaspParser *p) {
         ClaspASTNode *expr =  parser_expression(p);
         if (!consume(p, NULL, TOKEN_RIGHT_PAREN)) {
             token_err(lexer_next(p->lexer), "Expected closing parenthesis after expression.");
+            parser_panic(p);
         } return expr;
     }
 }

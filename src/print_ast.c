@@ -88,6 +88,24 @@ void *_printBlockStmt(ClaspASTNode *ast) {
     return NULL;
 }
 
+void *_printVarDecl(ClaspASTNode *ast) {
+    printf("(varDecl: name=\"%s\"", ast->data.var_decl_stmt.name->data);
+    if (ast->data.var_decl_stmt.type) {
+        printf(" type=");
+        visit(ast->data.var_decl_stmt.type, clasp_ast_printer);
+    }
+
+    if (ast->data.var_decl_stmt.initializer) {
+        printf(" initializer=");
+        visit(ast->data.var_decl_stmt.initializer, clasp_ast_printer);
+    }
+    printf(")\n");
+}
+
+void *_printSingleType(ClaspASTNode *ast) {
+    printf("[single name=\"%s\"]", ast->data.single.name->data);
+}
+
 void claspPrintAST(ClaspASTNode *ast) {
     visit(ast, clasp_ast_printer);
 }
@@ -99,6 +117,10 @@ ClaspASTVisitor clasp_ast_printer = {
     [AST_EXPR_LIT_NUMBER] = &_printNumLiteral,
     [AST_EXPR_VAR_REF   ] = &_printVarRef,
     [AST_EXPR_FN_CALL   ] = &_printFnCall,
+
     [AST_EXPR_STMT      ] = &_printExprStmt,
     [AST_BLOCK_STMT     ] = &_printBlockStmt,
+    [AST_VAR_DECL_STMT  ] = &_printVarDecl,
+
+    [AST_TYPE_SINGLE    ] = &_printSingleType,
 };

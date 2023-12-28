@@ -203,6 +203,7 @@ ClaspASTNode *type_single(ClaspToken *name) {
 }
 
 void *visit(ClaspASTNode *node, ClaspASTVisitor v) {
+    if (!node) return NULL;
     if (node->type < 0 || node->type > CLASP_NUM_VISITORS) {
         fprintf(stderr, "Internal error, please report this message: \n\n\"Unknown AST node type: %d\"\n", node->type);
         exit(1);

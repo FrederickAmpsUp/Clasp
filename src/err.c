@@ -37,5 +37,9 @@ void general_err(const char *fmt, ...) {
 
 // TODO: file/line numbers
 void token_err(ClaspToken *tok, char *err) {
-    fprintf(stderr, "Syntax error on token '%s': \"%s\"\n", tok->data, err);
+    fprintf(stderr, "Syntax error in file %s, line %d.\n%s\n", "TODO", tok->lineno, tok->line);
+    for (int i = 0; i < tok->where - 1; i++) {
+        putchar(' ');
+    } printf("^\n\"%s\"\n", err);
+
 }

@@ -76,6 +76,10 @@ typedef enum {
 typedef struct {
     char *data;
     ClaspTokenType type;
+
+    char *line;
+    unsigned int lineno;
+    unsigned int where;
 } ClaspToken;
 
 /**
@@ -90,6 +94,12 @@ typedef struct {
 
     char cCurrent;
     void *_stream_args;
+
+    char **lines;
+    unsigned int lineno;
+
+    char *current_line;
+    unsigned int col_idx;
 } ClaspLexer;
 
 /**

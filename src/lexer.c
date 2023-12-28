@@ -30,14 +30,24 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <cvector/cvector.h>
+
+static char lexer_read(ClaspLexer *l);
 
 void new_lexer(ClaspLexer *lexer, StreamReadFn fn, void *args) {
     lexer->stream = fn;
     lexer->current  = NULL;
     lexer->next     = NULL;
     lexer->previous = NULL;
-    lexer->cCurrent = lexer->stream(args);
     lexer->_stream_args = args;
+    (void) lexer_read(lexer);
+
+    lexer->lineno = 0;
+    lexer->col_idx = 0;
+
+    lexer->lines = NULL;
+    lexer->current_line = NULL;
+
     (void) lexer_next(lexer);
 
     return;
@@ -55,7 +65,7 @@ ClaspToken *lexer_next(ClaspLexer *lexer) {
         lexer->current  = lexer->next;
         lexer->next     = lexer_scan(lexer);
     }
-    if (lexer->previous) token_print(lexer->previous);
+    //if (lexer->previous) token_print(lexer->previous);
     return lexer->previous;
 }
 
@@ -63,23 +73,44 @@ static bool is_identifier(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
 }
 
-static ClaspToken *new_token(char *data, ClaspTokenType type) {
+static ClaspToken *new_token(ClaspLexer *l, char *data, ClaspTokenType type) {
     ClaspToken *out = malloc(sizeof(ClaspToken));
     out->data = data;
     out->type = type;
+
+    out->line = l->current_line;
+    out->where = l->col_idx;
+    out->lineno = l->lineno;
     return out;
 }
-static ClaspToken *new_token_const(const char *const data, ClaspTokenType type) {
+static ClaspToken *new_token_const(ClaspLexer *l, const char *const data, ClaspTokenType type) {
     char *buf = malloc(strlen(data) + 1);
     strcpy(buf, data);
-    return new_token(buf, type);
+    return new_token(l, buf, type);
+}
+
+static char lexer_read(ClaspLexer *l) {
+    cvector_push_back(l->current_line, l->cCurrent);
+    l->col_idx++;
+    l->cCurrent = l->stream(l->_stream_args);
 }
 
 ClaspToken *lexer_scan(ClaspLexer *lexer) {
     char current = lexer->cCurrent;
-    if (current == EOF) return new_token("", TOKEN_EOF);
-    while (isspace(current)) current = lexer->stream(lexer->_stream_args);
-    if (current == EOF) return new_token("", TOKEN_EOF);
+    if (current == EOF) return new_token_const(lexer, "\xff", TOKEN_EOF);
+    while (isspace(current)) {
+        if (current == '\n') {
+            current = lexer_read(lexer);
+            printf("LINE: %s\n", lexer->current_line);
+            cvector_push_back(lexer->lines, lexer->current_line);
+            lexer->current_line = NULL;
+            lexer->lineno++;
+            lexer->col_idx = 0;
+        }
+
+        current = lexer_read(lexer);
+    }
+    if (current == EOF) return new_token_const(lexer, "\xff", TOKEN_EOF);
 
         // Identifiers
     if (is_identifier(current)) {
@@ -87,11 +118,11 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         unsigned int length = 1;
         identifier[0] = current;
 
-        current = lexer->stream(lexer->_stream_args);
+        current = lexer_read(lexer);
         while ((is_identifier(current) || isdigit(current))) {
             if (length < 128) identifier[length] = current;
             ++length;
-            current = lexer->stream(lexer->_stream_args);
+            current = lexer_read(lexer);
         }
         char *final = malloc(length + 1);
         memcpy(final, identifier, length);
@@ -100,14 +131,14 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         lexer->cCurrent = current;
 
             // Keywords
-        if (!strcmp(final, "if"   )) return new_token(final, TOKEN_KW_IF   );
-        if (!strcmp(final, "while")) return new_token(final, TOKEN_KW_WHILE);
-        if (!strcmp(final, "for"  )) return new_token(final, TOKEN_KW_FOR  );
-        if (!strcmp(final, "fn"   )) return new_token(final, TOKEN_KW_FN   );
-        if (!strcmp(final, "var"  )) return new_token(final, TOKEN_KW_VAR  );
-        if (!strcmp(final, "let"  )) return new_token(final, TOKEN_KW_LET  );
-        if (!strcmp(final, "const")) return new_token(final, TOKEN_KW_CONST);
-        return new_token(final, TOKEN_ID);
+        if (!strcmp(final, "if"   )) return new_token(lexer, final, TOKEN_KW_IF   );
+        if (!strcmp(final, "while")) return new_token(lexer, final, TOKEN_KW_WHILE);
+        if (!strcmp(final, "for"  )) return new_token(lexer, final, TOKEN_KW_FOR  );
+        if (!strcmp(final, "fn"   )) return new_token(lexer, final, TOKEN_KW_FN   );
+        if (!strcmp(final, "var"  )) return new_token(lexer, final, TOKEN_KW_VAR  );
+        if (!strcmp(final, "let"  )) return new_token(lexer, final, TOKEN_KW_LET  );
+        if (!strcmp(final, "const")) return new_token(lexer, final, TOKEN_KW_CONST);
+        return new_token(lexer, final, TOKEN_ID);
     }
         // Number literals
     if (isdigit(current) || current == '.') {
@@ -117,7 +148,7 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
 
         int decimal_count = (current == '.');
 
-        while (decimal_count < 2 && (isdigit(current = lexer->stream(lexer->_stream_args)) || current == '.') && length < 128)  {
+        while (decimal_count < 2 && (isdigit(current = lexer_read(lexer)) || current == '.') && length < 128)  {
             decimal_count += (current == '.');
             num[length++] = current;
         }
@@ -127,149 +158,149 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         final[length] = '\0';
         free(num);
         lexer->cCurrent = current;
-        return new_token(final, TOKEN_NUMBER);
+        return new_token(lexer, final, TOKEN_NUMBER);
     }
 
     if (current == '+') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("+=", TOKEN_PLUS_EQ);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "+=", TOKEN_PLUS_EQ);
         }
         if (lexer->cCurrent == '+') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("++", TOKEN_PLUS_PLUS);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "++", TOKEN_PLUS_PLUS);
         }
-        return new_token_const("+", TOKEN_PLUS);
+        return new_token_const(lexer, "+", TOKEN_PLUS);
     }
     if (current == '-') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("-=", TOKEN_MINUS_EQ);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "-=", TOKEN_MINUS_EQ);
         }
         if (lexer->cCurrent == '>') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("->", TOKEN_RIGHT_POINT);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "->", TOKEN_RIGHT_POINT);
         }
         if (lexer->cCurrent == '-') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("--", TOKEN_MINUS_MINUS);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "--", TOKEN_MINUS_MINUS);
         }
-        return new_token_const("-", TOKEN_MINUS);
+        return new_token_const(lexer, "-", TOKEN_MINUS);
     }
     if (current == '*') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("*=", TOKEN_ASTERIX_EQ);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "*=", TOKEN_ASTERIX_EQ);
         }
-        return new_token_const("*", TOKEN_ASTERIX);
+        return new_token_const(lexer, "*", TOKEN_ASTERIX);
     }
     if (current == '/') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("/=", TOKEN_SLASH_EQ);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "/=", TOKEN_SLASH_EQ);
         }
-        return new_token_const("/", TOKEN_SLASH);
+        return new_token_const(lexer, "/", TOKEN_SLASH);
     }
     if (current == '%') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("%=", TOKEN_PERC_EQ);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "%=", TOKEN_PERC_EQ);
         }
-        return new_token_const("%", TOKEN_PERC);
+        return new_token_const(lexer, "%", TOKEN_PERC);
     }
     if (current == '^') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("^=", TOKEN_CARAT_EQ);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "^=", TOKEN_CARAT_EQ);
         }
-        return new_token_const("^", TOKEN_CARAT);
+        return new_token_const(lexer, "^", TOKEN_CARAT);
     }
     if (current == '=') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("==", TOKEN_EQ_EQ);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "==", TOKEN_EQ_EQ);
         }
-        return new_token_const("=", TOKEN_EQ);
+        return new_token_const(lexer, "=", TOKEN_EQ);
     }
     if (current == '!') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("!=", TOKEN_BANG_EQ);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "!=", TOKEN_BANG_EQ);
         }
-        return new_token_const("!", TOKEN_BANG);
+        return new_token_const(lexer, "!", TOKEN_BANG);
     }
     if (current == '<') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("<=", TOKEN_LESS_EQ);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "<=", TOKEN_LESS_EQ);
         }
         if (lexer->cCurrent == '-') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const("<-", TOKEN_LEFT_POINT);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "<-", TOKEN_LEFT_POINT);
         }
-        return new_token_const("<", TOKEN_LESS);
+        return new_token_const(lexer, "<", TOKEN_LESS);
     }
     if (current == '>') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
+        lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
-            lexer->cCurrent = lexer->stream(lexer->_stream_args);
-            return new_token_const(">=", TOKEN_GREATER_EQ);
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, ">=", TOKEN_GREATER_EQ);
         }
-        return new_token_const(">", TOKEN_GREATER);
+        return new_token_const(lexer, ">", TOKEN_GREATER);
     }
 
     if (current == '(') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
-        return new_token_const("(", TOKEN_LEFT_PAREN);
+        lexer->cCurrent = lexer_read(lexer);
+        return new_token_const(lexer, "(", TOKEN_LEFT_PAREN);
     }
     if (current == ')') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
-        return new_token_const(")", TOKEN_RIGHT_PAREN);
+        lexer->cCurrent = lexer_read(lexer);
+        return new_token_const(lexer, ")", TOKEN_RIGHT_PAREN);
     }
 
     if (current == '[') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
-        return new_token_const("[", TOKEN_LEFT_SQUARE);
+        lexer->cCurrent = lexer_read(lexer);
+        return new_token_const(lexer, "[", TOKEN_LEFT_SQUARE);
     }
     if (current == ']') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
-        return new_token_const("]", TOKEN_RIGHT_SQUARE);
+        lexer->cCurrent = lexer_read(lexer);
+        return new_token_const(lexer, "]", TOKEN_RIGHT_SQUARE);
     }
 
     if (current == '{') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
-        return new_token_const("{", TOKEN_LEFT_CURLY);
+        lexer->cCurrent = lexer_read(lexer);
+        return new_token_const(lexer, "{", TOKEN_LEFT_CURLY);
     }
     if (current == '}') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
-        return new_token_const("}", TOKEN_RIGHT_CURLY);
+        lexer->cCurrent = lexer_read(lexer);
+        return new_token_const(lexer, "}", TOKEN_RIGHT_CURLY);
     }
 
     if (current == ',') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
-        return new_token_const(",", TOKEN_COMMA);
+        lexer->cCurrent = lexer_read(lexer);
+        return new_token_const(lexer, ",", TOKEN_COMMA);
     }
     if (current == ';') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
-        return new_token_const(";", TOKEN_SEMICOLON);
+        lexer->cCurrent = lexer_read(lexer);
+        return new_token_const(lexer, ";", TOKEN_SEMICOLON);
     }
     if (current == ':') {
-        lexer->cCurrent = lexer->stream(lexer->_stream_args);
-        return new_token_const(":", TOKEN_COLON);
+        lexer->cCurrent = lexer_read(lexer);
+        return new_token_const(lexer, ":", TOKEN_COLON);
     }
 
     fprintf(stderr, "Syntax error on character '%c': \"Unexpected character '%c' (0x%2x).\"\n", current, current, current & 0xff);
 
-    return new_token_const("", TOKEN_UNKNOWN);
+    return new_token_const(lexer, "", TOKEN_UNKNOWN);
 }
 int lexer_has(ClaspLexer *l, ClaspTokenType t) {
     return l->current->type == t;
