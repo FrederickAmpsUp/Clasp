@@ -184,6 +184,21 @@ ClaspASTNode *const_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *val
     return new_AST_node(AST_CONST_DECL_STMT, data);
 }
 
+ClaspASTNode *fn_decl(ClaspToken *name, ClaspASTNode *ret_type, struct ClaspArg **args, ClaspASTNode *body) {
+        union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        fprintf(stderr, "Memory allocation error in fn_decl function\n");
+        return NULL;
+    }
+
+    data->fn_decl_stmt.name = name;
+    data->fn_decl_stmt.ret_type = ret_type;
+    data->fn_decl_stmt.body = body;
+    data->fn_decl_stmt.args = args;
+
+    return new_AST_node(AST_FN_DECL_STMT, data);
+}
+
 // dog
 ClaspASTNode *type_single(ClaspToken *name) {
     union ASTNodeData *data = malloc(sizeof(union ASTNodeData));

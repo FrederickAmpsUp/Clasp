@@ -107,6 +107,21 @@ void *_printVarDecl(ClaspASTNode *ast) {
     printf(")\n");
 }
 
+void *_printFnDecl(ClaspASTNode *ast) {
+    printf("fnDecl: name=\"%s\" ret=", ast->data.fn_decl_stmt.name->data);
+    visit(ast->data.fn_decl_stmt.ret_type, clasp_ast_printer);
+    printf(" args=[  ");
+    for (int i = 0; i < cvector_size(ast->data.fn_decl_stmt.args); ++i) {
+        struct ClaspArg *arg = ast->data.fn_decl_stmt.args[i];
+        printf("\b\b(%s ", arg->name->data);
+        visit(arg->type, clasp_ast_printer);
+        printf("),   ");
+    }
+    printf("\b\b\b\b] body=");
+    visit(ast->data.fn_decl_stmt.body, clasp_ast_printer);
+    printf(")");
+}
+
 void *_printSingleType(ClaspASTNode *ast) {
     printf("[single name=\"%s\"]", ast->data.single.name->data);
 }
@@ -128,6 +143,8 @@ ClaspASTVisitor clasp_ast_printer = {
     [AST_VAR_DECL_STMT  ] = &_printVarDecl,
     [AST_LET_DECL_STMT  ] = &_printVarDecl,
     [AST_CONST_DECL_STMT  ] = &_printVarDecl,
+
+    [AST_FN_DECL_STMT   ] = &_printFnDecl,
 
     [AST_TYPE_SINGLE    ] = &_printSingleType,
 };

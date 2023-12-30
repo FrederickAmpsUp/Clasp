@@ -60,6 +60,11 @@ typedef enum {
 // Forward declaration
 typedef struct ClaspASTNode ClaspASTNode;
 
+struct ClaspArg {
+    ClaspToken *name;
+    ClaspASTNode *type;
+};
+
 /**
  * The actual data stored in AST nodes.
 */
@@ -109,7 +114,7 @@ union ASTNodeData {
      * Expression statements (see syntax.md)
     */
     struct {
-            ClaspASTNode *expr;
+        ClaspASTNode *expr;
     } expr_stmt;
     /**
      * Block statment (see syntax.md)
@@ -126,7 +131,13 @@ union ASTNodeData {
         ClaspASTNode *initializer;
     } var_decl_stmt;
 
-    // TODO: function declarations
+    struct {
+        ClaspToken *name;
+        ClaspASTNode *ret_type;
+
+        ClaspASTNode *body;
+        struct ClaspArg **args; // cvector
+    } fn_decl_stmt;
 
 
     // Type node stuff
@@ -257,6 +268,15 @@ ClaspASTNode *let_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *initi
  * @param initializer The epxression node representing the variable intializer.
 */
 ClaspASTNode *const_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *initializer);
+
+/**
+ * Helper function for creating a function declaration statement node.
+ * @param name The name of the function being declared.
+ * @param ret_type The return type of the function being declared.
+ * @param args A cvector, the argument list of the function beind declared.
+ * @param body A statement node, the function body.
+*/
+ClaspASTNode *fn_decl(ClaspToken *name, ClaspASTNode *ret_type, struct ClaspArg **args, ClaspASTNode *body);
 
 /**
  * Helper function for creating a single type node.

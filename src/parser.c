@@ -55,6 +55,7 @@ static bool consume_impl(ClaspParser *p, ClaspToken **t, int n, ...) {
 
 static const ClaspTokenType const SYNC_TOKENS[] = {
     TOKEN_SEMICOLON, // TODO: more of these? maybe, idk
+    TOKEN_LEFT_CURLY,
     TOKEN_EOF,
 };
 
@@ -142,6 +143,64 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
         } else {
             ERROR("Expected typename or assignment after immutable variable name.");
         }
+    }
+
+    if (consume(p, NULL, TOKEN_KW_CONST)) { // const declaration
+        ClaspToken *name = lexer_next(p->lexer); // Name token
+        ClaspASTNode *type = NULL, *initializer = NULL;
+        ClaspToken *op;
+        if (consume(p, &op, TOKEN_COLON, TOKEN_EQ)) {
+            if (op->type == TOKEN_COLON) { // We have a typename
+                type = parser_type(p);
+                if (!consume(p, NULL, TOKEN_EQ)) // Initializers are required for consts
+                    ERROR("Expected assignment to const variable.");
+            }
+
+            initializer = parser_expression(p);
+            if (initializer == NULL) return NULL;
+            if (!consume(p, NULL, TOKEN_SEMICOLON)) {
+                ERROR("Expected semicolon after constant declaration.");
+            }
+            return const_decl(name, type, initializer);
+        } else {
+            ERROR("Expected typename or assignment after constant name.");
+        }
+    }
+
+    if (consume(p, NULL, TOKEN_KW_FN)) {
+        ClaspToken *name = lexer_next(p->lexer);
+        if (!consume(p, NULL, TOKEN_LEFT_PAREN)) {
+            ERROR("Expected opening parenthesis after function name.");
+        }
+        cvector(struct ClaspArg *) args = NULL;
+
+        while (true) {
+            ClaspToken *argname = lexer_next(p->lexer);
+            if (!consume(p, NULL, TOKEN_COLON)) {
+                ERROR("Expected colon after function argument name.");
+            }
+            ClaspASTNode *argtype = parser_type(p);
+            if (argtype == NULL) return NULL;
+
+            struct ClaspArg *arg = malloc(sizeof(struct ClaspArg));
+            arg->name = argname;
+            arg->type = argtype;
+
+            cvector_push_back(args, arg);
+
+            if (consume(p, NULL, TOKEN_RIGHT_PAREN)) break;
+            if (!consume(p, NULL, TOKEN_COMMA)) {
+                ERROR("Expected ',' or ')' after function argument declaration.");
+            }
+        }
+
+        if (!consume(p, NULL, TOKEN_RIGHT_POINT)) {
+            ERROR("Expected return type specifier after function argument list."); // TODO: show the function name here
+        }
+        ClaspASTNode *rettype = parser_type(p);
+        ClaspASTNode *body = parser_stmt(p);
+        
+        return fn_decl(name, rettype, args, body);
     }
     
         // Fall-back to expression statements
@@ -232,7 +291,7 @@ ClaspASTNode *parser_postfix(ClaspParser *p) {
                 cvector_push_back(args, arg);
                 if (consume(p, NULL, TOKEN_RIGHT_PAREN)) break;
                 if (!consume(p, NULL, TOKEN_COMMA)) {
-                    ERROR("Expected ',' or ')' after function argument");
+                    ERROR("Expected ',' or ')' after function argument.");
                 } 
             }
 

@@ -41,7 +41,7 @@ varDecl:   'var'   identifier((':' typeName)|('=' expression)) | (':' typeName '
 letDecl:   'let'   identifier (':' typeName)? '=' expression
 constDecl: 'const' identifier (':' typeName)? '=' expression
 
-fnDecl: 'fn' identifier '(' (identifier ':' typeName ('=' expression)? ',')* ')' '->' typeName '{' statement* '}'
+fnDecl: 'fn' identifier '(' (identifier ':' typeName ('=' expression)? ',')* ')' '->' typeName statement
 ```
 * Examples:
 ```
