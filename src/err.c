@@ -53,7 +53,7 @@ void token_err(ClaspToken *tok, char *err) {
     int nSpaces = (int)tok->where - startIdx - tokLen - 1;
     while (isspace(tok->line[nSpaces + startIdx])) nSpaces--;
     if (nSpaces + 1 > 0)
-        for (int i = 0; i <= nSpaces; ++i) {
+        for (int i = 0; i <= nSpaces + 1; ++i) {
             putchar(' ');
         }
     printf("^\n%s\n", err);
