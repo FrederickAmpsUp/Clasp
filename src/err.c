@@ -26,6 +26,8 @@
 #include <clasp/err.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
 void general_err(const char *fmt, ...) {
     va_list args;
@@ -37,9 +39,23 @@ void general_err(const char *fmt, ...) {
 
 // TODO: file/line numbers
 void token_err(ClaspToken *tok, char *err) {
-    fprintf(stderr, "Syntax error in file %s, line %d.\n%s\n", "TODO", tok->lineno, tok->line);
-    for (int i = 0; i < tok->where - 1; i++) {
-        putchar(' ');
-    } printf("^\n\"%s\"\n", err);
+    int startIdx = tok->where - 15;
+    if (startIdx < 0) startIdx = 0;
+    int endIdx = startIdx + 25;
+    if (endIdx > strlen(tok->line) - 1) endIdx = strlen(tok->line) - 1;
+
+    fprintf(stderr, "Syntax error in file %s, line %d:%d.\n", "TODO", tok->lineno + 1, tok->where + 1);
+    for (unsigned int i = startIdx; i < endIdx; ++i) {
+        putchar(tok->line[i]);
+    } putchar('\n');
+
+    int tokLen = strlen(tok->data);
+    int nSpaces = (int)tok->where - startIdx - tokLen - 1;
+    while (isspace(tok->line[nSpaces + startIdx])) nSpaces--;
+    if (nSpaces + 1 > 0)
+        for (int i = 0; i <= nSpaces; ++i) {
+            putchar(' ');
+        }
+    printf("^\n%s\n", err);
 
 }

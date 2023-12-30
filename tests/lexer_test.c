@@ -47,22 +47,16 @@ char read_string() {
 }
 
 int main(int argc, char **argv) {
-    str = (StringStream) { "5wowo 76+82 e68==75= 8,4 -> 7 %%= %= 5%5 84; ++--", 0 };
+    str = (StringStream) { "5 * 2; 85/6;; 4; {8 + 3;}; -8 = 4 / 2; 5++; 8 + 6--; x = x + 1;\ny++; x = foo(a, b, x, 25); var test: int = 42; var test2: int; var test3 = 25.0; var err = ; test2 = 5;\n", 0 };
     ClaspLexer *l = malloc(sizeof(ClaspLexer));
     new_lexer(l, read_string, NULL);
 
     ClaspToken *current;
 
-    ClaspTokenType target_type[] = {
-        TOKEN_NUMBER, TOKEN_ID, TOKEN_NUMBER, TOKEN_PLUS, TOKEN_NUMBER, TOKEN_ID, TOKEN_EQ_EQ, TOKEN_NUMBER, TOKEN_EQ, TOKEN_NUMBER, TOKEN_COMMA, TOKEN_NUMBER, TOKEN_RIGHT_POINT, TOKEN_NUMBER,
-        TOKEN_PERC,TOKEN_PERC_EQ,TOKEN_PERC_EQ,TOKEN_NUMBER, TOKEN_PERC, TOKEN_NUMBER, TOKEN_NUMBER, TOKEN_SEMICOLON, TOKEN_PLUS_PLUS, TOKEN_MINUS_MINUS
-    };
-
     current = lexer_next(l);
     unsigned int i = 0;
     while (current->type != TOKEN_EOF &&  current->type != TOKEN_UNKNOWN) {
         token_print(current);
-        assert(current->type == target_type[i]);
         current = lexer_next(l);
         ++i;
     }

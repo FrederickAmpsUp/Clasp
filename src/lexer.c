@@ -100,8 +100,6 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
     if (current == EOF) return new_token_const(lexer, "\xff", TOKEN_EOF);
     while (isspace(current)) {
         if (current == '\n') {
-            current = lexer_read(lexer);
-            printf("LINE: %s\n", lexer->current_line);
             cvector_push_back(lexer->lines, lexer->current_line);
             lexer->current_line = NULL;
             lexer->lineno++;

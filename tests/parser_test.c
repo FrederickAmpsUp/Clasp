@@ -49,7 +49,7 @@ char read_string() {
 }
 
 int main(int argc, char **argv) {
-    str = (StringStream) { "5 * 2; 85/6;; 4; {8 + 3;}; -8 = 4 / 2; 5++; 8 + 6--; x = x + 1\ny++; x = foo(a, b, x, 25); var test: int = 42; var test2: int; var test3 = 25.0; var err; test2 = 5;\n", 0 };
+    str = (StringStream) { "5 * 2; 85/6;; 4; {8 + 3;}; -8 = 4 / 2; 5++; 8 + 6--; x = x + 1;\ny++; x = foo(a, b, x, 25); var test: int = 42; var test2: int; var test3 = 25.0; var err = ; 2 = 5; var err2: = 25; test2 = 5;\n", 0 };
     ClaspLexer *l = malloc(sizeof(ClaspLexer));
     new_lexer(l, read_string, NULL);
     ClaspParser *p = malloc(sizeof(ClaspParser));

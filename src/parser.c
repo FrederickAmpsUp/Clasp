@@ -93,7 +93,7 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
         return block_stmt(block);
     }
 
-    if (consume(p, NULL, TOKEN_KW_VAR)) {
+    if (consume(p, NULL, TOKEN_KW_VAR)) { // var declaration
         ClaspToken *name = lexer_next(p->lexer); // Name token
         ClaspASTNode *type = NULL, *initializer = NULL;
         ClaspToken *op;
@@ -105,9 +105,11 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             } else { // Initializer only
                 initializer = parser_expression(p);
             }
+            if (initializer == NULL) return NULL;
             if (!consume(p, NULL, TOKEN_SEMICOLON)) {
                 token_err(lexer_next(p->lexer), "Expected semicolon after variable declaration.");
                 parser_panic(p);
+                return NULL;
             }
             return var_decl(name, type, initializer);
         } else {
@@ -122,7 +124,9 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
     if (!consume(p, NULL, TOKEN_SEMICOLON)) {
         token_err(lexer_next(p->lexer), "Expected semicolon after expression statement.");
         parser_panic(p);
-    } return expr_stmt(expr);
+        return NULL;
+    }
+    return expr_stmt(expr);
 }
 
 // TODO: add other type nodes here
@@ -132,6 +136,8 @@ ClaspASTNode *parser_type(ClaspParser *p) {
         return type_single(typename);
     } else {
         token_err(lexer_next(p->lexer), "Temp error: unfinished type parsing system.");
+        parser_panic(p);
+        return NULL;
     }
 }
 
@@ -231,6 +237,11 @@ ClaspASTNode *parser_primary(ClaspParser *p) {
         if (!consume(p, NULL, TOKEN_RIGHT_PAREN)) {
             token_err(lexer_next(p->lexer), "Expected closing parenthesis after expression.");
             parser_panic(p);
+            return NULL;
         } return expr;
     }
+
+    token_err(lexer_next(p->lexer), "Expected expression.");
+    parser_panic(p);
+    return NULL;
 }
