@@ -190,6 +190,7 @@ ClaspASTNode *const_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *val
     return new_AST_node(AST_VAR_DECL_STMT, data);
 }
 
+// dog
 ClaspASTNode *type_single(ClaspToken *name) {
     union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
     if (data == NULL) {
