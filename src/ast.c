@@ -153,8 +153,6 @@ ClaspASTNode *var_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *value
     data->var_decl_stmt.type = type;
     data->var_decl_stmt.initializer = value;
 
-    data->var_decl_stmt.var_type = VARIABLE_TYPE_VAR;
-
     return new_AST_node(AST_VAR_DECL_STMT, data);
 }
 
@@ -169,9 +167,7 @@ ClaspASTNode *let_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *value
     data->var_decl_stmt.type = type;
     data->var_decl_stmt.initializer = value;
 
-    data->var_decl_stmt.var_type = VARIABLE_TYPE_LET;
-
-    return new_AST_node(AST_VAR_DECL_STMT, data);
+    return new_AST_node(AST_LET_DECL_STMT, data);
 }
 
 ClaspASTNode *const_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *value) {
@@ -185,9 +181,7 @@ ClaspASTNode *const_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *val
     data->var_decl_stmt.type = type;
     data->var_decl_stmt.initializer = value;
 
-    data->var_decl_stmt.var_type = VARIABLE_TYPE_CONST;
-
-    return new_AST_node(AST_VAR_DECL_STMT, data);
+    return new_AST_node(AST_CONST_DECL_STMT, data);
 }
 
 // dog

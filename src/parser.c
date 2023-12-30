@@ -72,6 +72,13 @@ static void parser_panic(ClaspParser *p) {
     }
 }
 
+// Do an error. This halts the current parse function and starts a new statement after the first sync token.
+#define ERROR(message) do {\
+    ClaspToken *errtok = p->lexer->current;\
+    parser_panic(p); token_err(errtok, message);\
+    return NULL;\
+} while (0)
+
 ClaspASTNode *parser_compile(ClaspParser *p) {
     cvector(ClaspASTNode *) block = NULL;
     while (!consume(p, NULL, TOKEN_EOF)) {
@@ -107,24 +114,40 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             }
             if (initializer == NULL) return NULL;
             if (!consume(p, NULL, TOKEN_SEMICOLON)) {
-                token_err(lexer_next(p->lexer), "Expected semicolon after variable declaration.");
-                parser_panic(p);
-                return NULL;
+                ERROR("Expected semicolon after variable declaration.");
             }
             return var_decl(name, type, initializer);
         } else {
-            token_err(p->lexer->current, "Expected typename or assignment after variable name.");
-            parser_panic(p);
-            return NULL;
+            ERROR("Expected typename or assignment after variable name.");
+        }
+    }
+
+    if (consume(p, NULL, TOKEN_KW_LET)) { // let (immutable) declaration
+        ClaspToken *name = lexer_next(p->lexer); // Name token
+        ClaspASTNode *type = NULL, *initializer = NULL;
+        ClaspToken *op;
+        if (consume(p, &op, TOKEN_COLON, TOKEN_EQ)) {
+            if (op->type == TOKEN_COLON) { // We have a typename
+                type = parser_type(p);
+                if (consume(p, NULL, TOKEN_EQ)) // Typename and initializer
+                    initializer = parser_expression(p);
+            } else { // Initializer only
+                initializer = parser_expression(p);
+            }
+            if (initializer == NULL) return NULL;
+            if (!consume(p, NULL, TOKEN_SEMICOLON)) {
+                ERROR("Expected semicolon after immutable variable declaration.");
+            }
+            return let_decl(name, type, initializer);
+        } else {
+            ERROR("Expected typename or assignment after immutable variable name.");
         }
     }
     
         // Fall-back to expression statements
     ClaspASTNode *expr = parser_expression(p);
     if (!consume(p, NULL, TOKEN_SEMICOLON)) {
-        token_err(lexer_next(p->lexer), "Expected semicolon after expression statement.");
-        parser_panic(p);
-        return NULL;
+        ERROR("Expected semicolon after expression statement.");
     }
     return expr_stmt(expr);
 }
@@ -135,9 +158,7 @@ ClaspASTNode *parser_type(ClaspParser *p) {
     if (consume(p, &typename, TOKEN_ID)) {
         return type_single(typename);
     } else {
-        token_err(lexer_next(p->lexer), "Temp error: unfinished type parsing system.");
-        parser_panic(p);
-        return NULL;
+        ERROR("Temp error: unfinished type parsing system.");
     }
 }
 
@@ -211,8 +232,7 @@ ClaspASTNode *parser_postfix(ClaspParser *p) {
                 cvector_push_back(args, arg);
                 if (consume(p, NULL, TOKEN_RIGHT_PAREN)) break;
                 if (!consume(p, NULL, TOKEN_COMMA)) {
-                    token_err(lexer_next(p->lexer), "Expected ',' or ')' after function argument");
-                    parser_panic(p);
+                    ERROR("Expected ',' or ')' after function argument");
                 } 
             }
 
@@ -241,7 +261,7 @@ ClaspASTNode *parser_primary(ClaspParser *p) {
         } return expr;
     }
 
-    token_err(lexer_next(p->lexer), "Expected expression.");
-    parser_panic(p);
-    return NULL;
+    ERROR("Expected expression.");
 }
+
+#undef ERROR

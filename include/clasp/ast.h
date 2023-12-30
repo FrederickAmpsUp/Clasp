@@ -57,12 +57,6 @@ typedef enum {
     CLASP_NUM_VISITORS
 } ClaspASTNodeType;
 
-typedef enum {
-    VARIABLE_TYPE_VAR,
-    VARIABLE_TYPE_LET,
-    VARIABLE_TYPE_CONST
-} ClaspVariableType;
-
 // Forward declaration
 typedef struct ClaspASTNode ClaspASTNode;
 
@@ -130,8 +124,6 @@ union ASTNodeData {
         ClaspToken *name;
         ClaspASTNode *type;
         ClaspASTNode *initializer;
-
-        ClaspVariableType var_type;
     } var_decl_stmt;
 
     // TODO: function declarations
