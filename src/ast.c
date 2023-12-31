@@ -185,7 +185,7 @@ ClaspASTNode *const_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *val
 }
 
 ClaspASTNode *fn_decl(ClaspToken *name, ClaspASTNode *ret_type, struct ClaspArg **args, ClaspASTNode *body) {
-        union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
     if (data == NULL) {
         fprintf(stderr, "Memory allocation error in fn_decl function\n");
         return NULL;
@@ -199,7 +199,32 @@ ClaspASTNode *fn_decl(ClaspToken *name, ClaspASTNode *ret_type, struct ClaspArg 
     return new_AST_node(AST_FN_DECL_STMT, data);
 }
 
-// dog
+ClaspASTNode *if_stmt(ClaspASTNode *cond, ClaspASTNode *body) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        fprintf(stderr, "Memory allocation error in if_stmt function\n");
+        return NULL;
+    }
+
+    data->cond_stmt.cond = cond;
+    data->cond_stmt.body = body;
+
+    return new_AST_node(AST_IF_STMT, data);
+}
+
+ClaspASTNode *while_stmt(ClaspASTNode *cond, ClaspASTNode *body) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        fprintf(stderr, "Memory allocation error in while_stmt function\n");
+        return NULL;
+    }
+
+    data->cond_stmt.cond = cond;
+    data->cond_stmt.body = body;
+
+    return new_AST_node(AST_WHILE_STMT, data);
+}
+
 ClaspASTNode *type_single(ClaspToken *name) {
     union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
     if (data == NULL) {

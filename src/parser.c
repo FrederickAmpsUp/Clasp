@@ -202,6 +202,32 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
         
         return fn_decl(name, rettype, args, body);
     }
+
+    ClaspToken *cond_type;
+    if (consume(p, &cond_type, TOKEN_KW_IF, TOKEN_KW_WHILE)) {
+        if (!consume(p, NULL, TOKEN_LEFT_PAREN)) {
+            switch(cond_type->type) {
+                case TOKEN_KW_IF:    ERROR("Expected opening parenthesis after if keyword."   ); break;
+                case TOKEN_KW_WHILE: ERROR("Expected opening parenthesis after while keyword."); break;
+            }
+        }
+        ClaspASTNode *cond = parser_expression(p);
+
+        if (!consume(p, NULL, TOKEN_RIGHT_PAREN)) {
+            switch(cond_type->type) {
+                case TOKEN_KW_IF:    ERROR("Expected closing parenthesis after if condition."   ); break;
+                case TOKEN_KW_WHILE: ERROR("Expected closing parenthesis after while condition."); break;
+            }
+        }
+
+        ClaspASTNode *body = parser_stmt(p);
+
+        switch(cond_type->type) {
+            case TOKEN_KW_IF:    return    if_stmt(cond, body); break;
+            case TOKEN_KW_WHILE: return while_stmt(cond, body); break;
+        }
+        return NULL; // juuuust to be safe.
+    }
     
         // Fall-back to expression statements
     ClaspASTNode *expr = parser_expression(p);

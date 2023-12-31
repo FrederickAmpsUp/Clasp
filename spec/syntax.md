@@ -7,7 +7,7 @@ compile: blockStmt EOF
 
 ## Statements
 ```
-statement: exprStmt | declStmt | '{' blockStmt '}'
+statement: exprStmt | declStmt | ('{' blockStmt '}') | condStmt
 blockStmt: stmt*
 ```
 ### Expression stmt
@@ -59,6 +59,22 @@ const sqrt4: float = 2; // Inference of int overridden by definition as float
 
 fn foo(a: float, b: int) -> float {
     return a * b;
+}
+```
+
+### Conditional stmt
+* If/While statement
+* For loops are parsed into a block of statements with a while
+```
+condStmt: (ifStmt | whileStmt)
+ifStmt: 'if' '(' expression ')' statement
+whileStmt: 'while' '(' expression ')' statement
+```
+* Examples:
+```
+if (x < 5) print(x);
+while (x++ != 27) {
+    print(2*x + 1);
 }
 ```
 

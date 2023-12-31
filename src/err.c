@@ -38,11 +38,13 @@ void general_err(const char *fmt, ...) {
 }
 
 // TODO: file/line numbers
-void token_err(ClaspToken *tok, char *err) {
+void token_err(ClaspToken *tok, char *err) {\
+    printf("%s\n", tok->line);
+
     int startIdx = tok->where - 15;
     if (startIdx < 0) startIdx = 0;
     int endIdx = startIdx + 25;
-    if (endIdx > strlen(tok->line) - 1) endIdx = strlen(tok->line) - 1;
+    if (endIdx > strlen(tok->line)) endIdx = strlen(tok->line);
 
     fprintf(stderr, "Syntax error in file %s, line %d:%d.\n", "TODO", tok->lineno + 1, tok->where + 1);
     for (unsigned int i = startIdx; i < endIdx; ++i) {

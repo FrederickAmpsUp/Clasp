@@ -122,6 +122,22 @@ void *_printFnDecl(ClaspASTNode *ast) {
     printf(")");
 }
 
+void *_printIf(ClaspASTNode *ast) {
+    printf("(ifStmt: cond=");
+    visit(ast->data.cond_stmt.cond, clasp_ast_printer);
+    printf(" body=");
+    visit(ast->data.cond_stmt.body, clasp_ast_printer);
+    printf(")");
+}
+
+void *_printWhile(ClaspASTNode *ast) {
+    printf("(whileStmt: cond=");
+    visit(ast->data.cond_stmt.cond, clasp_ast_printer);
+    printf(" body=");
+    visit(ast->data.cond_stmt.body, clasp_ast_printer);
+    printf(")");
+}
+
 void *_printSingleType(ClaspASTNode *ast) {
     printf("[single name=\"%s\"]", ast->data.single.name->data);
 }
@@ -142,9 +158,12 @@ ClaspASTVisitor clasp_ast_printer = {
     [AST_BLOCK_STMT     ] = &_printBlockStmt,
     [AST_VAR_DECL_STMT  ] = &_printVarDecl,
     [AST_LET_DECL_STMT  ] = &_printVarDecl,
-    [AST_CONST_DECL_STMT  ] = &_printVarDecl,
+    [AST_CONST_DECL_STMT] = &_printVarDecl,
 
     [AST_FN_DECL_STMT   ] = &_printFnDecl,
+
+    [AST_IF_STMT        ] = &_printIf,
+    [AST_WHILE_STMT     ] = &_printWhile,
 
     [AST_TYPE_SINGLE    ] = &_printSingleType,
 };

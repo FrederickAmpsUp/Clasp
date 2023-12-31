@@ -78,7 +78,10 @@ static ClaspToken *new_token(ClaspLexer *l, char *data, ClaspTokenType type) {
     out->data = data;
     out->type = type;
 
-    out->line = l->current_line;
+    char *line = malloc(cvector_size(l->current_line) + 1);
+    memcpy(line, l->current_line, cvector_size(l->current_line));
+    line[cvector_size(l->current_line)] = '\0';
+    out->line = line;
     out->where = l->col_idx;
     out->lineno = l->lineno;
     return out;

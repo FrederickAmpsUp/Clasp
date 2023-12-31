@@ -31,7 +31,7 @@
 
 /**
  * Enumeration to store types of AST nodes.
- * CLASP_NUM_VISITORS must remain at the end of the list to accurately store the number of visitor function needed.
+ * CLASP_NUM_VISITORS must remain at the end of the list to accurately store the number of visitor functions needed.
 */
 typedef enum {
     AST_EXPR_BINOP,
@@ -47,6 +47,9 @@ typedef enum {
     AST_LET_DECL_STMT,
     AST_CONST_DECL_STMT,
     AST_FN_DECL_STMT,
+
+    AST_IF_STMT,
+    AST_WHILE_STMT,
 
     AST_TYPE_SINGLE,
     AST_TYPE_ARRAY,
@@ -131,6 +134,9 @@ union ASTNodeData {
         ClaspASTNode *initializer;
     } var_decl_stmt;
 
+    /**
+     * Function declaration (see syntax.md)
+    */
     struct {
         ClaspToken *name;
         ClaspASTNode *ret_type;
@@ -138,6 +144,14 @@ union ASTNodeData {
         ClaspASTNode *body;
         struct ClaspArg **args; // cvector
     } fn_decl_stmt;
+
+    /**
+     * If/While statement (see syntax.md)
+    */
+    struct {
+        ClaspASTNode *cond;
+        ClaspASTNode *body;
+    } cond_stmt;
 
 
     // Type node stuff
@@ -277,6 +291,20 @@ ClaspASTNode *const_decl(ClaspToken *name, ClaspASTNode *type, ClaspASTNode *ini
  * @param body A statement node, the function body.
 */
 ClaspASTNode *fn_decl(ClaspToken *name, ClaspASTNode *ret_type, struct ClaspArg **args, ClaspASTNode *body);
+
+/**
+ * Helper function for creating an if statement node.
+ * @param cond The expression node representing the condition of the if statement
+ * @param body The statement representing the body to run if cond is true
+*/
+ClaspASTNode *if_stmt(ClaspASTNode *cond, ClaspASTNode *body);
+
+/**
+ * Helper function for creating a while statement node.
+ * @param cond The expression node representing the condition of the while statement
+ * @param body The statement representing the body to run while cond is true
+*/
+ClaspASTNode *while_stmt(ClaspASTNode *cond, ClaspASTNode *body);
 
 /**
  * Helper function for creating a single type node.
