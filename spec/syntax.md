@@ -10,12 +10,14 @@ compile: blockStmt EOF
 statement: exprStmt | declStmt | ('{' blockStmt '}') | condStmt
 blockStmt: stmt*
 ```
-### Expression stmt
+### Expression stmt and expression
 * Function calls, assignments, etc.
 ```
 exprStmt:   expression ';'
 expression: assignment
-assignment: term     assignmentOperator assignment
+assignment: equality assignmentOperator assignment
+equality: comparison ('==' | '!=') comparison
+comparison:     term ('<' | '>' | '<=' | '>=') term
 term:       factor   ('+' | '-')        factor
 factor:     exponent ('*' | '/' | '%')  exponent
 exponent:   primary  '^'                exponent
@@ -69,12 +71,31 @@ fn foo(a: float, b: int) -> float {
 condStmt: (ifStmt | whileStmt)
 ifStmt: 'if' '(' expression ')' statement
 whileStmt: 'while' '(' expression ')' statement
+
+forLoop: 'for' '(' start: statement ' ' cond: expression ';' inc: nonPunctuatedStmt ')' body: statement ->
+    blockStmt {
+        start
+        while (cond) {
+            body
+            inc
+        }
+    }
 ```
 * Examples:
 ```
 if (x < 5) print(x);
 while (x++ != 27) {
     print(2*x + 1);
+}
+
+for (var i = 0; i < 10; i++) {
+    print(i);
+}
+// parses to:
+var i = 0;
+while (i < 10) {
+    print(i);
+    i++;
 }
 ```
 

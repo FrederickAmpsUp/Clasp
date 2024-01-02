@@ -34,6 +34,7 @@
 
 void new_parser(ClaspParser *p, ClaspLexer *l) {
     p->lexer = l;
+    p->puncNextStmt = true;
 }
 #define consume(p, t, ...) consume_impl(p, t, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
 static bool consume_impl(ClaspParser *p, ClaspToken **t, int n, ...) {
@@ -54,7 +55,7 @@ static bool consume_impl(ClaspParser *p, ClaspToken **t, int n, ...) {
 }
 
 static const ClaspTokenType const SYNC_TOKENS[] = {
-    TOKEN_SEMICOLON, // TODO: more of these? maybe, idk
+    TOKEN_SEMICOLON, // TODO: more of these? maybe, idk. this seems to work *ok* as is but needs more work for sure
     TOKEN_LEFT_CURLY,
     TOKEN_EOF,
 };
@@ -114,9 +115,10 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
                 initializer = parser_expression(p);
             }
             if (initializer == NULL) return NULL;
-            if (!consume(p, NULL, TOKEN_SEMICOLON)) {
+            if (!consume(p, NULL, TOKEN_SEMICOLON) && p->puncNextStmt) {
                 ERROR("Expected semicolon after variable declaration.");
             }
+            if (!p->puncNextStmt) p->puncNextStmt = true;
             return var_decl(name, type, initializer);
         } else {
             ERROR("Expected typename or assignment after variable name.");
@@ -136,9 +138,10 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
                 initializer = parser_expression(p);
             }
             if (initializer == NULL) return NULL;
-            if (!consume(p, NULL, TOKEN_SEMICOLON)) {
+            if (!consume(p, NULL, TOKEN_SEMICOLON) && p->puncNextStmt) {
                 ERROR("Expected semicolon after immutable variable declaration.");
             }
+            if (!p->puncNextStmt) p->puncNextStmt = true;
             return let_decl(name, type, initializer);
         } else {
             ERROR("Expected typename or assignment after immutable variable name.");
@@ -158,9 +161,10 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
 
             initializer = parser_expression(p);
             if (initializer == NULL) return NULL;
-            if (!consume(p, NULL, TOKEN_SEMICOLON)) {
+            if (!consume(p, NULL, TOKEN_SEMICOLON) && p->puncNextStmt) {
                 ERROR("Expected semicolon after constant declaration.");
             }
+            if (!p->puncNextStmt) p->puncNextStmt = true;
             return const_decl(name, type, initializer);
         } else {
             ERROR("Expected typename or assignment after constant name.");
@@ -195,7 +199,7 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
         }
 
         if (!consume(p, NULL, TOKEN_RIGHT_POINT)) {
-            ERROR("Expected return type specifier after function argument list."); // TODO: show the function name here
+            ERROR("Expected return type specifier after function argument list."); // TODO: show the function name here, once varargs are introduced to the ERROR macro
         }
         ClaspASTNode *rettype = parser_type(p);
         ClaspASTNode *body = parser_stmt(p);
@@ -215,8 +219,8 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
 
         if (!consume(p, NULL, TOKEN_RIGHT_PAREN)) {
             switch(cond_type->type) {
-                case TOKEN_KW_IF:    ERROR("Expected closing parenthesis after if condition."   ); break;
-                case TOKEN_KW_WHILE: ERROR("Expected closing parenthesis after while condition."); break;
+                case TOKEN_KW_IF:    ERROR("Expected closing parenthesis after if conditional."   ); break;
+                case TOKEN_KW_WHILE: ERROR("Expected closing parenthesis after while conditional."); break;
             }
         }
 
@@ -228,12 +232,42 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
         }
         return NULL; // juuuust to be safe.
     }
+
+    if (consume(p, NULL, TOKEN_KW_FOR)) {
+        if (!consume(p, NULL, TOKEN_LEFT_PAREN)) {
+            ERROR("Expected opening parenthesis after for keyword.");
+        }
+        cvector(ClaspASTNode *) out = NULL;
+
+        ClaspASTNode *setup = parser_stmt(p); // The setup statement (eg. var i: int = 0)
+        ClaspASTNode *cond = parser_expression(p); // The exit condition. (eg i < 10)
+        if (!consume(p, NULL, TOKEN_SEMICOLON)) {
+            ERROR("Expected semicolon after for loop conditional.");
+        }
+        p->puncNextStmt = false; // No semicolon after the last statement in a for loop
+        ClaspASTNode *inc = parser_stmt(p); // The increment statement (eg. i++)
+        if (!consume(p, NULL, TOKEN_RIGHT_PAREN)) {
+            ERROR("Expected closing parenthesis after for loop increment statement.");
+        }
+        ClaspASTNode *body = parser_stmt(p); // The body of the loop.
+        cvector(ClaspASTNode *) bodyFull = NULL;
+        cvector_push_back(bodyFull, body);
+        cvector_push_back(bodyFull, inc );
+        ClaspASTNode *bodyFinal = block_stmt(bodyFull);
+
+        cvector_push_back(out, setup); // Setup statement
+        ClaspASTNode *loop = while_stmt(cond, bodyFinal);
+        cvector_push_back(out, loop);
+
+        return block_stmt(out);
+    }
     
         // Fall-back to expression statements
     ClaspASTNode *expr = parser_expression(p);
-    if (!consume(p, NULL, TOKEN_SEMICOLON)) {
+    if (!consume(p, NULL, TOKEN_SEMICOLON) && p->puncNextStmt) {
         ERROR("Expected semicolon after expression statement.");
     }
+    if (!p->puncNextStmt) p->puncNextStmt = true;
     return expr_stmt(expr);
 }
 
@@ -251,7 +285,7 @@ ClaspASTNode *parser_expression(ClaspParser *p) {
     return parser_assignment(p);
 }
 ClaspASTNode *parser_assignment(ClaspParser *p) {
-    ClaspASTNode *left = parser_term(p); // Left operand.
+    ClaspASTNode *left = parser_equality(p); // Left operand.
 
     ClaspToken *op;
     while (consume(p, &op,
@@ -267,12 +301,32 @@ ClaspASTNode *parser_assignment(ClaspParser *p) {
     }
     return left;
 }
+ClaspASTNode *parser_equality(ClaspParser *p) {
+    ClaspASTNode *left = parser_comparison(p);  // Left operand
+
+    ClaspToken *op;
+    while (consume(p, &op, TOKEN_EQ_EQ, TOKEN_BANG_EQ)) {
+        ClaspASTNode *right = parser_comparison(p); // Right operand
+        left = binop(left, right, op);
+    }
+    return left;
+}
+ClaspASTNode *parser_comparison(ClaspParser *p) {
+    ClaspASTNode *left = parser_term(p);  // Left operand
+
+    ClaspToken *op;
+    while (consume(p, &op, TOKEN_LESS, TOKEN_GREATER, TOKEN_LESS_EQ, TOKEN_GREATER_EQ)) {
+        ClaspASTNode *right = parser_term(p); // Right operand
+        left = binop(left, right, op);
+    }
+    return left;
+}
 ClaspASTNode *parser_term(ClaspParser *p) {
     ClaspASTNode *left = parser_factor(p);  // Left operand
 
     ClaspToken *op;
     while (consume(p, &op, TOKEN_PLUS, TOKEN_MINUS)) {
-        ClaspASTNode *right = parser_factor(p);
+        ClaspASTNode *right = parser_factor(p); // Right operand
         left = binop(left, right, op);
     }
     return left;

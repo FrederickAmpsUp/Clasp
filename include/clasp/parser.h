@@ -29,12 +29,15 @@
 #include <clasp/lexer.h>
 #include <stdio.h>
 #include <clasp/ast.h>
+#include <stdbool.h>
 
 /**
- * State of a parser. Stores the lexer used.
+ * State of a parser. Stores the lexer used, and wether the next statement requires punctuation (a semicolon).
 */
 typedef struct {
     ClaspLexer *lexer;
+
+    bool puncNextStmt;
 } ClaspParser;
 
 /**
@@ -52,7 +55,7 @@ void new_parser(ClaspParser *parser, ClaspLexer *lexer);
 ClaspASTNode *parser_compile(ClaspParser *parser);
 
 /**
- * Parse a single statement, including the semicolon.
+ * Parse a single statement, including the semicolon (if required).
  * @param parser The parser to parse from.
  * @return The statement's AST.
 */
@@ -76,6 +79,14 @@ ClaspASTNode *parser_expression(ClaspParser *parser);  // Expression statement
  * Parse an assignment. This should only be called internally, except special cases.
 */
 ClaspASTNode *parser_assignment(ClaspParser *parser); // Assignment (=, +=, %=, etc.)
+/**
+ * Parse an equality. This should only be called internally, except special cases.
+*/
+ClaspASTNode *parser_equality(ClaspParser *parser); // Equality (==, !=)
+/**
+ * Parse a comparison. This should only be called internally, except special cases.
+*/
+ClaspASTNode *parser_comparison(ClaspParser *parser); // Comparison (>, <, >=, <=)
 /**
  * Parse a term. This should only be called internally, except special cases.
 */

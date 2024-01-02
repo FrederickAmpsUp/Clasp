@@ -81,7 +81,6 @@ void *_printExprStmt(ClaspASTNode *ast) {
 void *_printBlockStmt(ClaspASTNode *ast) {
     printf("(blockStmt:\n");
     for (int i = 0; i < cvector_size(ast->data.block_stmt.body); ++i) {
-        printf("\t");
         visit(ast->data.block_stmt.body[i], clasp_ast_printer);
     }
     printf(")\n");
@@ -119,7 +118,7 @@ void *_printFnDecl(ClaspASTNode *ast) {
     }
     printf("\b\b\b\b] body=");
     visit(ast->data.fn_decl_stmt.body, clasp_ast_printer);
-    printf(")");
+    printf(")\n");
 }
 
 void *_printIf(ClaspASTNode *ast) {
@@ -127,7 +126,7 @@ void *_printIf(ClaspASTNode *ast) {
     visit(ast->data.cond_stmt.cond, clasp_ast_printer);
     printf(" body=");
     visit(ast->data.cond_stmt.body, clasp_ast_printer);
-    printf(")");
+    printf(")\n");
 }
 
 void *_printWhile(ClaspASTNode *ast) {
@@ -135,7 +134,7 @@ void *_printWhile(ClaspASTNode *ast) {
     visit(ast->data.cond_stmt.cond, clasp_ast_printer);
     printf(" body=");
     visit(ast->data.cond_stmt.body, clasp_ast_printer);
-    printf(")");
+    printf(")\n");
 }
 
 void *_printSingleType(ClaspASTNode *ast) {
