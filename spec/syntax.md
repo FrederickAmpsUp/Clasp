@@ -20,9 +20,10 @@ equality: comparison ('==' | '!=') comparison
 comparison:     term ('<' | '>' | '<=' | '>=') term
 term:       factor   ('+' | '-')        factor
 factor:     exponent ('*' | '/' | '%')  exponent
-exponent:   primary  '^'                exponent
-primary: (number | fnCall | ('(' expression ')') | varRef) ('++' | '--')?
-fnCall: identifier '(' (expression ',')* expression? ')'
+exponent:   unary    '^'                exponent
+unary: (('+' | '-' | '!' | '~') unary) | postfix
+postfix: primary ('++' | '--' | ('(' (expression ',')* expression? ')'))*
+primary: (number | ('(' expression ')') | varRef)
 varRef: identifier
 ```
 * Examples:

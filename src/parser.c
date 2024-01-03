@@ -353,7 +353,7 @@ ClaspASTNode *parser_exponent(ClaspParser *p) {
 }
 ClaspASTNode *parser_unary(ClaspParser *p) {
     ClaspToken *op;
-    if (consume(p, &op, TOKEN_PLUS, TOKEN_MINUS)) {
+    if (consume(p, &op, TOKEN_PLUS, TOKEN_MINUS, TOKEN_BANG)) {
         ClaspASTNode *right = parser_unary(p); // right operand
         return unop(right, op);
     }
@@ -362,11 +362,12 @@ ClaspASTNode *parser_unary(ClaspParser *p) {
 ClaspASTNode *parser_postfix(ClaspParser *p) {
     ClaspASTNode *prim = parser_primary(p);
     ClaspToken *op;
-    if (consume(p, &op, TOKEN_PLUS_PLUS, TOKEN_MINUS_MINUS, TOKEN_LEFT_PAREN)) {
+    while (consume(p, &op, TOKEN_PLUS_PLUS, TOKEN_MINUS_MINUS, TOKEN_LEFT_PAREN)) {
         if (op->type == TOKEN_LEFT_PAREN) { // function call
             cvector(ClaspASTNode *) args = NULL;
             ClaspASTNode *arg;
             while (1) {
+                if (consume(p, NULL, TOKEN_RIGHT_PAREN)) break;
                 arg = parser_expression(p);
                 cvector_push_back(args, arg);
                 if (consume(p, NULL, TOKEN_RIGHT_PAREN)) break;
@@ -375,9 +376,10 @@ ClaspASTNode *parser_postfix(ClaspParser *p) {
                 } 
             }
 
-            return fn_call(prim, args);
+            prim = fn_call(prim, args);
+            continue;
         }
-        return postfix(prim, op);
+        prim = postfix(prim, op);
     }
     return prim;
 }
