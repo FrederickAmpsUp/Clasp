@@ -1,7 +1,3 @@
-* Finish full language AST
-* Finish parser
-* Structs/classes & member functions
-* Syntax highlighting
-
-* Disregard everything in this file, work on what needs to be worked on :P
-* Tilde (~) in lexer
+* Target decompression and usage
+* Basic CLI (language as well as creating and packaging targets)
+* AST printer target

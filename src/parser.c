@@ -295,7 +295,8 @@ ClaspASTNode *parser_assignment(ClaspParser *p) {
             TOKEN_ASTERIX_EQ,
             TOKEN_SLASH_EQ,
             TOKEN_PERC_EQ,
-            TOKEN_CARAT_EQ)) {
+            TOKEN_CARAT_EQ,
+            TOKEN_TILDE_EQ)) {
         ClaspASTNode *right = parser_assignment(p); // right operand, right-associativity
         left = binop(left, right, op);
     }
@@ -353,7 +354,7 @@ ClaspASTNode *parser_exponent(ClaspParser *p) {
 }
 ClaspASTNode *parser_unary(ClaspParser *p) {
     ClaspToken *op;
-    if (consume(p, &op, TOKEN_PLUS, TOKEN_MINUS, TOKEN_BANG)) {
+    if (consume(p, &op, TOKEN_PLUS, TOKEN_MINUS, TOKEN_BANG, TOKEN_TILDE)) {
         ClaspASTNode *right = parser_unary(p); // right operand
         return unop(right, op);
     }

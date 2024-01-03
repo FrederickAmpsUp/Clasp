@@ -238,6 +238,14 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         }
         return new_token_const(lexer, "!", TOKEN_BANG);
     }
+    if (current == '~') {
+        lexer->cCurrent = lexer_read(lexer);
+        if (lexer->cCurrent == '=') {
+            lexer->cCurrent = lexer_read(lexer);
+            return new_token_const(lexer, "~=", TOKEN_TILDE_EQ);
+        }
+        return new_token_const(lexer, "~", TOKEN_TILDE);
+    }
     if (current == '<') {
         lexer->cCurrent = lexer_read(lexer);
         if (lexer->cCurrent == '=') {
@@ -331,6 +339,8 @@ const char *tktyp_str(ClaspTokenType typ) {
         CASE(TOKEN_MINUS_MINUS)
         CASE(TOKEN_BANG)
         CASE(TOKEN_BANG_EQ)
+        CASE(TOKEN_TILDE)
+        CASE(TOKEN_TILDE_EQ)
         CASE(TOKEN_LESS)
         CASE(TOKEN_LESS_EQ)
         CASE(TOKEN_GREATER)
