@@ -4,7 +4,7 @@
  * 
  * This program is part of the Clasp Header Libraries
  * 
- * Copyright (c) 2023, Frederick Ziola
+ * Copyright (c) 2024, Frederick Ziola
  *                      frederick.ziola@gmail.com
  * 
  * SPDX-License-Identifier: GPL-3.0
@@ -84,5 +84,12 @@ _DLL *_DLL_open(char *filename);
 */
 #define _DLL_load(lib, ret, name) ((ret (*) ())(_DLL_load_impl(name, lib)))
 void (*_DLL_load_impl(char *name, _DLL *lib))();
+
+/**
+ * Load a target from a .cbt file.
+ * @param filename The .cbt file to unpack and load.
+ * @return The loaded build target
+*/
+ClaspTarget *new_target(char *filename);
 
 #endif // TARGET_H

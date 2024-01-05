@@ -38,9 +38,7 @@ void general_err(const char *fmt, ...) {
 }
 
 // TODO: file/line numbers
-void token_err(ClaspToken *tok, char *err) {\
-    printf("%s\n", tok->line);
-
+void token_err(ClaspToken *tok, char *err) {
     int startIdx = tok->where - 15;
     if (startIdx < 0) startIdx = 0;
     int endIdx = startIdx + 25;

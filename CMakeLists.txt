@@ -14,10 +14,13 @@ enable_testing()
 file(GLOB TEST_SOURCES tests/*.c)
 
 # Source files
-file(GLOB SOURCES src/*.c)
+file(GLOB SOURCES src/*.c src/**/*.c)
 
 # C math library (-lm on command-line)
 link_libraries(m)
+
+link_directories(/lib32/)
+link_libraries(libz.a)
 
 # Include directory
 include_directories(include/)
