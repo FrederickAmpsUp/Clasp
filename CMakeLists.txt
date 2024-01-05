@@ -26,13 +26,16 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
     # Extract the file name without extension
     get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
 
-    # Create an executable for each test source file
-    add_executable(${TEST_NAME} ${TEST_SOURCE} ${SOURCES})
-    add_test(
-        NAME    ${TEST_NAME}
-        COMMAND ${TEST_NAME}
-        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    # Check if the filename contains "exclude" and skip the test if true
+    if(NOT ${TEST_SOURCE} MATCHES "dll_test_lib.c")
+        # Create an executable for each test source file
+        add_executable(${TEST_NAME} ${TEST_SOURCE} ${SOURCES})
+        add_test(
+            NAME    ${TEST_NAME}
+            COMMAND ${TEST_NAME}
+            WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-    # Optionally, link any necessary libraries
-    # target_link_libraries(${TEST_NAME} some_library)
+        # Optionally, link any necessary libraries
+        # target_link_libraries(${TEST_NAME} some_library)
+    endif()
 endforeach()

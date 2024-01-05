@@ -1,3 +1,4 @@
 * Target decompression and usage
 * Basic CLI (language as well as creating and packaging targets)
 * AST printer target
+* Bytecode spec/impl
