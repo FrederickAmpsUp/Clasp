@@ -25,7 +25,6 @@
 
 #include <clasp/target.h>
 #include <stdio.h>
-#include <minizip/unzip.h>
 #include <sys/stat.h>
 
     // platform specific code for dlls
@@ -69,77 +68,6 @@ void (*_DLL_load_impl(char *name, _DLL *lib))() {
     return fn;
 
 #endif
-}
-
-#define CHUNK 16384
-
-static int unzip(const char *zip_filename, const char *output_dir) {
-    unzFile zip_file = unzOpen(zip_filename);
-    if (!zip_file) {
-        fprintf(stderr, "Error: Could not open zip file %s\n", zip_filename);
-        return -1;
-    }
-
-    if (unzGoToFirstFile(zip_file) != UNZ_OK) {
-        fprintf(stderr, "Error: Could not go to the first file in the zip archive\n");
-        unzClose(zip_file);
-        return -1;
-    }
-
-    int ret;
-    unsigned char buffer[CHUNK];
-    unz_file_info file_info;
-
-    do {
-        char file_name[256];
-        if (unzGetCurrentFileInfo(zip_file, &file_info, file_name, sizeof(file_name), NULL, 0, NULL, 0) != UNZ_OK) {
-            fprintf(stderr, "Error: Could not get file info\n");
-            unzClose(zip_file);
-            return -1;
-        }
-
-        char full_path[512];
-        snprintf(full_path, sizeof(full_path), "%s/%s", output_dir, file_name);
-
-        if (file_name[strlen(file_name) - 1] == '/') {
-            // The file in the zip archive is a directory, create it
-            mkdir(full_path, 0755);
-        } else {
-            // The file in the zip archive is a regular file, extract it
-            FILE *output_file = fopen(full_path, "wb");
-            if (!output_file) {
-                fprintf(stderr, "Error: Could not open output file %s\n", full_path);
-                unzClose(zip_file);
-                return -1;
-            }
-
-            ret = UNZ_OK;
-            int read_bytes;
-            do {
-                ret = unzReadCurrentFile(zip_file, buffer, CHUNK);
-                if (ret < 0) {
-                    fprintf(stderr, "Error: Could not read from zip file\n");
-                    fclose(output_file);
-                    unzClose(zip_file);
-                    return -1;
-                }
-                read_bytes = ret;
-                if (read_bytes > 0) {
-                    fwrite(buffer, read_bytes, 1, output_file);
-                }
-            } while (ret > 0);
-
-            fclose(output_file);
-        }
-
-        if (unzGoToNextFile(zip_file) != UNZ_OK) {
-            break;  // No more files in the zip archive
-        }
-
-    } while (1);
-
-    unzClose(zip_file);
-    return 0;
 }
 
 ClaspTarget *new_target(char *fname) {
