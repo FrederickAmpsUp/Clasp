@@ -28,6 +28,23 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+static bool term_does_color() {
+    const char *term = getenv("TERM");
+    if (!term || strcmp(term, "dumb") == 0) {
+        // "dumb" indicates a basic terminal with no color support
+        return false;
+    }
+
+    if (isatty(fileno(stdout))) {
+        return true;  // Terminal supports color
+    } else {
+        return false; // Terminal does not support color
+    }
+}
 
 void general_err(const char *fmt, ...) {
     va_list args;
@@ -37,25 +54,35 @@ void general_err(const char *fmt, ...) {
     return;
 }
 
-// TODO: file/line numbers
 void token_err(ClaspToken *tok, char *err) {
-    int startIdx = tok->where - 15;
+    int startIdx = 0;
     if (startIdx < 0) startIdx = 0;
-    int endIdx = startIdx + 25;
+    int endIdx = strlen(tok->line);
     if (endIdx > strlen(tok->line)) endIdx = strlen(tok->line);
+    int tokLen = strlen(tok->data);
+
+    bool col = term_does_color();
 
     fprintf(stderr, "Syntax error in file %s, line %d:%d.\n", "TODO", tok->lineno + 1, tok->where + 1);
     for (unsigned int i = startIdx; i < endIdx; ++i) {
+        if (col && (i == tok->where - tokLen)) printf("\033[1;31m");
         putchar(tok->line[i]);
+        if (col && (i == tok->where)) printf("\033[0m");
     } putchar('\n');
+    printf("\033[0m");
 
-    int tokLen = strlen(tok->data);
     int nSpaces = (int)tok->where - startIdx - tokLen - 1;
     while (isspace(tok->line[nSpaces + startIdx])) nSpaces--;
-    if (nSpaces + 1 > 0)
-        for (int i = 0; i <= nSpaces + 1; ++i) {
+    if (nSpaces > 0)
+        for (int i = 0; i <= nSpaces; ++i) {
             putchar(' ');
         }
-    printf("^\n%s\n", err);
+
+    if (col) printf("\033[1;31m");
+    for (int i = 0; i < strlen(tok->data); ++i)
+        putchar('^');
+    if (col) printf("\033[0m");
+
+    printf("\n%s\n", err);
 
 }

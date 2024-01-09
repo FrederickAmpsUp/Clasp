@@ -77,7 +77,8 @@ static void parser_panic(ClaspParser *p) {
 // Do an error. This halts the current parse function and starts a new statement after the first sync token.
 #define ERROR(message) do {\
     ClaspToken *errtok = p->lexer->current;\
-    parser_panic(p); token_err(errtok, message);\
+    parser_panic(p);\
+    token_err(errtok, message);\
     return NULL;\
 } while (0)
 
@@ -109,12 +110,14 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
         if (consume(p, &op, TOKEN_COLON, TOKEN_EQ)) {
             if (op->type == TOKEN_COLON) { // We have a typename
                 type = parser_type(p);
-                if (consume(p, NULL, TOKEN_EQ)) // Typename and initializer
+                if (consume(p, NULL, TOKEN_EQ)) { // Typename and initializer
                     initializer = parser_expression(p);
+                    if (initializer == NULL) return NULL;
+                }
             } else { // Initializer only
                 initializer = parser_expression(p);
+                if (initializer == NULL) return NULL;
             }
-            if (initializer == NULL) return NULL;
             if (!consume(p, NULL, TOKEN_SEMICOLON) && p->puncNextStmt) {
                 ERROR("Expected semicolon after variable declaration.");
             }
