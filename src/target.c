@@ -160,6 +160,7 @@ ClaspTarget *new_target(char *fname) {
 
     FILE *dll_outf = fopen(dll_fname, "wb");
     fwrite(buf, 1, len, dll_outf);
+    fclose(dll_outf);
     _DLL *dll_f = _DLL_open(dll_fname);
 
     ClaspTarget *out = malloc(sizeof(ClaspTarget));
@@ -205,6 +206,6 @@ ClaspTarget *new_target(char *fname) {
         out->type = TARGET_VISITOR;
     }
 
-
     free(dll_fname); // also frees dir
+    return out;
 }

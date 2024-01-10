@@ -4,7 +4,7 @@
  * 
  * This program is part of the Clasp Test Suite
  * 
- * Copyright (c) 2023, Frederick Ziola
+ * Copyright (c) 2024, Frederick Ziola
  *                      frederick.ziola@gmail.com
  * 
  * SPDX-License-Identifier: GPL-3.0
@@ -36,10 +36,10 @@
 #include <assert.h>
 
 int main(int argc, char **argv) {
-    StringStream *str = new_stream("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890  \n\nabcd");
+    StringStream *str = new_sstream("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890  \n\nabcd");
     
     char c;
-    while ((c = stream_read(str)) != EOF) {
+    while ((c = sstream_read(str)) != EOF) {
         putchar(c);
     }
     putchar('\n');

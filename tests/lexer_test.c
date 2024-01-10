@@ -4,7 +4,7 @@
  * 
  * This program is part of the Clasp Test Suite
  * 
- * Copyright (c) 2023, Frederick Ziola
+ * Copyright (c) 2024, Frederick Ziola
  *                      frederick.ziola@gmail.com
  * 
  * SPDX-License-Identifier: GPL-3.0
