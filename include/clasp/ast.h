@@ -60,17 +60,19 @@ typedef enum {
     CLASP_NUM_VISITORS
 } ClaspASTNodeType;
 
-// Forward declaration
+/**
+ * The actual data stored in AST nodes.
+*/
 typedef struct ClaspASTNode ClaspASTNode;
 
+/**
+ * Utility for function arguments.
+*/
 struct ClaspArg {
     ClaspToken *name;
     ClaspASTNode *type;
 };
 
-/**
- * The actual data stored in AST nodes.
-*/
 union ASTNodeData {
     /**
      * Binary operations (5 + 3)

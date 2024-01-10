@@ -11,4 +11,4 @@ EnumModes {
 ```
 CBT <mode: EnumModes> <binarySize: u64> <binary: bytearray[binarySize]>
 ```
-`mode` is the mode of the target, either an AST visitor or a bytecode transpiler. `binarySize` is the size of the target's binary file in bytes. `binary` is the binary representation of the `.o` file from the original visitor source code.
+`mode` is the mode of the target, either an AST visitor or a bytecode transpiler. `binarySize` is the size of the target's binary file in bytes. `binary` is the binary representation of the `.dll`/`.so` file from the original visitor source code.
