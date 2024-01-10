@@ -1,8 +1,8 @@
 /**
- * Clasp String Stream Implementation
- * Authored 12/2023
+ * Clasp String Stream declaration
+ * Authored 1/9/2024
  * 
- * This program is part of the Clasp Source Libraries
+ * This program is part of the Clasp Header Libraries
  * 
  * Copyright (c) 2024, Frederick Ziola
  *                      frederick.ziola@gmail.com
@@ -23,24 +23,29 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <clasp/stringstream.h>
-#include <string.h>
+#ifndef FSTREAM_H
+#define FSTREAM_H
+
+#include <clasp/lexer.h>
 #include <stdio.h>
-#include <stdlib.h>
 
-StringStream *new_stream(char *str) {
-    char *new = malloc(strlen(str) + 1);
-    strcpy(new, str);
-    new[strlen(new)-1] = '\0';
+/**
+ * File Stream. This store the data and index into it.
+*/
+typedef struct {
+    FILE *file;
+} FileStream;
 
-    StringStream *stream = malloc(sizeof(StringStream));
-    stream->data = new;
-    stream->idx = 0;
+/**
+ * Allocate and intialize a new stream.
+ * @param fname The file to open.
+*/
+FileStream* new_fstream(char *fname);
 
-    return stream;
-}
+/**
+ * Read a character from a stream.
+ * @param s The stream to read from.
+*/
+char fstream_read(FileStream *s);
 
-char stream_read(StringStream *s) {
-    if (s->idx >= strlen(s->data)) return EOF;
-    return s->data[s->idx++];
-}
+#endif // STRINGSTREAM_H

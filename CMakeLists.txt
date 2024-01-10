@@ -16,11 +16,11 @@ file(GLOB TEST_SOURCES tests/*.c)
 # Source files
 file(GLOB SOURCES src/*.c src/**/*.c)
 
+# Main files
+file(GLOB MAIN_SOURCES run/*.c)
+
 # C math library (-lm on command-line)
 link_libraries(m)
-
-link_directories(/lib32/)
-link_libraries(libz.a)
 
 # Include directory
 include_directories(include/)
@@ -37,8 +37,11 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
             NAME    ${TEST_NAME}
             COMMAND ${TEST_NAME}
             WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-
-        # Optionally, link any necessary libraries
-        # target_link_libraries(${TEST_NAME} some_library)
     endif()
+endforeach()
+
+foreach(SOURCE ${MAIN_SOURCES})
+    get_filename_component(NAME ${SOURCE} NAME_WE)
+
+    add_executable(${NAME} ${SOURCE} ${SOURCES})
 endforeach()

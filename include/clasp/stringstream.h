@@ -40,12 +40,12 @@ typedef struct {
  * Allocate and intialize a new stream.
  * @param str The string to treat as a file
 */
-StringStream* new_stream(char *str);
+StringStream* new_sstream(char *str);
 
 /**
  * Read a character from a stream.
  * @param s The stream to read from.
 */
-char stream_read(StringStream *s);
+char sstream_read(StringStream *s);
 
 #endif // STRINGSTREAM_H
