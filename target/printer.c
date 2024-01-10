@@ -155,3 +155,7 @@ void *visit_while(ClaspASTNode *ast) {
 void *visit_single_type(ClaspASTNode *ast) {
     printf("[single name=\"%s\"]", ast->data.single.name->data);
 }
+
+void target_run(ClaspASTNode *ast) {
+    (void) visit(ast, _PRINTER);
+}

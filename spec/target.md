@@ -15,18 +15,5 @@ CBT <mode: EnumModes> <binarySize: u64> <binary: bytearray[binarySize]>
 
 The included dynamic library must contain the following functions:
 ```
-visit_binop
-visit_unop
-visit_postfix
-visit_lit_num
-visit_var_ref
-visit_fn_call
-visit_expr_stmt
-visit_block_stmt
-visit_var_decl
-visit_let_decl
-visit_const_decl
-visit_fn_decl
-visit_if
-visit_while
-``````
+target_run // Runs the target on a given input (bytecode or AST)
+```

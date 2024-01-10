@@ -185,22 +185,7 @@ ClaspTarget *new_target(char *fname) {
     AST_IF_STMT
     AST_WHILE_STMT
 */
-            // i wish there was a better way to do this  
-            // i guess i gotta get the line count up somehow
-        out->visitor[AST_EXPR_BINOP     ] = _DLL_load(dll_f, void *, "visit_binop"     );
-        out->visitor[AST_EXPR_UNOP      ] = _DLL_load(dll_f, void *, "visit_unop"      );
-        out->visitor[AST_EXPR_POSTFIX   ] = _DLL_load(dll_f, void *, "visit_postfix"   );
-        out->visitor[AST_EXPR_LIT_NUMBER] = _DLL_load(dll_f, void *, "visit_lit_num"   );
-        out->visitor[AST_EXPR_VAR_REF   ] = _DLL_load(dll_f, void *, "visit_var_ref"   );
-        out->visitor[AST_EXPR_FN_CALL   ] = _DLL_load(dll_f, void *, "visit_fn_call"   );
-        out->visitor[AST_EXPR_STMT      ] = _DLL_load(dll_f, void *, "visit_expr_stmt" );
-        out->visitor[AST_BLOCK_STMT     ] = _DLL_load(dll_f, void *, "visit_block_stmt");
-        out->visitor[AST_VAR_DECL_STMT  ] = _DLL_load(dll_f, void *, "visit_var_decl"  );
-        out->visitor[AST_LET_DECL_STMT  ] = _DLL_load(dll_f, void *, "visit_let_decl"  );
-        out->visitor[AST_CONST_DECL_STMT] = _DLL_load(dll_f, void *, "visit_const_decl");
-        out->visitor[AST_FN_DECL_STMT   ] = _DLL_load(dll_f, void *, "visit_fn_decl"   );
-        out->visitor[AST_IF_STMT        ] = _DLL_load(dll_f, void *, "visit_if"        );
-        out->visitor[AST_WHILE_STMT     ] = _DLL_load(dll_f, void *, "visit_while"     );
+        out->run = _DLL_load(dll_f, void, "target_run");
 
         out->library = dll_f;
         out->type = TARGET_VISITOR;

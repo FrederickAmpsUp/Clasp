@@ -63,10 +63,7 @@ typedef enum {
 typedef struct ClaspTarget {
     _DLL *library;
     ClaspTargetType type;
-    union {
-        ClaspASTVisitor visitor;
-        // TOOD: bytecode transpiler
-    };
+    void (*run)(void *);
 } ClaspTarget;
 
 /**

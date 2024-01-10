@@ -22,8 +22,7 @@ int main(int argc, char **argv) {
     if (target->type != TARGET_VISITOR) {
         printf("Error: only AST visitor targets are currently supported.\n");
     }
-        // use the target :)
-    visit(ast, target->visitor);
+    target->run(ast);
 
     return 0;
 }
