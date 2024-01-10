@@ -237,11 +237,11 @@ ClaspASTNode *type_single(ClaspToken *name) {
     return new_AST_node(AST_TYPE_SINGLE, data);
 }
 
-void *visit(ClaspASTNode *node, ClaspASTVisitor v) {
+void *visit(ClaspASTNode *node, void *args, ClaspASTVisitor v) {
     if (!node) return NULL;
     if (node->type < 0 || node->type > CLASP_NUM_VISITORS) {
         fprintf(stderr, "Internal error, please report this message: \n\n\"Unknown AST node type: %d\"\n", node->type);
         exit(1);
     }
-    return v[node->type](node);
+    return v[node->type](node, args);
 }

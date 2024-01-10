@@ -27,67 +27,67 @@
 #include <stdio.h>
 #include <cvector/cvector.h>
 
-void *_printBinop(ClaspASTNode *binop) {
+void *_printBinop(ClaspASTNode *binop, void *args) {
     printf("(binop: left=");
-    visit(binop->data.binop.left, clasp_ast_printer);
+    visit(binop->data.binop.left, args, clasp_ast_printer);
     printf(" op=%s right=", binop->data.binop.op->data);
-    visit(binop->data.binop.right, clasp_ast_printer);
+    visit(binop->data.binop.right, args, clasp_ast_printer);
     printf(")");
     return NULL;
 }
-void *_printUnop(ClaspASTNode *unop) {
+void *_printUnop(ClaspASTNode *unop, void *args) {
     printf("(unop: op=%s right=", unop->data.unop.op->data);
-    visit(unop->data.unop.right, clasp_ast_printer);
+    visit(unop->data.unop.right, args, clasp_ast_printer);
     printf(")");
     return NULL;
 }
 
-void *_printPostfix(ClaspASTNode *post) {
+void *_printPostfix(ClaspASTNode *post, void *args) {
     printf("(postfix: left=");
-    visit(post->data.postfix.left, clasp_ast_printer);
+    visit(post->data.postfix.left, args, clasp_ast_printer);
     printf(" op=%s)", post->data.postfix.op->data);
     return NULL;
 }
-void *_printNumLiteral(ClaspASTNode *lit) {
+void *_printNumLiteral(ClaspASTNode *lit, void *args) {
     printf("(num_literal: val=%s)", lit->data.lit_num.value->data);
     return NULL;
 }
 
-void *_printVarRef(ClaspASTNode *var) {
+void *_printVarRef(ClaspASTNode *var, void *args) {
     printf("(var_ref: name=%s)", var->data.var_ref.varname->data);
     return NULL;
 }
 
-void *_printFnCall(ClaspASTNode *fn) {
+void *_printFnCall(ClaspASTNode *fn, void *args) {
     printf("(fn_call: ref=");
-    visit(fn->data.fn_call.referencer, clasp_ast_printer);
+    visit(fn->data.fn_call.referencer, args, clasp_ast_printer);
     printf(" args=[  ");
 
     for (int i = 0; i < cvector_size(fn->data.fn_call.args); ++i) {
         printf("\b\b");
-        visit(fn->data.fn_call.args[i], clasp_ast_printer);
+        visit(fn->data.fn_call.args[i], args, clasp_ast_printer);
         printf(",   ");
     }
     printf("\b\b\b\b])");
 }
 
-void *_printExprStmt(ClaspASTNode *ast) {
+void *_printExprStmt(ClaspASTNode *ast, void *args) {
     printf("(exprStmt: ");
-    visit(ast->data.expr_stmt.expr, clasp_ast_printer);
+    visit(ast->data.expr_stmt.expr, args, clasp_ast_printer);
     printf(")\n");
     return NULL;
 }
 
-void *_printBlockStmt(ClaspASTNode *ast) {
+void *_printBlockStmt(ClaspASTNode *ast, void *args) {
     printf("(blockStmt:\n");
     for (int i = 0; i < cvector_size(ast->data.block_stmt.body); ++i) {
-        visit(ast->data.block_stmt.body[i], clasp_ast_printer);
+        visit(ast->data.block_stmt.body[i], args, clasp_ast_printer);
     }
     printf(")\n");
     return NULL;
 }
 
-void *_printVarDecl(ClaspASTNode *ast) {
+void *_printVarDecl(ClaspASTNode *ast, void *args) {
     switch (ast->type) {
         case AST_VAR_DECL_STMT:   printf("(varDecl:");   break;
         case AST_LET_DECL_STMT:   printf("(letDecl:");   break;
@@ -96,53 +96,53 @@ void *_printVarDecl(ClaspASTNode *ast) {
     printf(" name=\"%s\"", ast->data.var_decl_stmt.name->data);
     if (ast->data.var_decl_stmt.type) {
         printf(" type=");
-        visit(ast->data.var_decl_stmt.type, clasp_ast_printer);
+        visit(ast->data.var_decl_stmt.type, args, clasp_ast_printer);
     }
 
     if (ast->data.var_decl_stmt.initializer) {
         printf(" initializer=");
-        visit(ast->data.var_decl_stmt.initializer, clasp_ast_printer);
+        visit(ast->data.var_decl_stmt.initializer, args, clasp_ast_printer);
     }
     printf(")\n");
 }
 
-void *_printFnDecl(ClaspASTNode *ast) {
+void *_printFnDecl(ClaspASTNode *ast, void *args) {
     printf("fnDecl: name=\"%s\" ret=", ast->data.fn_decl_stmt.name->data);
-    visit(ast->data.fn_decl_stmt.ret_type, clasp_ast_printer);
+    visit(ast->data.fn_decl_stmt.ret_type, args, clasp_ast_printer);
     printf(" args=[  ");
     for (int i = 0; i < cvector_size(ast->data.fn_decl_stmt.args); ++i) {
         struct ClaspArg *arg = ast->data.fn_decl_stmt.args[i];
         printf("\b\b(%s ", arg->name->data);
-        visit(arg->type, clasp_ast_printer);
+        visit(arg->type, args, clasp_ast_printer);
         printf("),   ");
     }
     printf("\b\b\b\b] body=");
-    visit(ast->data.fn_decl_stmt.body, clasp_ast_printer);
+    visit(ast->data.fn_decl_stmt.body, args, clasp_ast_printer);
     printf(")\n");
 }
 
-void *_printIf(ClaspASTNode *ast) {
+void *_printIf(ClaspASTNode *ast, void *args) {
     printf("(ifStmt: cond=");
-    visit(ast->data.cond_stmt.cond, clasp_ast_printer);
+    visit(ast->data.cond_stmt.cond, args, clasp_ast_printer);
     printf(" body=");
-    visit(ast->data.cond_stmt.body, clasp_ast_printer);
+    visit(ast->data.cond_stmt.body, args, clasp_ast_printer);
     printf(")\n");
 }
 
-void *_printWhile(ClaspASTNode *ast) {
+void *_printWhile(ClaspASTNode *ast, void *args) {
     printf("(whileStmt: cond=");
-    visit(ast->data.cond_stmt.cond, clasp_ast_printer);
+    visit(ast->data.cond_stmt.cond, args, clasp_ast_printer);
     printf(" body=");
-    visit(ast->data.cond_stmt.body, clasp_ast_printer);
+    visit(ast->data.cond_stmt.body, args, clasp_ast_printer);
     printf(")\n");
 }
 
-void *_printSingleType(ClaspASTNode *ast) {
+void *_printSingleType(ClaspASTNode *ast, void *args) {
     printf("[single name=\"%s\"]", ast->data.single.name->data);
 }
 
 void claspPrintAST(ClaspASTNode *ast) {
-    visit(ast, clasp_ast_printer);
+    visit(ast, NULL, clasp_ast_printer);
 }
 
 ClaspASTVisitor clasp_ast_printer = {

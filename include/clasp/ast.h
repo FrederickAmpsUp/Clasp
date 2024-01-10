@@ -319,7 +319,7 @@ ClaspASTNode *type_single(ClaspToken *name);
 /**
  * AST visitor that can return data.
 */
-typedef void *(*ClaspVisitorFn) (ClaspASTNode *node);
+typedef void *(*ClaspVisitorFn) (ClaspASTNode *node, void *args);
 
 /**
  * List of visitors.
@@ -331,6 +331,6 @@ typedef ClaspVisitorFn ClaspASTVisitor[CLASP_NUM_VISITORS];
  * @param node The node to visit
  * @param visitor The visitor table to use.
 */
-void *visit(ClaspASTNode *node, ClaspASTVisitor visitor);
+void *visit(ClaspASTNode *node, void *args, ClaspASTVisitor visitor);
 
 #endif // AST_H

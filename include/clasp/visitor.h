@@ -32,22 +32,22 @@
  * Visitor functions for different AST node types.
  * These are automatically called by the visit() function in clasp/ast.h
 */
-void *visitBinop(ClaspASTNode *binop);
-void *visitUnop(ClaspASTNode *unop);
-void *visitPostfix(ClaspASTNode *postfix);
-void *visitNumLiteral(ClaspASTNode *lit);
-void *visitVarRef(ClaspASTNode *var);
-void *visitFnCall(ClaspASTNode *fn);
+void *visitBinop(ClaspASTNode *binop, void *args);
+void *visitUnop(ClaspASTNode *unop, void *args);
+void *visitPostfix(ClaspASTNode *postfix, void *args);
+void *visitNumLiteral(ClaspASTNode *lit, void *args);
+void *visitVarRef(ClaspASTNode *var, void *args);
+void *visitFnCall(ClaspASTNode *fn, void *args);
 
-void *visitExprStmt(ClaspASTNode *expr);
-void *visitBlockStmt(ClaspASTNode *block);
-void *visitVarDecl(ClaspASTNode *var);
-void *visitFnDecl(ClaspASTNode *fn);
+void *visitExprStmt(ClaspASTNode *expr, void *args);
+void *visitBlockStmt(ClaspASTNode *block, void *args);
+void *visitVarDecl(ClaspASTNode *var, void *args);
+void *visitFnDecl(ClaspASTNode *fn, void *args);
 
-void *visitIfStmt(ClaspASTNode *stmt);
-void *visitWhileStmt(ClaspASTNode *stmt);
+void *visitIfStmt(ClaspASTNode *stmt, void *args);
+void *visitWhileStmt(ClaspASTNode *stmt, void *args);
 
-void *visitSingleType(ClaspASTNode *type);
+void *visitSingleType(ClaspASTNode *type, void *args);
 
 ClaspASTVisitor clasp_ast_printer = {
     [AST_EXPR_BINOP     ] = &visitBinop,
