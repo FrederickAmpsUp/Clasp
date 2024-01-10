@@ -12,3 +12,4 @@ build/
 bin/
 .header-template.txt
 test.csp
+!target/Makefile
