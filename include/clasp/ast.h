@@ -28,6 +28,7 @@
 
 #include <clasp/lexer.h>
 #include <cvector/cvector.h>
+#include <stdint.h>
 
 /**
  * Enumeration to store types of AST nodes.
@@ -73,6 +74,16 @@ struct ClaspArg {
     ClaspASTNode *type;
 };
 
+typedef uint8_t ClaspTypeFlag;
+
+static const ClaspTypeFlag TYPE_CONST   = 0b00000001;
+static const ClaspTypeFlag TYPE_MUTABLE = 0b00000010;
+
+struct ClaspExprType {
+    ClaspASTNode *type;
+    ClaspTypeFlag flag;
+};
+
 union ASTNodeData {
     /**
      * Binary operations (5 + 3)
@@ -81,6 +92,8 @@ union ASTNodeData {
         ClaspASTNode *left;
         ClaspASTNode *right;
         ClaspToken *op;
+
+        struct ClaspExprType *type;
     } binop;
     /**
      * Unary operations (-8)
@@ -88,6 +101,8 @@ union ASTNodeData {
     struct {
         ClaspASTNode *right;
         ClaspToken *op;
+
+        struct ClaspExprType *type;
     } unop;
     /**
      * Postfix (x++)
@@ -95,18 +110,24 @@ union ASTNodeData {
     struct {
         ClaspASTNode *left;
         ClaspToken *op;
+
+        struct ClaspExprType *type;
     } postfix;
     /**
      * Number literals (22)
     */
     struct {
         ClaspToken *value;
+
+        struct ClaspExprType *type;
     } lit_num;
     /**
      * Variable references (x, foo)
     */
     struct {
         ClaspToken *varname;
+
+        struct ClaspExprType *type;
     } var_ref;
     /**
      * Function calls (foo(), mul(a,b))
@@ -114,6 +135,8 @@ union ASTNodeData {
     struct {
         ClaspASTNode *referencer;
         cvector(ClaspASTNode *) args;
+
+        struct ClaspExprType *type;
     } fn_call;
     /**
      * Expression statements (see syntax.md)

@@ -30,12 +30,14 @@
 #include <stdio.h>
 #include <clasp/ast.h>
 #include <stdbool.h>
+#include <sheredom-hashmap/hashmap.h>
 
 /**
  * State of a parser. Stores the lexer used, and wether the next statement requires punctuation (a semicolon).
 */
 typedef struct {
     ClaspLexer *lexer;
+    hashmap_t variables;
 
     bool puncNextStmt;
 } ClaspParser;
