@@ -32,43 +32,43 @@
  * Visitor functions for different AST node types.
  * These are automatically called by the visit() function in clasp/ast.h
 */
-void *visitBinop(ClaspASTNode *binop, void *args);
-void *visitUnop(ClaspASTNode *unop, void *args);
-void *visitPostfix(ClaspASTNode *postfix, void *args);
-void *visitNumLiteral(ClaspASTNode *lit, void *args);
-void *visitVarRef(ClaspASTNode *var, void *args);
-void *visitFnCall(ClaspASTNode *fn, void *args);
+void *visit_binop(ClaspASTNode *binop, void *args);
+void *visit_unop(ClaspASTNode *unop, void *args);
+void *visit_postfix(ClaspASTNode *postfix, void *args);
+void *visit_lit_num(ClaspASTNode *lit, void *args);
+void *visit_var_ref(ClaspASTNode *var, void *args);
+void *visit_fn_call(ClaspASTNode *fn, void *args);
 
-void *visitExprStmt(ClaspASTNode *expr, void *args);
-void *visitBlockStmt(ClaspASTNode *block, void *args);
-void *visitVarDecl(ClaspASTNode *var, void *args);
-void *visitFnDecl(ClaspASTNode *fn, void *args);
+void *visit_expr_stmt(ClaspASTNode *expr, void *args);
+void *visit_block_stmt(ClaspASTNode *block, void *args);
+void *visit_var_decl(ClaspASTNode *var, void *args);
+void *visit_fn_decl(ClaspASTNode *fn, void *args);
 
-void *visitIfStmt(ClaspASTNode *stmt, void *args);
-void *visitWhileStmt(ClaspASTNode *stmt, void *args);
+void *visit_if(ClaspASTNode *stmt, void *args);
+void *visit_while(ClaspASTNode *stmt, void *args);
 
-void *visitSingleType(ClaspASTNode *type, void *args);
+void *visit_single_type(ClaspASTNode *type, void *args);
 
-ClaspASTVisitor clasp_ast_printer = {
-    [AST_EXPR_BINOP     ] = &visitBinop,
-    [AST_EXPR_UNOP      ] = &visitUnop,
-    [AST_EXPR_POSTFIX   ] = &visitPostfix,
-    [AST_EXPR_LIT_NUMBER] = &visitNumLiteral,
-    [AST_EXPR_VAR_REF   ] = &visitVarRef,
-    [AST_EXPR_FN_CALL   ] = &visitFnCall,
+ClaspASTVisitor self_visitor = {
+    [AST_EXPR_BINOP     ] = &visit_binop,
+    [AST_EXPR_UNOP      ] = &visit_unop,
+    [AST_EXPR_POSTFIX   ] = &visit_postfix,
+    [AST_EXPR_LIT_NUMBER] = &visit_lit_num,
+    [AST_EXPR_VAR_REF   ] = &visit_var_ref,
+    [AST_EXPR_FN_CALL   ] = &visit_fn_call,
 
-    [AST_EXPR_STMT      ] = &visitExprStmt,
-    [AST_BLOCK_STMT     ] = &visitBlockStmt,
-    [AST_VAR_DECL_STMT  ] = &visitVarDecl,
-    [AST_LET_DECL_STMT  ] = &visitVarDecl,
-    [AST_CONST_DECL_STMT] = &visitVarDecl,
+    [AST_EXPR_STMT      ] = &visit_expr_stmt,
+    [AST_BLOCK_STMT     ] = &visit_block_stmt,
+    [AST_VAR_DECL_STMT  ] = &visit_var_decl,
+    [AST_LET_DECL_STMT  ] = &visit_var_decl,
+    [AST_CONST_DECL_STMT] = &visit_var_decl,
 
-    [AST_FN_DECL_STMT   ] = &visitFnDecl,
+    [AST_FN_DECL_STMT   ] = &visit_fn_decl,
 
-    [AST_IF_STMT        ] = &visitIfStmt,
-    [AST_WHILE_STMT     ] = &visitWhileStmt,
+    [AST_IF_STMT        ] = &visit_if,
+    [AST_WHILE_STMT     ] = &visit_while,
 
-    [AST_TYPE_SINGLE    ] = &visitSingleType,
+    [AST_TYPE_SINGLE    ] = &visit_single_type,
 };
 
 #endif // VISITOR_H
