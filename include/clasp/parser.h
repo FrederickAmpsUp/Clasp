@@ -33,7 +33,7 @@
 #include <sheredom-hashmap/hashmap.h>
 
 /**
- * State of a parser. Stores the lexer used, and wether the next statement requires punctuation (a semicolon).
+ * State of a parser. Stores the lexer used, a variable table, and wether the next statement requires punctuation (a semicolon).
 */
 typedef struct {
     ClaspLexer *lexer;

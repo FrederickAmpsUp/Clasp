@@ -49,7 +49,7 @@ char sstream_read(StringStream *s) {
 FileStream *new_fstream(char *filename) {
     FILE *f = fopen(filename, "r");
     if (!f) {
-        printf("Failed to open file %s\n");
+        printf("Failed to open file %s\n", filename);
         return NULL;
     }
 

@@ -63,7 +63,7 @@ void (*_DLL_load_impl(char *name, _DLL *lib))() {
     void (*fn)() = dlsym(lib->handle, name);
     if (fn == NULL) {
         // Handle error
-        fprintf(stderr, "dlsym error while loading function \"%s\": %s\n", dlerror());
+        fprintf(stderr, "dlsym error while loading function \"%s\": %s\n", name, dlerror());
     }
     return fn;
 
