@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
 
     char *filename = argv[1];
     FileStream *stream = new_fstream(filename);
-
+    if (!stream) return -1;
 
     ClaspLexer *lexer = malloc(sizeof(ClaspLexer));
     new_lexer(lexer, (StreamReadFn)&fstream_read, stream);
@@ -18,6 +18,7 @@ int main(int argc, char **argv) {
 
     ClaspASTNode *ast = parser_compile(parser);
     ClaspTarget *target = new_target(argv[2]);
+    if (!stream) return -1;
 
     if (target->type != TARGET_VISITOR) {
         printf("Error: only AST visitor targets are currently supported.\n");
