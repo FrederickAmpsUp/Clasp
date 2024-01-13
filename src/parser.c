@@ -66,20 +66,20 @@ static const ClaspTokenType const SYNC_TOKENS[] = {
 static void parser_panic(ClaspParser *p) {
     const int n_sync = sizeof(SYNC_TOKENS) / sizeof(ClaspTokenType);
 
-    ClaspToken *t;
+    ClaspToken *t = p->lexer->current;
     while (true) {
-        t = lexer_next(p->lexer);
         for (int i = 0; i < n_sync; ++i) {
             if (p->lexer->previous->type == SYNC_TOKENS[i]) {
                 return;
             }
         }
+        t = lexer_next(p->lexer);
     }
 }
 
 // Do an error. This halts the current parse function and starts a new statement after the first sync token.
 #define ERROR(message) do {\
-    ClaspToken *errtok = p->lexer->current;\
+    ClaspToken *errtok = p->lexer->previous;\
     parser_panic(p);\
     token_err(errtok, message);\
     return NULL;\
@@ -203,6 +203,9 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             vtype->flag = TYPE_CONST;
             var->type = vtype;
             var->scope = p->scope;
+            if (!(initializer->exprType->flag & TYPE_CONST)) {
+                ERROR("Constant initalization to non-constant expression.");
+            }
             parser_add_var(p, var);
             return const_decl(name, type, initializer);
         } else {
@@ -342,6 +345,9 @@ ClaspASTNode *parser_assignment(ClaspParser *p) {
             TOKEN_PERC_EQ,
             TOKEN_CARAT_EQ,
             TOKEN_TILDE_EQ)) {
+        if (!(left->exprType->flag & TYPE_MUTABLE)) { // Trying to assign to an immutable/const expression
+            ERROR("Assignment to immutable or const expression.");
+        }
         ClaspASTNode *right = parser_assignment(p); // right operand, right-associativity
         left = binop(left, right, op);
     }

@@ -54,6 +54,7 @@ void general_err(const char *fmt, ...) {
     return;
 }
 
+// yes, it's terrible
 void token_err(ClaspToken *tok, char *err) {
     int startIdx = 0;
     if (startIdx < 0) startIdx = 0;
@@ -71,7 +72,7 @@ void token_err(ClaspToken *tok, char *err) {
     } putchar('\n');
     printf("\033[0m");
 
-    int nSpaces = (int)tok->where - startIdx - tokLen - 1;
+    int nSpaces = (int)tok->where - startIdx - tokLen - 2;
     while (isspace(tok->line[nSpaces + startIdx])) nSpaces--;
     if (nSpaces > 0)
         for (int i = 0; i <= nSpaces; ++i) {

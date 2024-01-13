@@ -119,8 +119,13 @@ ClaspASTNode *lit_num(ClaspToken *n) {
         return NULL;
     }
 
-        struct ClaspType *type = malloc(sizeof(struct ClaspType));
-    type->type = NULL;
+    struct ClaspType *type = malloc(sizeof(struct ClaspType));
+
+    union ASTNodeData *typeData = malloc(sizeof(union ASTNodeData));
+    typeData->single.name = malloc(sizeof(ClaspToken));
+    typeData->single.name->data = "int"; // TODO: floats
+    ClaspASTNode *typename = new_AST_node(AST_TYPE_SINGLE, typeData);
+    type->type = typename;
     type->flag = TYPE_CONST;
 
     data->lit_num.value = n;
