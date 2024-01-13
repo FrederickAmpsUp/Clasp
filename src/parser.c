@@ -66,14 +66,13 @@ static const ClaspTokenType const SYNC_TOKENS[] = {
 static void parser_panic(ClaspParser *p) {
     const int n_sync = sizeof(SYNC_TOKENS) / sizeof(ClaspTokenType);
 
-    ClaspToken *t = p->lexer->current;
     while (true) {
         for (int i = 0; i < n_sync; ++i) {
             if (p->lexer->previous->type == SYNC_TOKENS[i]) {
                 return;
             }
         }
-        t = lexer_next(p->lexer);
+        (void) lexer_next(p->lexer);
     }
 }
 

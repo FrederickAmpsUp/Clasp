@@ -147,6 +147,7 @@ ClaspASTNode *var_ref(hashmap_t *vars, ClaspToken *n) {
     
     ClaspVariable *var = hashmap_get(vars, n->data, strlen(n->data));
     if (var) type->flag = var->type->flag;
+    if (var) type->type = var->type->type;
 
     data->var_ref.varname = n;
 
