@@ -1,3 +1,5 @@
+# line stats
+
 include="./include/clasp"
 source="./src/ ./target/"
 
@@ -34,6 +36,6 @@ echo "  Min: $(echo $source_min | awk ' { print $1 } ') ($(basename $(echo $sour
 
 echo ""
 echo "Overall:"
+echo "  Total: $((head_total_lines + source_total_lines))"
 echo "  Max: $(echo $overall_max | awk ' { print $1 } ') ($(basename $(echo $overall_max | awk ' { print $2 } ')))"
 echo "  Min: $(echo $overall_min | awk ' { print $1 } ') ($(basename $(echo $overall_min | awk ' { print $2 } ')))"
-echo "  Total: $((head_total_lines + source_total_lines))"

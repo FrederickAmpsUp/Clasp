@@ -10,6 +10,16 @@ When jumping to assembly, there's an intermediate function inserted that loads t
 
 Aditionally, the VM holds a "symbol table" that stores function locations **in memory** and **by name**. Each `.clb` file contains its own symbol table specifying function names and locations **in that file's code section**.
 
+## File structure
+```
+CLB
+<startAddr: i64> // Start address (address table index). If this is -1, the file is marked as 'not runnable' and is used as a library.
+<aLen: u64> <aTable: [u64]>  // Address table
+<sTable: hashmap[str, u64]>  // Symbol table
+<codeSize: u64> <code: [u8]> // Code section
+
+```
+
 ## Opcodes
 <!-- this sucked to make -->
 <!-- also this comment syntax is terrible -->
