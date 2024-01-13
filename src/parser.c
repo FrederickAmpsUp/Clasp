@@ -198,7 +198,7 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             struct ClaspType *vtype = malloc(sizeof(struct ClaspType));
             if (type == NULL) type = initializer->exprType->type;
             vtype->type = type;
-            vtype->type = TYPE_CONST;
+            vtype->flag = TYPE_CONST;
             var->type = vtype;
             var->scope = p->scope;
             parser_add_var(p, var);
