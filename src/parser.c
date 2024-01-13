@@ -95,7 +95,9 @@ ClaspASTNode *parser_compile(ClaspParser *p) {
 }
 
 void parser_add_var(ClaspParser *p, ClaspVariable *v) {
-    hashmap_put(p->variables, v->name, strlen(v->name), v->type);
+    if(hashmap_put(p->variables, v->name, strlen(v->name), v)) {
+        general_err("hashmap_put error.\n");
+    }
 }
 
 ClaspASTNode *parser_stmt(ClaspParser *p) {
