@@ -34,7 +34,10 @@
 
 void new_parser(ClaspParser *p, ClaspLexer *l) {
     p->lexer = l;
+    p->variables = malloc(sizeof(hashmap_t));
+    hashmap_create(5, p->variables);
     p->puncNextStmt = true;
+    p->scope = 0;
 }
 #define consume(p, t, ...) consume_impl(p, t, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
 static bool consume_impl(ClaspParser *p, ClaspToken **t, int n, ...) {
@@ -91,6 +94,10 @@ ClaspASTNode *parser_compile(ClaspParser *p) {
     return block_stmt(block);
 }
 
+void parser_add_var(ClaspParser *p, ClaspVariable *v) {
+    hashmap_put(p->variables, v->name, strlen(v->name), v->type);
+}
+
 ClaspASTNode *parser_stmt(ClaspParser *p) {
     while (consume(p, NULL, TOKEN_SEMICOLON));
     if (consume(p, NULL, TOKEN_EOF)) return NULL;
@@ -122,6 +129,15 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
                 ERROR("Expected semicolon after variable declaration.");
             }
             if (!p->puncNextStmt) p->puncNextStmt = true;
+            ClaspVariable *var = malloc(sizeof(ClaspVariable));
+            var->name = name->data;
+            struct ClaspType *vtype = malloc(sizeof(struct ClaspType));
+            if (type == NULL) type = initializer->exprType->type;
+            vtype->type = type;
+            vtype->flag = TYPE_MUTABLE;
+            var->type = vtype;
+            var->scope = p->scope;
+            parser_add_var(p, var);
             return var_decl(name, type, initializer);
         } else {
             ERROR("Expected typename or assignment after variable name.");
@@ -145,6 +161,15 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
                 ERROR("Expected semicolon after immutable variable declaration.");
             }
             if (!p->puncNextStmt) p->puncNextStmt = true;
+            ClaspVariable *var = malloc(sizeof(ClaspVariable));
+            var->name = name->data;
+            struct ClaspType *vtype = malloc(sizeof(struct ClaspType));
+            if (type == NULL) type = initializer->exprType->type;
+            vtype->type = type;
+            vtype->flag = 0;
+            var->type = vtype;
+            var->scope = p->scope;
+            parser_add_var(p, var);
             return let_decl(name, type, initializer);
         } else {
             ERROR("Expected typename or assignment after immutable variable name.");
@@ -168,6 +193,15 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
                 ERROR("Expected semicolon after constant declaration.");
             }
             if (!p->puncNextStmt) p->puncNextStmt = true;
+            ClaspVariable *var = malloc(sizeof(ClaspVariable));
+            var->name = name->data;
+            struct ClaspType *vtype = malloc(sizeof(struct ClaspType));
+            if (type == NULL) type = initializer->exprType->type;
+            vtype->type = type;
+            vtype->type = TYPE_CONST;
+            var->type = vtype;
+            var->scope = p->scope;
+            parser_add_var(p, var);
             return const_decl(name, type, initializer);
         } else {
             ERROR("Expected typename or assignment after constant name.");
@@ -205,7 +239,9 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             ERROR("Expected return type specifier after function argument list."); // TODO: show the function name here, once varargs are introduced to the ERROR macro
         }
         ClaspASTNode *rettype = parser_type(p);
+        p->scope++;
         ClaspASTNode *body = parser_stmt(p);
+        p->scope--;
         
         return fn_decl(name, rettype, args, body);
     }
@@ -227,7 +263,9 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             }
         }
 
+        p->scope++;
         ClaspASTNode *body = parser_stmt(p);
+        p->scope--;
 
         switch(cond_type->type) {
             case TOKEN_KW_IF:    return    if_stmt(cond, body); break;
@@ -252,7 +290,9 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
         if (!consume(p, NULL, TOKEN_RIGHT_PAREN)) {
             ERROR("Expected closing parenthesis after for loop increment statement.");
         }
+        p->scope++;
         ClaspASTNode *body = parser_stmt(p); // The body of the loop.
+        p->scope--;
         cvector(ClaspASTNode *) bodyFull = NULL;
         cvector_push_back(bodyFull, body);
         cvector_push_back(bodyFull, inc );
@@ -394,7 +434,7 @@ ClaspASTNode *parser_primary(ClaspParser *p) {
     }
 
     if (consume(p, &val, TOKEN_ID)) { // Variable/fnname references
-        return var_ref(val);
+        return var_ref(p->variables, val);
     }
     
     if (consume(p, NULL, TOKEN_LEFT_PAREN)) {  // Parenthesized expression

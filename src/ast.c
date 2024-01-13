@@ -26,11 +26,21 @@
 #include <clasp/ast.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <clasp/variable.h>
 
 ClaspASTNode *new_AST_node(ClaspASTNodeType t, union ASTNodeData *data) {
     ClaspASTNode *node = malloc(sizeof(ClaspASTNode));
     node->type = t;
     node->data = *data;
+    node->exprType = NULL;
+    return node;
+}
+
+ClaspASTNode *new_expr_node(ClaspASTNodeType t, union ASTNodeData *data, struct ClaspType *exprType) {
+    ClaspASTNode *node = malloc(sizeof(ClaspASTNode));
+    node->type = t;
+    node->data = *data;
+    node->exprType = exprType;
     return node;
 }
 
@@ -42,11 +52,19 @@ ClaspASTNode *binop(ClaspASTNode *left, ClaspASTNode *right, ClaspToken *op) {
         return NULL;
     }
 
+    struct ClaspType *type = malloc(sizeof(struct ClaspType));
+    type->type = NULL;
+    type->flag = TYPE_IMMUTABLE;
+    if (
+        (left ->exprType->flag & TYPE_CONST) &&
+        (right->exprType->flag & TYPE_CONST)
+    ) { type->flag = TYPE_CONST; }
+
     data->binop.left = left;
     data->binop.op = op;
     data->binop.right = right;
 
-    return new_AST_node(AST_EXPR_BINOP, data);
+    return new_expr_node(AST_EXPR_BINOP, data, type);
 }
 
 ClaspASTNode *unop(ClaspASTNode *right, ClaspToken *op) {
@@ -57,10 +75,18 @@ ClaspASTNode *unop(ClaspASTNode *right, ClaspToken *op) {
         return NULL;
     }
 
+    struct ClaspType *type = malloc(sizeof(struct ClaspType));
+    type->type = NULL;
+    type->flag = TYPE_IMMUTABLE;
+    if (
+        (right->exprType->flag & TYPE_CONST)
+    ) { type->flag = TYPE_CONST; }
+
+
     data->unop.op = op;
     data->unop.right = right;
 
-    return new_AST_node(AST_EXPR_UNOP, data);
+    return new_expr_node(AST_EXPR_UNOP, data, type);
 }
 
 ClaspASTNode *postfix(ClaspASTNode *left, ClaspToken *op) {
@@ -71,10 +97,18 @@ ClaspASTNode *postfix(ClaspASTNode *left, ClaspToken *op) {
         return NULL;
     }
 
+    struct ClaspType *type = malloc(sizeof(struct ClaspType));
+    type->type = NULL;
+    type->flag = TYPE_IMMUTABLE;
+    if (
+        (left ->exprType->flag & TYPE_CONST)
+    ) { type->flag = TYPE_CONST; }
+
+
     data->postfix.op = op;
     data->postfix.left = left;
 
-    return new_AST_node(AST_EXPR_POSTFIX, data);
+    return new_expr_node(AST_EXPR_POSTFIX, data, type);
 }
 
 ClaspASTNode *lit_num(ClaspToken *n) {
@@ -85,12 +119,16 @@ ClaspASTNode *lit_num(ClaspToken *n) {
         return NULL;
     }
 
+        struct ClaspType *type = malloc(sizeof(struct ClaspType));
+    type->type = NULL;
+    type->flag = TYPE_CONST;
+
     data->lit_num.value = n;
 
-    return new_AST_node(AST_EXPR_LIT_NUMBER, data);
+    return new_expr_node(AST_EXPR_LIT_NUMBER, data, type);
 }
 
-ClaspASTNode *var_ref(ClaspToken *n) {
+ClaspASTNode *var_ref(hashmap_t *vars, ClaspToken *n) {
     union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
     if (data == NULL) {
         // Handle memory allocation failure
@@ -98,9 +136,16 @@ ClaspASTNode *var_ref(ClaspToken *n) {
         return NULL;
     }
 
+    struct ClaspType *type = malloc(sizeof(struct ClaspType));
+    type->type = NULL;
+    type->flag = TYPE_MUTABLE;
+    
+    ClaspVariable *var = hashmap_get(vars, n->data, strlen(n->data));
+    if (var) type->flag = var->type->flag;
+
     data->var_ref.varname = n;
 
-    return new_AST_node(AST_EXPR_VAR_REF, data);
+    return new_expr_node(AST_EXPR_VAR_REF, data, type);
 }
 
 ClaspASTNode *fn_call(ClaspASTNode *ref, cvector(ClaspASTNode *) args) {
@@ -110,11 +155,15 @@ ClaspASTNode *fn_call(ClaspASTNode *ref, cvector(ClaspASTNode *) args) {
         fprintf(stderr, "Memory allocation error in fn_call function\n");
         return NULL;
     }
+    
+    struct ClaspType *type = malloc(sizeof(struct ClaspType));
+    type->type = NULL;
+    type->flag = TYPE_IMMUTABLE;
 
     data->fn_call.referencer = ref;
     data->fn_call.args = args;
 
-    return new_AST_node(AST_EXPR_FN_CALL, data);
+    return new_expr_node(AST_EXPR_FN_CALL, data, type);
 }
 
 ClaspASTNode *expr_stmt(ClaspASTNode *expr) {

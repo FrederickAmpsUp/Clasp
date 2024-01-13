@@ -28,6 +28,7 @@
 
 #include <clasp/lexer.h>
 #include <cvector/cvector.h>
+#include <sheredom-hashmap/hashmap.h>
 #include <stdint.h>
 
 /**
@@ -76,10 +77,11 @@ struct ClaspArg {
 
 typedef uint8_t ClaspTypeFlag;
 
-static const ClaspTypeFlag TYPE_CONST   = 0b00000001;
-static const ClaspTypeFlag TYPE_MUTABLE = 0b00000010;
+static const ClaspTypeFlag TYPE_CONST     = 0b00000001;
+static const ClaspTypeFlag TYPE_MUTABLE   = 0b00000010;
+static const ClaspTypeFlag TYPE_IMMUTABLE = 0b00000100;
 
-struct ClaspExprType {
+struct ClaspType {
     ClaspASTNode *type;
     ClaspTypeFlag flag;
 };
@@ -92,8 +94,6 @@ union ASTNodeData {
         ClaspASTNode *left;
         ClaspASTNode *right;
         ClaspToken *op;
-
-        struct ClaspExprType *type;
     } binop;
     /**
      * Unary operations (-8)
@@ -101,8 +101,6 @@ union ASTNodeData {
     struct {
         ClaspASTNode *right;
         ClaspToken *op;
-
-        struct ClaspExprType *type;
     } unop;
     /**
      * Postfix (x++)
@@ -110,24 +108,18 @@ union ASTNodeData {
     struct {
         ClaspASTNode *left;
         ClaspToken *op;
-
-        struct ClaspExprType *type;
     } postfix;
     /**
      * Number literals (22)
     */
     struct {
         ClaspToken *value;
-
-        struct ClaspExprType *type;
     } lit_num;
     /**
      * Variable references (x, foo)
     */
     struct {
         ClaspToken *varname;
-
-        struct ClaspExprType *type;
     } var_ref;
     /**
      * Function calls (foo(), mul(a,b))
@@ -135,8 +127,6 @@ union ASTNodeData {
     struct {
         ClaspASTNode *referencer;
         cvector(ClaspASTNode *) args;
-
-        struct ClaspExprType *type;
     } fn_call;
     /**
      * Expression statements (see syntax.md)
@@ -221,6 +211,8 @@ union ASTNodeData {
 typedef struct ClaspASTNode {
     ClaspASTNodeType type;
     union ASTNodeData data;
+
+    struct ClaspType *exprType;
 } ClaspASTNode;
 
 /**
@@ -229,6 +221,14 @@ typedef struct ClaspASTNode {
  * @param data The data of the new node.
 */
 ClaspASTNode *new_AST_node(ClaspASTNodeType type, union ASTNodeData *data);
+
+/**
+ * Allocate and initialize an expression node.
+ * @param type The type of the new node.
+ * @param data The data of the new node.
+ * @param exprType The expression type of the new node.
+*/
+ClaspASTNode *new_expr_node(ClaspASTNodeType type, union ASTNodeData *data, struct ClaspType *exprType);
 
 /**
  * Helper function for creating a binary op node.
@@ -260,9 +260,10 @@ ClaspASTNode *lit_num(ClaspToken *num);
 
 /**
  * Helper function for creating a variable reference node.
+ * @param vars The variable table to use.
  * @param varname The name of the variable to reference.
 */
-ClaspASTNode *var_ref(ClaspToken *varname);
+ClaspASTNode *var_ref(hashmap_t *vars, ClaspToken *varname);
 
 /**
  * Helper function for creating a function call node.

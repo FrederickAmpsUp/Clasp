@@ -27,9 +27,11 @@
 #define PARSER_H
 
 #include <clasp/lexer.h>
-#include <stdio.h>
 #include <clasp/ast.h>
+#include <clasp/variable.h>
+#include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <sheredom-hashmap/hashmap.h>
 
 /**
@@ -37,7 +39,8 @@
 */
 typedef struct {
     ClaspLexer *lexer;
-    hashmap_t variables;
+    hashmap_t *variables;
+    uint16_t scope;
 
     bool puncNextStmt;
 } ClaspParser;
@@ -62,6 +65,12 @@ ClaspASTNode *parser_compile(ClaspParser *parser);
  * @return The statement's AST.
 */
 ClaspASTNode *parser_stmt(ClaspParser *parser);
+
+/**
+ * Add a variable to the parser's variable table.
+ * @param var The variable to add.
+*/
+void parser_add_var(ClaspParser *parser, ClaspVariable *var);
 
 /**
  * Order of operations:
