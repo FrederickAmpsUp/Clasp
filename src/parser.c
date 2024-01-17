@@ -141,7 +141,7 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             parser_add_var(p, var);
             return var_decl(name, type, initializer);
         } else {
-            ERROR("Expected typename or assignment after variable name.");
+            ERROR("Expected typename or initializer after variable name.");
         }
     }
 
@@ -173,7 +173,7 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             parser_add_var(p, var);
             return let_decl(name, type, initializer);
         } else {
-            ERROR("Expected typename or assignment after immutable variable name.");
+            ERROR("Expected typename or initializer after immutable variable name.");
         }
     }
 
@@ -185,7 +185,7 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             if (op->type == TOKEN_COLON) { // We have a typename
                 type = parser_type(p);
                 if (!consume(p, NULL, TOKEN_EQ)) // Initializers are required for consts
-                    ERROR("Expected assignment to const variable.");
+                    ERROR("Expected initializer for constant variable.");
             }
 
             initializer = parser_expression(p);
@@ -203,12 +203,12 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
             var->type = vtype;
             var->scope = p->scope;
             if (!(initializer->exprType->flag & TYPE_CONST)) {
-                ERROR("Constant initalization to non-constant expression.");
+                ERROR("Non-constant initializer for constant expression.");
             }
             parser_add_var(p, var);
             return const_decl(name, type, initializer);
         } else {
-            ERROR("Expected typename or assignment after constant name.");
+            ERROR("Expected typename or initializer after constant name.");
         }
     }
 
