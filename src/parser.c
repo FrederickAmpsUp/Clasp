@@ -220,6 +220,7 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
         cvector(struct ClaspArg *) args = NULL;
 
         while (true) {
+            if (consume(p, NULL, TOKEN_RIGHT_PAREN)) break;
             ClaspToken *argname = lexer_next(p->lexer);
             if (!consume(p, NULL, TOKEN_COLON)) {
                 ERROR("Expected colon after function argument name.");

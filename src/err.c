@@ -39,7 +39,7 @@ static bool term_does_color() {
         return false;
     }
 
-    if (isatty(fileno(stdout))) {
+    if (isatty(fileno(stderr))) {
         return true;  // Terminal supports color
     } else {
         return false; // Terminal does not support color
@@ -67,23 +67,23 @@ void token_err(ClaspToken *tok, char *err) {
     fprintf(stderr, "Syntax error in file %s, line %d:%d.\n", "TODO", tok->lineno + 1, tok->where + 1);
     for (unsigned int i = startIdx; i < endIdx; ++i) {
         if (col && (i == tok->where - tokLen)) printf("\033[1;31m");
-        putchar(tok->line[i]);
+        fprintf(stderr, "%c", tok->line[i]);
         if (col && (i == tok->where)) printf("\033[0m");
-    } putchar('\n');
-    printf("\033[0m");
+    } fprintf(stderr, "\n");
+    fprintf(stderr, "\033[0m");
 
     int nSpaces = (int)tok->where - startIdx - tokLen - 2;
     while (isspace(tok->line[nSpaces + startIdx])) nSpaces--;
     if (nSpaces > 0)
         for (int i = 0; i <= nSpaces; ++i) {
-            putchar(' ');
+            fprintf(stderr, " ");
         }
 
-    if (col) printf("\033[1;31m");
+    if (col) fprintf(stderr, "\033[1;31m");
     for (int i = 0; i < strlen(tok->data); ++i)
-        putchar('^');
-    if (col) printf("\033[0m");
+        fprintf(stderr, "^");
+    if (col) fprintf(stderr, "\033[0m");
 
-    printf("\n%s\n", err);
+    fprintf(stderr, "\n%s\n", err);
 
 }
