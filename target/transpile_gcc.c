@@ -77,7 +77,7 @@ void *visit_fn_call(ClaspASTNode *fn, void *args) {
     return NULL;
 }
 
-#define TABS(n) do { for (int __I = 0; __I < n; __I++) putchar('\t'); } while (0)
+#define TABS(n) do { for (int __I = 0; __I < abs(n)-2; __I++) putchar('\t'); } while (0)
 
 void *visit_expr_stmt(ClaspASTNode *expr, void *args) {
     int tabs = *(int*)args;
@@ -89,15 +89,17 @@ void *visit_expr_stmt(ClaspASTNode *expr, void *args) {
 }
 
 void *visit_block_stmt(ClaspASTNode *block, void *args) {
-    int tabs = *(int*)args + 1;
+    int tabs = *(int*)args;
+    if (tabs > 0) TABS(abs(tabs));
+    tabs = abs(*(int*)args) + 1;
 
-    if (tabs != 0) printf("{\n");
+    if (*(int*)args != -1) printf("{\n");
     for (int i = 0; i < cvector_size(block->data.block_stmt.body); i++) {
         ClaspASTNode *stmt = block->data.block_stmt.body[i];
         visit(stmt, &tabs, self_visitor);
     }
-    TABS(*(int*)args);
-    if (tabs != 0) printf("}\n");
+    TABS(abs(*(int*)args));
+    if (*(int*)args != -1) printf("}\n");
     return NULL;
 }
 
@@ -135,6 +137,7 @@ void *visit_fn_decl(ClaspASTNode *fn, void *args) {
         printf(", ");
     }
     printf(") ");
+    tabs = -tabs;
     visit(fn->data.fn_decl_stmt.body, &tabs, self_visitor);
     return NULL;
 }
@@ -146,6 +149,7 @@ void *visit_if(ClaspASTNode *stmt, void *args) {
     printf("if (");
     visit(stmt->data.cond_stmt.cond, &tabs, self_visitor);
     printf(") ");
+    tabs = -tabs;
     visit(stmt->data.cond_stmt.body, &tabs, self_visitor);
     return NULL;
 }
@@ -157,6 +161,7 @@ void *visit_while(ClaspASTNode *stmt, void *args) {
     printf("while (");
     visit(stmt->data.cond_stmt.cond, &tabs, self_visitor);
     printf(") ");
+    tabs = -tabs;
     visit(stmt->data.cond_stmt.body, &tabs, self_visitor);
     return NULL;
 }
