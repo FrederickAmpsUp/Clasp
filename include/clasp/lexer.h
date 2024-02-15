@@ -39,6 +39,7 @@ typedef char (*StreamReadFn) (void *);
 */
 typedef enum {
     TOKEN_ID, TOKEN_NUMBER,
+    TOKEN_KW_RETURN,
     TOKEN_KW_IF,TOKEN_KW_WHILE,
     TOKEN_KW_FOR,TOKEN_KW_FN,
     TOKEN_KW_VAR,TOKEN_KW_LET,

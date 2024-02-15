@@ -172,6 +172,18 @@ ClaspASTNode *fn_call(ClaspASTNode *ref, cvector(ClaspASTNode *) args) {
     return new_expr_node(AST_EXPR_FN_CALL, data, type);
 }
 
+ClaspASTNode *return_stmt(ClaspASTNode *retval) {
+    union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
+    if (data == NULL) {
+        // Handle memory allocation failures
+        fprintf(stderr, "Memory allocation error in return_stmt function\n");
+        return NULL;
+    }
+    data->return_stmt.retval = retval;
+
+    return new_AST_node(AST_RETURN_STMT, data);
+}
+
 ClaspASTNode *expr_stmt(ClaspASTNode *expr) {
     union ASTNodeData *data = malloc(sizeof(union ASTNodeData));
     if (data == NULL) {

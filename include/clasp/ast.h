@@ -43,6 +43,7 @@ typedef enum {
     AST_EXPR_VAR_REF,
     AST_EXPR_FN_CALL,
 
+    AST_RETURN_STMT,
     AST_EXPR_STMT,
     AST_BLOCK_STMT,
     AST_VAR_DECL_STMT,
@@ -128,6 +129,12 @@ union ASTNodeData {
         ClaspASTNode *referencer;
         cvector(ClaspASTNode *) args;
     } fn_call;
+    /**
+     * Return statements (see syntax.md)
+    */
+    struct {
+        ClaspASTNode *retval;
+    } return_stmt;
     /**
      * Expression statements (see syntax.md)
     */
@@ -272,6 +279,11 @@ ClaspASTNode *var_ref(hashmap_t *vars, ClaspToken *varname);
 */
 ClaspASTNode *fn_call(ClaspASTNode *referencer, cvector(ClaspASTNode *) args);
 
+/**
+ * Helper function for creating a return statement node.
+ * @param retval The returned value.
+*/
+ClaspASTNode *return_stmt(ClaspASTNode *retval);
 
 /**
  * Helper function for creating an expression statement node.

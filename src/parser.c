@@ -103,6 +103,14 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
     while (consume(p, NULL, TOKEN_SEMICOLON));
     if (consume(p, NULL, TOKEN_EOF)) return NULL;
 
+    if (consume(p, NULL, TOKEN_KW_RETURN)) { // return statement
+        ClaspASTNode *retval = parser_expression(p);
+        if (!consume(p, NULL, TOKEN_SEMICOLON) && p->puncNextStmt) {
+            ERROR("Expected semicolon after return statement.");
+        }
+        return return_stmt(retval);
+    }
+
     if (consume(p, NULL, TOKEN_LEFT_CURLY)) {
         cvector(ClaspASTNode *) block = NULL;
         while (!consume(p, NULL, TOKEN_RIGHT_CURLY)) {

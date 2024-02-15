@@ -70,6 +70,13 @@ void *visit_fn_call(ClaspASTNode *fn, void *args) {
     printf("\b\b\b\b])");
 }
 
+void *visit_return_stmt(ClaspASTNode *ast, void *args) {
+    printf("(returnStmt: ");
+    visit(ast->data.return_stmt.retval, args, self_visitor);
+    printf(")\n");
+    return NULL;
+}
+
 void *visit_expr_stmt(ClaspASTNode *ast, void *args) {
     printf("(exprStmt: ");
     visit(ast->data.expr_stmt.expr, args, self_visitor);

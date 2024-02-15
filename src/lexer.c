@@ -132,13 +132,14 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         lexer->cCurrent = current;
 
             // Keywords
-        if (!strcmp(final, "if"   )) return new_token(lexer, final, TOKEN_KW_IF   );
-        if (!strcmp(final, "while")) return new_token(lexer, final, TOKEN_KW_WHILE);
-        if (!strcmp(final, "for"  )) return new_token(lexer, final, TOKEN_KW_FOR  );
-        if (!strcmp(final, "fn"   )) return new_token(lexer, final, TOKEN_KW_FN   );
-        if (!strcmp(final, "var"  )) return new_token(lexer, final, TOKEN_KW_VAR  );
-        if (!strcmp(final, "let"  )) return new_token(lexer, final, TOKEN_KW_LET  );
-        if (!strcmp(final, "const")) return new_token(lexer, final, TOKEN_KW_CONST);
+        if (!strcmp(final, "return")) return new_token(lexer, final, TOKEN_KW_RETURN);
+        if (!strcmp(final, "if"    )) return new_token(lexer, final, TOKEN_KW_IF    );
+        if (!strcmp(final, "while" )) return new_token(lexer, final, TOKEN_KW_WHILE );
+        if (!strcmp(final, "for"   )) return new_token(lexer, final, TOKEN_KW_FOR   );
+        if (!strcmp(final, "fn"    )) return new_token(lexer, final, TOKEN_KW_FN    );
+        if (!strcmp(final, "var"   )) return new_token(lexer, final, TOKEN_KW_VAR   );
+        if (!strcmp(final, "let"   )) return new_token(lexer, final, TOKEN_KW_LET   );
+        if (!strcmp(final, "const" )) return new_token(lexer, final, TOKEN_KW_CONST );
         return new_token(lexer, final, TOKEN_ID);
     }
         // Number literals
@@ -321,6 +322,7 @@ const char *tktyp_str(ClaspTokenType typ) {
     switch (typ) {
         CASE(TOKEN_ID)
         CASE(TOKEN_NUMBER)
+        CASE(TOKEN_KW_RETURN)
         CASE(TOKEN_KW_IF)
         CASE(TOKEN_KW_WHILE)
         CASE(TOKEN_KW_FOR)

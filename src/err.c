@@ -66,9 +66,9 @@ void token_err(ClaspToken *tok, char *err) {
 
     fprintf(stderr, "Syntax error in file %s, line %d:%d.\n", "TODO", tok->lineno + 1, tok->where + 1);
     for (unsigned int i = startIdx; i < endIdx; ++i) {
-        if (col && (i == tok->where - tokLen)) printf("\033[1;31m");
+        if (col && (i == tok->where - tokLen)) fprintf(stderr, "\033[1;31m");
         fprintf(stderr, "%c", tok->line[i]);
-        if (col && (i == tok->where)) printf("\033[0m");
+        if (col && (i == tok->where)) fprintf(stderr, "\033[0m");
     } fprintf(stderr, "\n");
     fprintf(stderr, "\033[0m");
 

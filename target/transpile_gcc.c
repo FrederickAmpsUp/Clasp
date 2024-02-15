@@ -1,6 +1,6 @@
 /**
- * Clasp Template AST visitor target implementing the target API
- * Authored 1/11/2024
+ * Clasp C Transpiler implementing the Clasp Target API
+ * Authored 1/11/2024-present
  * 
  * This program is part of the Clasp Source Libraries
  * 
@@ -77,7 +77,16 @@ void *visit_fn_call(ClaspASTNode *fn, void *args) {
     return NULL;
 }
 
-#define TABS(n) do { for (int __I = 0; __I < abs(n)-2; __I++) putchar('\t'); } while (0)
+#define TABS(n) do { if (n>0) for (int __I = 0; __I < abs(n)-2; __I++) putchar('\t'); } while (0)
+
+void *visit_return_stmt(ClaspASTNode *retval, void *args) {
+    int tabs = *(int*)args;
+    TABS(tabs);
+    printf("return ");
+    visit(retval->data.return_stmt.retval, &tabs, self_visitor);
+    printf(";\n");
+    return NULL;
+}
 
 void *visit_expr_stmt(ClaspASTNode *expr, void *args) {
     int tabs = *(int*)args;

@@ -7,9 +7,15 @@ compile: blockStmt EOF
 
 ## Statements
 ```
-statement: exprStmt | declStmt | ('{' blockStmt '}') | condStmt
+statement: exprStmt | declStmt | ('{' blockStmt '}') | condStmt | returnStmt
 blockStmt: stmt*
 ```
+### Return stmt
+* Return values from functions
+```
+returnStmt: 'return' expression? ';'
+```
+
 ### Expression stmt and expression
 * Function calls, assignments, etc.
 ```

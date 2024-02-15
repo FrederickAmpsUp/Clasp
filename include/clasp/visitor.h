@@ -39,6 +39,7 @@ void *visit_lit_num(ClaspASTNode *lit, void *args);
 void *visit_var_ref(ClaspASTNode *var, void *args);
 void *visit_fn_call(ClaspASTNode *fn, void *args);
 
+void *visit_return_stmt(ClaspASTNode *retval, void *args);
 void *visit_expr_stmt(ClaspASTNode *expr, void *args);
 void *visit_block_stmt(ClaspASTNode *block, void *args);
 void *visit_var_decl(ClaspASTNode *var, void *args);
@@ -57,6 +58,7 @@ ClaspASTVisitor self_visitor = {
     [AST_EXPR_VAR_REF   ] = &visit_var_ref,
     [AST_EXPR_FN_CALL   ] = &visit_fn_call,
 
+    [AST_RETURN_STMT    ] = &visit_return_stmt,
     [AST_EXPR_STMT      ] = &visit_expr_stmt,
     [AST_BLOCK_STMT     ] = &visit_block_stmt,
     [AST_VAR_DECL_STMT  ] = &visit_var_decl,
