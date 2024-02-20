@@ -14,3 +14,4 @@ bin/
 test.csp
 test.c
 !target/Makefile
+test

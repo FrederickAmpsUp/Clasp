@@ -182,5 +182,9 @@ void *visit_single_type(ClaspASTNode *type, void *args) {
 
 void target_run(ClaspASTNode *ast, void *args) {
     int tabs = -1;
+    printf("#include <stdio.h>\n\
+void println(int x) {\n\
+	printf(\"%%d\\n\", x);\n\
+}\n");
     visit(ast, &tabs, self_visitor);
 }
