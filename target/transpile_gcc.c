@@ -182,6 +182,7 @@ void *visit_single_type(ClaspASTNode *type, void *args) {
 
 void target_run(ClaspASTNode *ast, void *args) {
     int tabs = -1;
+        // TODO: load stdlibs from a file (or have them included)
     printf("#include <stdio.h>\n\
 void println(int x) {\n\
 	printf(\"%%d\\n\", x);\n\

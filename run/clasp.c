@@ -18,10 +18,10 @@ int main(int argc, char **argv) {
 
     ClaspASTNode *ast = parser_compile(parser);
     ClaspTarget *target = new_target(argv[2]);
-    if (!stream) return -1;
 
     if (target->type != TARGET_VISITOR) {
-        printf("Error: only AST visitor targets are currently supported.\n");
+        fprintf(stderr, "Error: only AST visitor targets are currently supported.\n");
+        return -1;
     }
     target->run(ast);
 

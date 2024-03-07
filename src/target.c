@@ -110,33 +110,33 @@ ClaspTarget *new_target(char *fname) {
     FILE *f = fopen(fname, "rb");
     char head[3];
     if (fread(head, 1, sizeof(head), f) != sizeof(head)) {
-        printf("Invalid header in build target file: %s\n", fname);
+        fprintf(stderr, "Invalid header in build target file: %s\n", fname);
         fclose(f);
         return NULL;
     }
     if (strncmp(head, "CBT", sizeof(head))) {
-        printf("Invalid header in build target file: %s\n", fname);
+        fprintf(stderr, "Invalid header in build target file: %s\n", fname);
         fclose(f);
         return NULL;
     }
 
     uint8_t type;
     if (fread(&type, 1, sizeof(uint8_t), f) != sizeof(uint8_t)) {
-        printf("Failed to read target type in build target file: %s\n", fname);
+        fprintf(stderr, "Failed to read target type in build target file: %s\n", fname);
         fclose(f);
         return NULL;
     }
 
     size_t len;
     if (fread(&len, 1, sizeof(size_t), f) != sizeof(size_t)) {
-        printf("Failed to read binary size in build target file: %s\n", fname);
+        fprintf(stderr, "Failed to read binary size in build target file: %s\n", fname);
         fclose(f);
         return NULL;
     }
 
     char *buf = malloc(len);
     if (fread(buf, 1, len, f) != len) {
-        printf("Binary data in build target file %s is of incorrect length.\n", fname);
+        fprintf(stderr, "Binary data in build target file %s is of incorrect length.\n", fname);
         free(buf);
         fclose(f);
         return NULL;
@@ -189,6 +189,12 @@ ClaspTarget *new_target(char *fname) {
 
         out->library = dll_f;
         out->type = TARGET_VISITOR;
+    } else {
+        fprintf(stderr, "Warning: unknown target type %d\n", type);
+        out->type = type;
+
+        out->run = _DLL_load(dll_f, void, "target_run");
+        out->library = dll_f;
     }
 
     free(dll_fname); // also frees dir
