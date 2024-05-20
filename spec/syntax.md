@@ -29,7 +29,7 @@ factor:     exponent ('*' | '/' | '%')  exponent
 exponent:   unary    '^'                exponent
 unary: (('+' | '-' | '!' | '~') unary) | postfix
 postfix: primary ('++' | '--' | ('(' (expression ',')* expression? ')'))*
-primary: (number | ('(' expression ')') | varRef)
+primary: (number | ('(' expression ')') | varRef | string)
 varRef: identifier
 ```
 * Examples:
@@ -126,4 +126,14 @@ float
 (int, float) -> { [float] } // function that takes an int and a float and produces a list of float
 vector[float] // template class
 >vector[int] // pointer to vector of int
+```
+## Compile-time operations
+### File inclusion
+```
+includeDirective: 'include' string
+```
+* Examples:
+```
+include "std.csp" // this is not how stdlibs will be handled later on
+include "res/math/vec3.csp"
 ```

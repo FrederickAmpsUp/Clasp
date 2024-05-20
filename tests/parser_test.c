@@ -44,7 +44,7 @@ char read_string() {
 }
 
 int main(int argc, char **argv) {
-    str = (StringStream) { "foo(25 + 36);\nvar test: float = 8.5 / bar(3.2);\nlet piApprox: int = 3;\nconst pi: double = 3.14159;\nfn foo(a: int, b: int) -> int { print(a+b); }\nif (test - 5) { print(test); } for (var i: int = 0; i < 10; i++) { print(i); } x++--; var type_inference_text = 27; const lol_this_wont_work = test; const but_this_will = pi;", 0 };
+    str = (StringStream) { "foo(25 + 36);\nvar test: float = 8.5 / bar(3.2);\nlet piApprox: int = 3;\nconst pi: double = 3.14159;\nfn foo(a: int, b: int) -> int { print(a+b); }\nif (test - 5) { print(test); } for (var i: int = 0; i < 10; i++) { print(i); } x++--; var type_inference_text = 27; const lol_this_wont_work = test; const but_this_will = pi; include \"test.csp\"\n", 0 };
     ClaspLexer *l = malloc(sizeof(ClaspLexer));
     new_lexer(l, read_string, NULL);
     ClaspParser *p = malloc(sizeof(ClaspParser));

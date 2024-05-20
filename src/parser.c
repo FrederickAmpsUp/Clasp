@@ -103,6 +103,16 @@ ClaspASTNode *parser_stmt(ClaspParser *p) {
     while (consume(p, NULL, TOKEN_SEMICOLON));
     if (consume(p, NULL, TOKEN_EOF)) return NULL;
 
+    if (consume(p, NULL, TOKEN_KW_INCLUDE)) {
+        printf("including\n");
+        ClaspToken *filename;
+        if (!consume(p, &filename, TOKEN_STRING)) {
+            ERROR("Expected string literal after include keyword.");
+        }
+        char *fn = filename->data;
+        printf("DEBUG: %s\n", fn);
+    }
+
     if (consume(p, NULL, TOKEN_KW_RETURN)) { // return statement
         ClaspASTNode *retval = parser_expression(p);
         if (!consume(p, NULL, TOKEN_SEMICOLON) && p->puncNextStmt) {

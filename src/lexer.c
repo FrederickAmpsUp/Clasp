@@ -98,6 +98,8 @@ static char lexer_read(ClaspLexer *l) {
     l->cCurrent = l->stream(l->_stream_args);
 }
 
+#define hex(c) ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))
+
 ClaspToken *lexer_scan(ClaspLexer *lexer) {
     char current = lexer->cCurrent;
     if (current == EOF) return new_token_const(lexer, "\xff", TOKEN_EOF);
@@ -132,14 +134,15 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         lexer->cCurrent = current;
 
             // Keywords
-        if (!strcmp(final, "return")) return new_token(lexer, final, TOKEN_KW_RETURN);
-        if (!strcmp(final, "if"    )) return new_token(lexer, final, TOKEN_KW_IF    );
-        if (!strcmp(final, "while" )) return new_token(lexer, final, TOKEN_KW_WHILE );
-        if (!strcmp(final, "for"   )) return new_token(lexer, final, TOKEN_KW_FOR   );
-        if (!strcmp(final, "fn"    )) return new_token(lexer, final, TOKEN_KW_FN    );
-        if (!strcmp(final, "var"   )) return new_token(lexer, final, TOKEN_KW_VAR   );
-        if (!strcmp(final, "let"   )) return new_token(lexer, final, TOKEN_KW_LET   );
-        if (!strcmp(final, "const" )) return new_token(lexer, final, TOKEN_KW_CONST );
+        if (!strcmp(final, "return" )) return new_token(lexer, final, TOKEN_KW_RETURN );
+        if (!strcmp(final, "if"     )) return new_token(lexer, final, TOKEN_KW_IF     );
+        if (!strcmp(final, "while"  )) return new_token(lexer, final, TOKEN_KW_WHILE  );
+        if (!strcmp(final, "for"    )) return new_token(lexer, final, TOKEN_KW_FOR    );
+        if (!strcmp(final, "fn"     )) return new_token(lexer, final, TOKEN_KW_FN     );
+        if (!strcmp(final, "var"    )) return new_token(lexer, final, TOKEN_KW_VAR    );
+        if (!strcmp(final, "let"    )) return new_token(lexer, final, TOKEN_KW_LET    );
+        if (!strcmp(final, "const"  )) return new_token(lexer, final, TOKEN_KW_CONST  );
+        if (!strcmp(final, "include")) return new_token(lexer, final, TOKEN_KW_INCLUDE);
         return new_token(lexer, final, TOKEN_ID);
     }
         // Number literals
@@ -307,11 +310,90 @@ ClaspToken *lexer_scan(ClaspLexer *lexer) {
         lexer->cCurrent = lexer_read(lexer);
         return new_token_const(lexer, ":", TOKEN_COLON);
     }
+    if (current == '"') { // string literal
+        lexer->cCurrent = lexer_read(lexer);
+        char *str = NULL;
+        
+        while (lexer->cCurrent != '"') {
+            if (lexer->cCurrent == EOF) {
+                fprintf(stderr, "Unexpected end of file in string literal.\n");
+                goto _scanstr_error;
+            }
+            if (lexer->cCurrent == '\\') {
+                lexer->cCurrent = lexer_read(lexer);
+                switch (lexer->cCurrent) {
+                    case 'n': cvector_push_back(str, '\n'); break;
+                    case 'r': cvector_push_back(str, '\r'); break;
+                    case 't': cvector_push_back(str, '\t'); break;
+                    case 'b': cvector_push_back(str, '\b'); break;
+                    case 'v': cvector_push_back(str, '\v'); break;
+                    case 'f': cvector_push_back(str, '\f'); break;
+                    case '\\': cvector_push_back(str, '\\'); break;
+                    case '"': cvector_push_back(str, '"'); break;
+                    case 'x': { // 2-digit hex
+                        char val = 0;
+
+                        lexer->cCurrent = lexer_read(lexer);
+                        char c0 = lexer->cCurrent;
+                        if (!hex(lexer->cCurrent)) {
+                            fprintf(stderr, "Syntax error on character '%c': \"Expected hex character after \\x escape code.\"\n", lexer->cCurrent);
+                            goto _scanstr_error;
+                        }
+
+                        lexer->cCurrent = lexer_read(lexer);
+                        char c1 = lexer->cCurrent;
+                        if (!hex(lexer->cCurrent)) {
+                            fprintf(stderr, "Syntax error on character '%c': \"Expected hex character after \\x escape code.\"\n", lexer->cCurrent);
+                            goto _scanstr_error;
+                        }
+
+                        if (c0 < '0' || c0 > '9') {
+                            c0 = tolower(c0);
+                            c0 -= 'a';
+                            c0 += 10;
+                        } else {
+                            c0 -= '0';
+                        }
+
+                        if (c1 < '0' || c1 > '9') {
+                            c1 = tolower(c1);
+                            c1 -= 'a';
+                            c1 += 10;
+                        } else {
+                            c1 -= '0';
+                        }
+
+                        val = c0 << 4 | c1;
+
+                        cvector_push_back(str, val);
+                    } break;
+                    default: {
+                        fprintf(stderr, "Syntax error on character '%c': \"Invalid escape code '%c'\"\n", lexer->cCurrent, lexer->cCurrent);
+                        goto _scanstr_error; // goto, rip
+                    }
+                }
+                lexer->cCurrent = lexer_read(lexer);
+                continue;
+            }
+            cvector_push_back(str, lexer->cCurrent);
+            lexer->cCurrent = lexer_read(lexer);
+        }
+        lexer->cCurrent = lexer_read(lexer);
+        char *final = malloc(cvector_size(str)) + 1;
+        memcpy(final, str, cvector_size(str));
+        final[cvector_size(str)] = '\0';
+        cvector_free(str);
+        return new_token(lexer, final, TOKEN_STRING);
+        _scanstr_error:
+        cvector_free(str);
+        return new_token_const(lexer, "", TOKEN_STRING);
+    }
 
     fprintf(stderr, "Syntax error on character '%c': \"Unexpected character '%c' (0x%2x).\"\n", current, current, current & 0xff);
 
     return new_token_const(lexer, "", TOKEN_UNKNOWN);
 }
+#undef hex
 int lexer_has(ClaspLexer *l, ClaspTokenType t) {
     return l->current->type == t;
 }
@@ -322,6 +404,7 @@ const char *tktyp_str(ClaspTokenType typ) {
     switch (typ) {
         CASE(TOKEN_ID)
         CASE(TOKEN_NUMBER)
+        CASE(TOKEN_STRING)
         CASE(TOKEN_KW_RETURN)
         CASE(TOKEN_KW_IF)
         CASE(TOKEN_KW_WHILE)
@@ -330,6 +413,7 @@ const char *tktyp_str(ClaspTokenType typ) {
         CASE(TOKEN_KW_VAR)
         CASE(TOKEN_KW_LET)
         CASE(TOKEN_KW_CONST)
+        CASE(TOKEN_KW_INCLUDE)
         CASE(TOKEN_PLUS)
         CASE(TOKEN_MINUS)
         CASE(TOKEN_ASTERIX)
