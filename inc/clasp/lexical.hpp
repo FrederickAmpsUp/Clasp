@@ -41,8 +41,9 @@ public:
 
         PLUS_PLUS, MINUS_MINUS,
 
+        COLON, SEMICOLON,
+
         IDENTIFIER, INTEGER_LITERAL,
-        // TODO: everything else
 
         END_OF_FILE,
         UNKNOWN

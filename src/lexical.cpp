@@ -41,6 +41,13 @@ Token::Token(Token::Type type, std::string value) {
                 value = "/=";
                 break;
 
+            case Type::COLON:
+                value = ":";
+                break;
+            case Type::SEMICOLON:
+                value = ";";
+                break;
+
             case Type::END_OF_FILE:
                 value = "\xff";
                 break;
@@ -56,11 +63,19 @@ Token::Token(Token::Type type, std::string value) {
 
 
     // TODO: add more stuff
+
+/**
+ * Operator table for op, op=, and opop operators
+ */
 static const std::tuple<char, Token::Type, Token::Type, Token::Type> operatorTokens[] = {
+// operator     type                   op= type                     opop type
     { '+', Token::Type::PLUS,     Token::Type::PLUS_EQUAL,     Token::Type::PLUS_PLUS   },
     { '-', Token::Type::MINUS,    Token::Type::MINUS_EQUAL,    Token::Type::MINUS_MINUS },
     { '*', Token::Type::ASTERISK, Token::Type::ASTERISK_EQUAL, Token::Type::UNKNOWN     },
     { '/', Token::Type::SLASH,    Token::Type::SLASH_EQUAL,    Token::Type::UNKNOWN     },
+
+    { ':', Token::Type::COLON,    Token::Type::UNKNOWN,        Token::Type::UNKNOWN     },
+    { ';', Token::Type::SEMICOLON,Token::Type::UNKNOWN,        Token::Type::UNKNOWN     },
 };
 
 // identifiers can start with _a-zA-Z

@@ -3,7 +3,7 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-    std::istringstream is("this_is_an_90909_identifier _soIsThis23 5 ThatWasA_Number");
+    std::istringstream is("five + 3rtyseven;");
 
     clasp::lexical::Scanner lexer(is);
     clasp::lexical::Token::Ptr tok;
