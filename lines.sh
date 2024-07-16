@@ -1,7 +1,7 @@
 # line stats
 
-include="./inc/clasp"
-source="./src/ ./run/"
+include="./inc/clasp/"
+source="./src/ ./run/ ./test/"
 
 head_data=$(find $include -name "*.hpp" -type f -exec wc -l {} +)
 source_data=$(find $source -name "*.cpp" -type f -exec wc -l {} +)
