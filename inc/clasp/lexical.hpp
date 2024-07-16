@@ -18,18 +18,8 @@ namespace clasp::lexical {
 struct Token {
 // implied
 public:
-    /**
-     * Smart pointer shorthand, so I have to use `auto` less
-     */
-    using Ptr = std::shared_ptr<Token>;
 
-    /**
-     * Construct a smart pointer to a token given the constructor arguments
-     */
-    template <typename ...Args>
-    static Ptr make_ptr(Args&&... args) {
-        return std::make_shared<Token>(std::forward<Args>(args)...);
-    }
+    CLASP_UTIL_CLASS_PTR(Token)
 
     /**
      * Scoped enumeration representing the types a lexical token can be
@@ -67,22 +57,12 @@ public:
  */
 class Scanner {
 public:
-    /**
-     * Smart pointer shorthand
-     */
-    using Ptr = std::shared_ptr<Scanner>;
     
-
-    /**
-     * Construct a smart pointer to a scanner given the constructor arguments
-     */
-    template <typename ...Args>
-    static Ptr make_ptr(Args&&... args) {
-        return std::make_shared<Scanner>(std::forward<Args>(args)...);
-    }
+    CLASP_UTIL_CLASS_PTR(Scanner)
 
     Scanner(std::istream& input) : input_(input) {
         (void) this->next(); // step to the first character
+        (void) this->scan(); // step to the first token
     }
 
     /**
@@ -97,7 +77,13 @@ public:
      */
     std::vector<Token::Ptr>& output() { return this->output_; }
 
+    /**
+     * Scan for the next token in the input stream.
+     * @retval The next token in the input stream
+     */
     Token::Ptr scan();
+
+    Token::Ptr peek() { return this->output_[this->output_.size() - 1]; }
 private:
     std::istream& input_;
     std::vector<Token::Ptr> output_;
@@ -119,5 +105,7 @@ private:
         }
         return 0;
     }
+
+    Token::Ptr _scan();
 };
 }

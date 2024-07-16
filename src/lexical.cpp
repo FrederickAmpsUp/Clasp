@@ -87,7 +87,7 @@ static bool isId(char c) {
     return isIdStart(c) || isdigit(c);
 }
 
-Token::Ptr Scanner::scan() {
+Token::Ptr Scanner::_scan() {
     char c;
 
         // skip whitespace
@@ -123,5 +123,13 @@ Token::Ptr Scanner::scan() {
 
     throw clasp::error::UnknownTokenError("Unknown token whilst scanning (got character '" + std::string(&c, 1) + "')");
     return Token::make_ptr(Token::Type::UNKNOWN);
+}
+
+Token::Ptr Scanner::scan() {
+    this->output_.push_back(this->_scan());
+    if (this->output_.size() <= 1) {
+        return nullptr;
+    }
+    return this->output_[this->output_.size() - 2];
 }
 }
