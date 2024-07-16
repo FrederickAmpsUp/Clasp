@@ -36,6 +36,12 @@ public:
      */
     enum class Type {
         PLUS, MINUS, ASTERISK, SLASH,
+        PLUS_EQUAL, MINUS_EQUAL,
+        ASTERISK_EQUAL, SLASH_EQUAL,
+
+        PLUS_PLUS, MINUS_MINUS,
+
+        IDENTIFIER, INTEGER_LITERAL,
         // TODO: everything else
 
         END_OF_FILE,
@@ -74,7 +80,9 @@ public:
         return std::make_shared<Scanner>(std::forward<Args>(args)...);
     }
 
-    Scanner(std::istream& input) : input_(input) {}
+    Scanner(std::istream& input) : input_(input) {
+        (void) this->next(); // step to the first character
+    }
 
     /**
      * Get the internal input stream
@@ -95,11 +103,20 @@ private:
 
     char prev_;
     char cur_;
+    char peek_;
 
     char next() {
         this->prev_ = this->cur_;
-        this->cur_ = this->input_.get();
+        this->cur_ = this->peek_;
+        this->peek_ = this->input_.get();
         return this->cur_;
+    }
+
+    char consume(char c) {
+        if (this->peek_ == c) {
+            return this->next();
+        }
+        return 0;
     }
 };
 }
