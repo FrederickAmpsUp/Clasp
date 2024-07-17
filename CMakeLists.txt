@@ -25,6 +25,9 @@ foreach(LIB_FILE ${LIB_FILES})
 endforeach()
 
 link_directories(lib/)
+target_link_libraries(claspSourceLibs dl)
+target_link_libraries(claspSourceLibs boost_filesystem)
+target_link_libraries(claspSourceLibs boost_system)
 
 # Gather all source files from test/ (non-recursive)
 file(GLOB TEST_FILES test/*.c test/*.cpp)

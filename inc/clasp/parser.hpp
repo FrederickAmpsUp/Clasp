@@ -12,6 +12,7 @@ public:
     Parser(clasp::lexical::Scanner& lexer) : lexer_(lexer) {}
 
     BaseExpression::Ptr expression();
+    BaseStatement::Ptr statement();
 private:
     clasp::lexical::Scanner& lexer_;
 

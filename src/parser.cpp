@@ -4,9 +4,19 @@
 
 namespace clasp::ast {
 
-    // this will eventually expand to `assignment`
 BaseExpression::Ptr Parser::expression() {
     return assignment();
+}
+
+BaseStatement::Ptr Parser::statement() {
+    // TODO: declstatements
+
+    BaseExpression::Ptr expr = expression();
+
+    clasp::lexical::Token::Ptr tok = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
+    if (!consume({ clasp::lexical::Token::Type::SEMICOLON })) throw clasp::error::SyntaxError("Missing semicolon after expression - expected ';', got ", tok);
+
+    return ExpressionStatement::make_ptr(expr);
 }
 
 // assignment is right-associative
@@ -140,6 +150,12 @@ BaseExpression::Ptr Parser::primary() {
             throw clasp::error::SyntaxError("Unexpected token - required ')', got ", tok);
         }
         return nested;
+    }
+
+    if (consume({
+        clasp::lexical::Token::Type::IDENTIFIER
+    }, tok)) {
+        return VariableReference::make_ptr(tok);
     }
     
     tok = this->lexer_.peek();

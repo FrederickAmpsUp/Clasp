@@ -66,7 +66,7 @@ Token::Token(Token::Type type, std::string value) {
                 value = "&";
                 break;
             case Type::AMPERSAND_EQUAL:
-                value = "&=";
+                value = "=";
                 break;
 
             case Type::EQUAL:

@@ -1,5 +1,6 @@
 #include <clasp/lexical.hpp>
 #include <clasp/parser.hpp>
+#include <clasp/target.hpp>
 #include <clasp/exception.hpp>
 #include <sstream>
 #include <iostream>
@@ -12,7 +13,11 @@ int main(int argc, char **argv) {
 
     try {
         clasp::ast::BaseStatement::Ptr ast = parser.statement();
-        std::cout << clasp::util::ASTStringifier().stringify(ast) << std::endl;
+
+        clasp::target::BuildTarget target("target/lib/transpile_c.so");
+
+        std::vector<uint8_t> res = target.run(ast);
+        std::cout << std::string(res.begin(), res.end()) << std::endl;
     } catch (clasp::error::SyntaxError& e) {
         std::cout << e.what() << std::endl;
     }
