@@ -1,5 +1,7 @@
 {
     "files.associations": {
+        "*.vsh": "glsl",
+        "*.fsh": "glsl",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -49,6 +51,7 @@
         "typeinfo": "cpp",
         "ctime": "cpp",
         "fstream": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "variant": "cpp"
     }
 }

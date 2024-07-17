@@ -41,11 +41,74 @@ Token::Token(Token::Type type, std::string value) {
                 value = "/=";
                 break;
 
+            case Type::CARET:
+                value = "^";
+                break;
+            case Type::CARET_EQUAL:
+                value = "^=";
+                break;
+
+            case Type::PERCENT:
+                value = "%";
+                break;
+            case Type::PERCENT_EQUAL:
+                value = "%=";
+                break;
+
+            case Type::TILDE:
+                value = "~";
+                break;
+            case Type::TILDE_EQUAL:
+                value = "~=";
+                break;
+                        
+            case Type::AMPERSAND:
+                value = "&";
+                break;
+            case Type::AMPERSAND_EQUAL:
+                value = "&=";
+                break;
+
+            case Type::EQUAL:
+                value = "=";
+                break;
+            case Type::EQUAL_EQUAL:
+                value = "==";
+                break;
+
+            case Type::BANG:
+                value = "!";
+                break;
+            case Type::BANG_EQUAL:
+                value = "!=";
+                break;
+
+            case Type::LESS:
+                value = "<";
+                break;
+            case Type::LESS_EQUAL:
+                value = "<=";
+                break;
+
+            case Type::GREATER:
+                value = ">";
+                break;
+            case Type::GREATER_EQUAL:
+                value = ">=";
+                break;
+
             case Type::COLON:
                 value = ":";
                 break;
             case Type::SEMICOLON:
                 value = ";";
+                break;
+
+            case Type::LEFT_PAREN:
+                value = "(";
+                break;
+            case Type::RIGHT_PAREN:
+                value = ")";
                 break;
 
             case Type::END_OF_FILE:
@@ -66,16 +129,30 @@ Token::Token(Token::Type type, std::string value) {
 
 /**
  * Operator table for op, op=, and opop operators
+ * could convert this to a hashmap
  */
 static const std::tuple<char, Token::Type, Token::Type, Token::Type> operatorTokens[] = {
 // operator     type                   op= type                     opop type
-    { '+', Token::Type::PLUS,     Token::Type::PLUS_EQUAL,     Token::Type::PLUS_PLUS   },
-    { '-', Token::Type::MINUS,    Token::Type::MINUS_EQUAL,    Token::Type::MINUS_MINUS },
-    { '*', Token::Type::ASTERISK, Token::Type::ASTERISK_EQUAL, Token::Type::UNKNOWN     },
-    { '/', Token::Type::SLASH,    Token::Type::SLASH_EQUAL,    Token::Type::UNKNOWN     },
+    { '+', Token::Type::PLUS,         Token::Type::PLUS_EQUAL,     Token::Type::PLUS_PLUS   },
+    { '-', Token::Type::MINUS,        Token::Type::MINUS_EQUAL,    Token::Type::MINUS_MINUS },
+    { '*', Token::Type::ASTERISK,     Token::Type::ASTERISK_EQUAL, Token::Type::UNKNOWN     },
+    { '/', Token::Type::SLASH,        Token::Type::SLASH_EQUAL,    Token::Type::UNKNOWN     },
 
-    { ':', Token::Type::COLON,    Token::Type::UNKNOWN,        Token::Type::UNKNOWN     },
-    { ';', Token::Type::SEMICOLON,Token::Type::UNKNOWN,        Token::Type::UNKNOWN     },
+    { '^', Token::Type::CARET,        Token::Type::CARET_EQUAL,    Token::Type::UNKNOWN     },
+    { '%', Token::Type::PERCENT,      Token::Type::PERCENT_EQUAL,  Token::Type::UNKNOWN     },
+    { '~', Token::Type::TILDE,        Token::Type::TILDE_EQUAL,    Token::Type::UNKNOWN     },
+    { '&', Token::Type::AMPERSAND,    Token::Type::AMPERSAND_EQUAL,Token::Type::UNKNOWN     },
+
+    { '=', Token::Type::EQUAL,        Token::Type::EQUAL_EQUAL,    Token::Type::EQUAL_EQUAL },
+    { '!', Token::Type::BANG,         Token::Type::BANG_EQUAL,     Token::Type::UNKNOWN     },
+    { '<', Token::Type::LESS,         Token::Type::LESS_EQUAL,     Token::Type::UNKNOWN     },
+    { '>', Token::Type::GREATER,      Token::Type::GREATER_EQUAL,  Token::Type::UNKNOWN     },
+
+    { ':', Token::Type::COLON,        Token::Type::UNKNOWN,        Token::Type::UNKNOWN     },
+    { ';', Token::Type::SEMICOLON,    Token::Type::UNKNOWN,        Token::Type::UNKNOWN     },
+    
+    { '(', Token::Type::LEFT_PAREN,   Token::Type::UNKNOWN,        Token::Type::UNKNOWN     },
+    { ')', Token::Type::RIGHT_PAREN,  Token::Type::UNKNOWN,        Token::Type::UNKNOWN     },
 };
 
 // identifiers can start with _a-zA-Z

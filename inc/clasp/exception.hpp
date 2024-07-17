@@ -19,18 +19,22 @@ private:
 class SyntaxError : public std::exception {
 public:
         // TODO: location info
-    SyntaxError(const std::string& message, clasp::lexical::Token::Ptr token=nullptr) : message_(message), token_(token) {}
+    SyntaxError(const std::string& message, clasp::lexical::Token::Ptr token=nullptr) : message_(message), token_(token) {
+        aggregated_message_ += "SyntaxError: " + message_ + "'";
+        if (token_)
+            aggregated_message_ += token_->value;
+        else
+            aggregated_message_ += "(null)";
+        aggregated_message_ += "'";
+    }
 
     virtual const char *what() const noexcept override {
-        std::string msg = "\"" + message_ + "\" on token ";
-        if (token_)
-            msg += "'" + token_->value + "'";
-        else msg += "(null)";
-
-        return msg.c_str();
+        return aggregated_message_.c_str();
     }
 private:
     std::string message_;
     clasp::lexical::Token::Ptr token_;
+        // must be a member variable to avoid deallocation (and likely corruption) after return from what()
+    std::string aggregated_message_;
 };
 }

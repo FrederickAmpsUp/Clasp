@@ -15,7 +15,10 @@ BaseExpression::Ptr Parser::assignment() {
 
     clasp::lexical::Token::Ptr op = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
     if (consume({
-        // TODO: assignment operators
+        clasp::lexical::Token::Type::EQUAL,
+        clasp::lexical::Token::Type::PLUS_EQUAL,
+        clasp::lexical::Token::Type::MINUS_EQUAL,
+        clasp::lexical::Token::Type::SLASH_EQUAL,
     }, op)) {
         BaseExpression::Ptr right = assignment();
 
@@ -29,7 +32,8 @@ BaseExpression::Ptr Parser::equality() {
 
     clasp::lexical::Token::Ptr op = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
     while (consume({
-        // TODO: equality operators
+        clasp::lexical::Token::Type::EQUAL_EQUAL,
+        clasp::lexical::Token::Type::BANG_EQUAL,
     }, op)) {
         BaseExpression::Ptr right = comparison();
 
@@ -43,7 +47,10 @@ BaseExpression::Ptr Parser::comparison() {
 
     clasp::lexical::Token::Ptr op = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
     while (consume({
-        // TODO: comparison operators
+        clasp::lexical::Token::Type::LESS,
+        clasp::lexical::Token::Type::GREATER,
+        clasp::lexical::Token::Type::LESS_EQUAL,
+        clasp::lexical::Token::Type::LESS_EQUAL,
     }, op)) {
         BaseExpression::Ptr right = term();
 
@@ -68,16 +75,16 @@ BaseExpression::Ptr Parser::term() {
     return left;
 }
 
-    // will reference exponent() in the future
 BaseExpression::Ptr Parser::factor() {
-    BaseExpression::Ptr left = unary();
+    BaseExpression::Ptr left = exponent();
 
     clasp::lexical::Token::Ptr op = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
     while (consume({
         clasp::lexical::Token::Type::ASTERISK,
         clasp::lexical::Token::Type::SLASH,
+        clasp::lexical::Token::Type::PERCENT,
     }, op)) {
-        BaseExpression::Ptr right = unary();
+        BaseExpression::Ptr right = exponent();
 
         left = BinaryExpression::make_ptr(left, op, right);
     }
@@ -85,10 +92,27 @@ BaseExpression::Ptr Parser::factor() {
     return left;
 }
 
+// right-associative
+BaseExpression::Ptr Parser::exponent() {
+    BaseExpression::Ptr left = unary();
+
+    clasp::lexical::Token::Ptr op = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
+    if (consume({
+        clasp::lexical::Token::Type::CARET,
+    }, op)) {
+        BaseExpression::Ptr right = exponent();
+
+        return BinaryExpression::make_ptr(left, op, right);
+    }
+    return left;
+}
+
 BaseExpression::Ptr Parser::unary() {
     clasp::lexical::Token::Ptr op = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
     if (consume({
         clasp::lexical::Token::Type::MINUS,
+        clasp::lexical::Token::Type::BANG,
+        clasp::lexical::Token::Type::TILDE,
     }, op)) {
         BaseExpression::Ptr right = unary();
 
@@ -104,9 +128,22 @@ BaseExpression::Ptr Parser::primary() {
     }, tok)) {
         return NumberLiteral::make_ptr(tok);
     }
-    tok = this->lexer_.peek();
 
-    throw clasp::error::SyntaxError("Syntax error while parsing primary expression", tok);
+    if (consume({
+        clasp::lexical::Token::Type::LEFT_PAREN
+    })) {
+        BaseExpression::Ptr nested = expression();
+        if (!consume({
+            clasp::lexical::Token::Type::RIGHT_PAREN
+        })) {
+            tok = this->lexer_.peek();
+            throw clasp::error::SyntaxError("Unexpected token - required ')', got ", tok);
+        }
+        return nested;
+    }
+    
+    tok = this->lexer_.peek();
+    throw clasp::error::SyntaxError("Unexpected token whilst parsing primary expression: ", tok);
 }
 
 bool Parser::consume(std::initializer_list<clasp::lexical::Token::Type> types, clasp::lexical::Token::Ptr tok) {

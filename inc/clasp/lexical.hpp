@@ -26,12 +26,25 @@ public:
      */
     enum class Type {
         PLUS, MINUS, ASTERISK, SLASH,
+        CARET, PERCENT, TILDE, AMPERSAND,
+
         PLUS_EQUAL, MINUS_EQUAL,
         ASTERISK_EQUAL, SLASH_EQUAL,
+        CARET_EQUAL, PERCENT_EQUAL,
+        TILDE_EQUAL, AMPERSAND_EQUAL,
+        
 
         PLUS_PLUS, MINUS_MINUS,
 
+        EQUAL, EQUAL_EQUAL,
+        
+        BANG, BANG_EQUAL,
+        GREATER, GREATER_EQUAL,
+        LESS, LESS_EQUAL,
+
         COLON, SEMICOLON,
+
+        LEFT_PAREN, RIGHT_PAREN,
 
         IDENTIFIER, INTEGER_LITERAL,
 

@@ -3,7 +3,7 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-    std::istringstream is("five + 3rtyseven;");
+    std::istringstream is("five + 3rtyseven; + - * / = += -= *= /= ++ -- = == ! != < <= > >= () ^%~& ^=%=~=&=");
 
     clasp::lexical::Scanner lexer(is);
     clasp::lexical::Token::Ptr tok;
