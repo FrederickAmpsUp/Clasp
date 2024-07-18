@@ -7,6 +7,7 @@
 #include <string>
 #include <istream>
 #include <clasp/util.hpp>
+#include <unordered_map>
 
 /**
  * Lexical/tokenization data
@@ -48,9 +49,15 @@ public:
 
         IDENTIFIER, INTEGER_LITERAL,
 
+        KEYWORD_IF, KEYWORD_WHILE,
+        KEYWORD_LET, KEYWORD_VAR,
+        KEYWORD_CONST, KEYWORD_FN, 
+
         END_OF_FILE,
         UNKNOWN
     };
+
+    static const std::unordered_map<Type, std::string> typeStrings;
 
     /**
      * Constructor

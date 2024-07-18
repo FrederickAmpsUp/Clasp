@@ -9,12 +9,58 @@ BaseExpression::Ptr Parser::expression() {
 }
 
 BaseStatement::Ptr Parser::statement() {
-    // TODO: declstatements
+    clasp::lexical::Token::Ptr tok = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
+    if (consume({
+        clasp::lexical::Token::Type::KEYWORD_VAR,
+        clasp::lexical::Token::Type::KEYWORD_LET,
+        clasp::lexical::Token::Type::KEYWORD_CONST,
+    }, tok)) {
+        clasp::lexical::Token::Ptr name = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
+        if (!consume({
+            clasp::lexical::Token::Type::IDENTIFIER
+        }, name)) throw clasp::error::SyntaxError("Missing variable name - expected (IDENTIFIER), got ", this->lexer_.peek());
+        VarDeclStatement::Qualifiers q;
+        switch (tok->type) {
+            case clasp::lexical::Token::Type::KEYWORD_VAR:
+                q = VarDeclStatement::Qualifiers::MUTABLE;
+                break;
+            case clasp::lexical::Token::Type::KEYWORD_LET:
+                q = VarDeclStatement::Qualifiers::IMMUABLE;
+                break;
+            case clasp::lexical::Token::Type::KEYWORD_CONST:
+                q = VarDeclStatement::Qualifiers::CONST;
+                break;
+            // default is unreachable
+        }
+
+        BaseExpression::Ptr initializer = nullptr;
+        clasp::type::Type::Ptr type = nullptr;
+
+        if (consume({
+            clasp::lexical::Token::Type::COLON
+        })) {
+            // TODO: type system
+            type = this->parse_type();
+        }
+
+        if (consume({
+            clasp::lexical::Token::Type::EQUAL
+        })) {
+            initializer = expression();
+        }
+
+        if (type == nullptr) {
+            type = initializer->type();
+        }
+        
+        if (!consume({ clasp::lexical::Token::Type::SEMICOLON })) throw clasp::error::SyntaxError("Missing semicolon after variable declaration - expected ';', got ", this->lexer_.peek());
+
+        return VarDeclStatement::make_ptr(name->value, q, type, initializer);
+    }
 
     BaseExpression::Ptr expr = expression();
 
-    clasp::lexical::Token::Ptr tok = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
-    if (!consume({ clasp::lexical::Token::Type::SEMICOLON })) throw clasp::error::SyntaxError("Missing semicolon after expression - expected ';', got ", tok);
+    if (!consume({ clasp::lexical::Token::Type::SEMICOLON })) throw clasp::error::SyntaxError("Missing semicolon after expression - expected ';', got ", this->lexer_.peek());
 
     return ExpressionStatement::make_ptr(expr);
 }
@@ -136,7 +182,8 @@ BaseExpression::Ptr Parser::primary() {
     if (consume({
         clasp::lexical::Token::Type::INTEGER_LITERAL
     }, tok)) {
-        return NumberLiteral::make_ptr(tok);
+            // i32 by default
+        return NumberLiteral::make_ptr(tok, clasp::type::PrimitiveType::make_ptr(clasp::type::PrimitiveType::Type::INT, 32));
     }
 
     if (consume({
@@ -173,5 +220,32 @@ bool Parser::consume(std::initializer_list<clasp::lexical::Token::Type> types, c
         }
     }
     return false;
+}
+
+static const std::unordered_map<std::string, clasp::type::PrimitiveType::Ptr> primitives = {
+    { "i8" , clasp::type::PrimitiveType::make_ptr(clasp::type::PrimitiveType::Type::INT, 8 ) },
+    { "i16", clasp::type::PrimitiveType::make_ptr(clasp::type::PrimitiveType::Type::INT, 16) },
+    { "i32", clasp::type::PrimitiveType::make_ptr(clasp::type::PrimitiveType::Type::INT, 32) },
+
+    { "u8" , clasp::type::PrimitiveType::make_ptr(clasp::type::PrimitiveType::Type::UINT, 8 ) },
+    { "u16", clasp::type::PrimitiveType::make_ptr(clasp::type::PrimitiveType::Type::UINT, 16) },
+    { "u32", clasp::type::PrimitiveType::make_ptr(clasp::type::PrimitiveType::Type::UINT, 32) },
+
+    { "f32", clasp::type::PrimitiveType::make_ptr(clasp::type::PrimitiveType::Type::FLOAT, 32) },
+};
+
+clasp::type::Type::Ptr Parser::parse_type() {
+    // TODO: array and other types
+
+    clasp::lexical::Token::Ptr tok = clasp::lexical::Token::make_ptr(clasp::lexical::Token::Type::UNKNOWN);
+    if (!consume({
+        clasp::lexical::Token::Type::IDENTIFIER
+    }, tok)) throw clasp::error::SyntaxError("Missing type name - expected (IDENTIFIER), got ", this->lexer_.peek());
+
+    if (primitives.find(tok->value) != primitives.end()) {
+        return primitives.at(tok->value);
+    }
+
+    return clasp::type::PrimaryType::make_ptr(tok);
 }
 }

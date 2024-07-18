@@ -4,6 +4,7 @@
 #include <memory>
 #include <clasp/util.hpp>
 #include <clasp/lexical.hpp>
+#include <clasp/type.hpp>
 
 namespace clasp::ast {
 
@@ -11,10 +12,15 @@ class Visitor;
 
 class BaseExpression {
 public:
+    BaseExpression(clasp::type::Type::Ptr type) : type_(type) {}
+
     CLASP_UTIL_CLASS_PTR(BaseExpression)
 
     virtual void accept(Visitor *v) = 0;
-private:
+
+    clasp::type::Type::Ptr type() const { return type_; }
+protected:
+    clasp::type::Type::Ptr type_;
 };
 
 class BaseStatement {
@@ -31,6 +37,7 @@ class NumberLiteral;
 class VariableReference;
 
 class ExpressionStatement;
+class VarDeclStatement;
 
 class Visitor {
 public:
@@ -42,7 +49,8 @@ public:
     virtual void visit(    NumberLiteral *e) = 0;
     virtual void visit(VariableReference *e) = 0;
 
-    virtual void visit(ExpressionStatement *e) = 0;
+    virtual void visit(ExpressionStatement *s) = 0;
+    virtual void visit(   VarDeclStatement *s) = 0;
 private:
 };
 
@@ -50,7 +58,7 @@ class BinaryExpression : public BaseExpression {
 public:
     CLASP_UTIL_CLASS_PTR(BinaryExpression)
 
-    BinaryExpression(BaseExpression::Ptr left, clasp::lexical::Token::Ptr op, BaseExpression::Ptr right) : left_(left), op_(op), right_(right) {}
+    BinaryExpression(BaseExpression::Ptr left, clasp::lexical::Token::Ptr op, BaseExpression::Ptr right, clasp::type::Type::Ptr type = nullptr) : left_(left), op_(op), right_(right), BaseExpression(type) {}
 
     virtual void accept(Visitor *v) override { v->visit(this); }
 
@@ -61,14 +69,13 @@ private:
     BaseExpression::Ptr left_;
     clasp::lexical::Token::Ptr op_;
     BaseExpression::Ptr right_;
-
 };
 
 class UnaryExpression : public BaseExpression {
 public:
     CLASP_UTIL_CLASS_PTR(UnaryExpression)
 
-    UnaryExpression(clasp::lexical::Token::Ptr op, BaseExpression::Ptr right) : op_(op), right_(right) {}
+    UnaryExpression(clasp::lexical::Token::Ptr op, BaseExpression::Ptr right, clasp::type::Type::Ptr type = nullptr) : op_(op), right_(right), BaseExpression(type) {}
 
     virtual void accept(Visitor *v) override { v->visit(this); }
 
@@ -83,7 +90,7 @@ class NumberLiteral : public BaseExpression {
 public:
     CLASP_UTIL_CLASS_PTR(NumberLiteral)
 
-    NumberLiteral(clasp::lexical::Token::Ptr num) : num_(num) {}
+    NumberLiteral(clasp::lexical::Token::Ptr num, clasp::type::Type::Ptr type = nullptr) : num_(num), BaseExpression(type) {}
 
     virtual void accept(Visitor *v) override { v->visit(this); }
 
@@ -96,7 +103,7 @@ class VariableReference : public BaseExpression {
 public:
     CLASP_UTIL_CLASS_PTR(VariableReference)
 
-    VariableReference(clasp::lexical::Token::Ptr var) : var_(var) {}
+    VariableReference(clasp::lexical::Token::Ptr var, clasp::type::Type::Ptr type = nullptr) : var_(var), BaseExpression(type) {}
 
     virtual void accept(Visitor *v) override { v->visit(this); }
 
@@ -117,6 +124,28 @@ public:
 private:
     BaseExpression::Ptr expr_;
 };
+
+class VarDeclStatement : public BaseStatement {
+public:
+    CLASP_UTIL_CLASS_PTR(VarDeclStatement)
+    enum class Qualifiers {
+        MUTABLE, IMMUABLE, CONST
+    };
+    
+    VarDeclStatement(std::string name, Qualifiers qual, clasp::type::Type::Ptr type, BaseExpression::Ptr initializer = nullptr) : name_(name), qual_(qual), type_(type), initializer_(initializer) {}
+
+    virtual void accept(Visitor *v) override { v->visit(this); }
+
+    Qualifiers qual() const { return qual_; }
+    std::string name() const { return name_; }
+    BaseExpression::Ptr initializer() const { return initializer_; }
+    clasp::type::Type::Ptr type() const { return type_; }
+private:
+    Qualifiers qual_;
+    std::string name_;
+    BaseExpression::Ptr initializer_;
+    clasp::type::Type::Ptr type_;
+};
 }
 
 namespace clasp::util {
@@ -133,7 +162,8 @@ public:
     virtual void visit(    clasp::ast::NumberLiteral *e) override;
     virtual void visit(clasp::ast::VariableReference *e) override;
 
-    virtual void visit(clasp::ast::ExpressionStatement *e) override;
+    virtual void visit(clasp::ast::ExpressionStatement *s) override;
+    virtual void visit(   clasp::ast::VarDeclStatement *s) override;
 private:
     std::string out_;
 };

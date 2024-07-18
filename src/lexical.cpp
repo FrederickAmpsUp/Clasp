@@ -1,8 +1,61 @@
 #include <clasp/lexical.hpp>
 #include <clasp/exception.hpp>
+#include <unordered_map>
 #include <tuple>
 
 namespace clasp::lexical {
+
+const std::unordered_map<Token::Type, std::string> Token::typeStrings = {
+    { Token::Type::PLUS, "PLUS" },
+    { Token::Type::MINUS, "MINUS" },
+    { Token::Type::ASTERISK, "ASTERISK" },
+    { Token::Type::SLASH, "SLASH" },
+    { Token::Type::CARET, "CARET" },
+    { Token::Type::PERCENT, "PERCENT" },
+    { Token::Type::TILDE, "TILDE" },
+    { Token::Type::AMPERSAND, "AMPERSAND" },
+
+    { Token::Type::PLUS_EQUAL, "PLUS_EQUAL" },
+    { Token::Type::MINUS_EQUAL, "MINUS_EQUAL" },
+    { Token::Type::ASTERISK_EQUAL, "ASTERISK_EQUAL" },
+    { Token::Type::SLASH_EQUAL, "SLASH_EQUAL" },
+    { Token::Type::CARET_EQUAL, "CARET_EQUAL" },
+    { Token::Type::PERCENT_EQUAL, "PERCENT_EQUAL" },
+    { Token::Type::TILDE_EQUAL, "TILDE_EQUAL" },
+    { Token::Type::AMPERSAND_EQUAL, "AMPERSAND_EQUAL" },
+    
+    { Token::Type::PLUS_PLUS, "PLUS_PLUS" },
+    { Token::Type::MINUS_MINUS, "MINUS_MINUS" },
+
+    { Token::Type::EQUAL, "EQUAL" },
+    { Token::Type::EQUAL_EQUAL, "EQUAL_EQUAL" },
+
+    { Token::Type::BANG, "BANG" },
+    { Token::Type::BANG_EQUAL, "BANG_EQUAL" },
+    { Token::Type::GREATER, "GREATER" },
+    { Token::Type::GREATER_EQUAL, "GREATER_EQUAL" },
+    { Token::Type::LESS, "LESS" },
+    { Token::Type::LESS_EQUAL, "LESS_EQUAL" },
+
+    { Token::Type::COLON, "COLON" },
+    { Token::Type::SEMICOLON, "SEMICOLON" },
+
+    { Token::Type::LEFT_PAREN, "LEFT_PAREN" },
+    { Token::Type::RIGHT_PAREN, "RIGHT_PAREN" },
+
+    { Token::Type::IDENTIFIER, "IDENTIFIER" },
+    { Token::Type::INTEGER_LITERAL, "INTEGER_LITERAL" },
+
+    { Token::Type::KEYWORD_IF, "KEYWORD_IF" },
+    { Token::Type::KEYWORD_WHILE, "KEYWORD_WHILE" },
+    { Token::Type::KEYWORD_LET, "KEYWORD_LET" },
+    { Token::Type::KEYWORD_VAR, "KEYWORD_VAR" },
+    { Token::Type::KEYWORD_CONST, "KEYWORD_CONST" },
+    { Token::Type::KEYWORD_FN, "KEYWORD_FN" },
+
+    { Token::Type::END_OF_FILE, "END_OF_FILE" },
+    { Token::Type::UNKNOWN, "UNKNOWN" },
+};
 
 Token::Token(Token::Type type, std::string value) {
     if (value.empty()) {
@@ -66,7 +119,7 @@ Token::Token(Token::Type type, std::string value) {
                 value = "&";
                 break;
             case Type::AMPERSAND_EQUAL:
-                value = "=";
+                value = "&=";
                 break;
 
             case Type::EQUAL:
@@ -109,6 +162,25 @@ Token::Token(Token::Type type, std::string value) {
                 break;
             case Type::RIGHT_PAREN:
                 value = ")";
+                break;
+
+            case Type::KEYWORD_IF:
+                value = "if";
+                break;
+            case Type::KEYWORD_WHILE:
+                value = "while";
+                break;
+            case Type::KEYWORD_VAR:
+                value = "var";
+                break;
+            case Type::KEYWORD_LET:
+                value = "let";
+                break;
+            case Type::KEYWORD_CONST:
+                value = "const";
+                break;
+            case Type::KEYWORD_FN:
+                value = "fn";
                 break;
 
             case Type::END_OF_FILE:
@@ -155,6 +227,18 @@ static const std::tuple<char, Token::Type, Token::Type, Token::Type> operatorTok
     { ')', Token::Type::RIGHT_PAREN,  Token::Type::UNKNOWN,        Token::Type::UNKNOWN     },
 };
 
+/**
+ * Keyword table [keyword, type]
+ */
+static const std::unordered_map<std::string, Token::Type> keywords = {
+    { "if",    Token::Type::KEYWORD_IF    },
+    { "while", Token::Type::KEYWORD_WHILE },
+    { "var",   Token::Type::KEYWORD_VAR   },
+    { "let",   Token::Type::KEYWORD_LET   },
+    { "const", Token::Type::KEYWORD_CONST },
+    { "fn",    Token::Type::KEYWORD_FN    }
+};
+
 // identifiers can start with _a-zA-Z
 static bool isIdStart(char c) {
     return c == '_' || isalpha(c);
@@ -182,10 +266,17 @@ Token::Ptr Scanner::_scan() {
 
     if (isIdStart(c)) {
         std::string id = std::string(&c, 1);
+
         while (isId(c = this->peek_)) {
             (void)this->next();  // consume
             id += c;
         }
+
+            // O(1) :)
+        if (keywords.find(id) != keywords.end()) {
+            return Token::make_ptr(keywords.at(id), id);
+        }
+        
         return Token::make_ptr(Token::Type::IDENTIFIER, std::move(id));
     }
 

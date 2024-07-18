@@ -40,4 +40,26 @@ void ASTStringifier::visit(clasp::ast::ExpressionStatement *s) {
     this->visit(s->expr());
     this->out_ += ")\n";
 }
+
+void ASTStringifier::visit(clasp::ast::VarDeclStatement *s) {
+    switch (s->qual()) {
+        case clasp::ast::VarDeclStatement::Qualifiers::MUTABLE:
+            this->out_ += "(var ";
+            break;
+        
+        case clasp::ast::VarDeclStatement::Qualifiers::IMMUABLE:
+            this->out_ += "(let ";
+            break;
+
+        case clasp::ast::VarDeclStatement::Qualifiers::CONST:
+            this->out_ += "(const ";
+            break;
+    }
+    this->out_ += s->name();
+    if (s->initializer()) {
+        this->out_ += " = ";
+        this->visit(s->initializer());
+    }
+    this->out_ += ")";
+}
 }
